@@ -1,0 +1,3 @@
+Name,Term,ES,nes,NOM p-val,fdr,FWER p-val,Tag %,Gene %,Lead_genes,Gene_Set,Direction
+prerank,Antigen processing and presentation,-0.7673119277575385,-1.641130659527325,0.0,0.16711181981263704,0.114,13/66,6.78%,Hsp90aa1;Hspa8;Hsp90ab1;Lgmn;Calr;Ctss;B2m;Hspa5;Canx;H2-D1;Ctsb;H2-K1;Tapbp,KEGG_2019_Mouse,Down
+prerank,Expression And Translocation Of Olfactory Receptors R-HSA-9752946,-0.7881929581873065,-1.7508854492084962,0.0,0.02754942918198795,0.02,2/95,2.36%,Ldb2;Ebf1,Reactome_2022,Down

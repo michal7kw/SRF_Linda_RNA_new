@@ -1,0 +1,11 @@
+cell_type_L2_new,reason
+CA2,"Low cell count (Ctrl=44, Mut=73)"
+ABC,"Low cell count (Ctrl=67, Mut=49)"
+Lamp5 (DG),"Low cell count (Ctrl=45, Mut=39)"
+nIPC,"Low cell count (Ctrl=26, Mut=37)"
+Pericytes,"Low cell count (Ctrl=82, Mut=31)"
+Car3,"Low cell count (Ctrl=44, Mut=29)"
+VIP (DG),"Low cell count (Ctrl=27, Mut=40)"
+Mossy cells,"Low cell count (Ctrl=15, Mut=32)"
+Neuroblast,"Low cell count (Ctrl=105, Mut=37)"
+Cajal-Retzius,"Low cell count (Ctrl=25, Mut=40)"

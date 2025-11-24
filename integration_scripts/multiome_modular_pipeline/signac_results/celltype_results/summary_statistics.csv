@@ -1,0 +1,69 @@
+"celltype","genotype","n_cells_ctrl","n_cells_mut","n_degs","n_degs_up","n_degs_down","n_da_peaks","n_da_more","n_da_less","n_peak_gene_links"
+"rest","Emx1",462,136,3306,3130,176,196,192,4,5
+"CA3","Emx1",16,194,NA,NA,NA,NA,NA,NA,NA
+"CTX","Emx1",80,298,187,101,86,103,4,99,247
+"ProS","Emx1",8,74,NA,NA,NA,NA,NA,NA,NA
+"CA1","Emx1",60,290,35,13,22,168,2,166,233
+"Mature GC","Emx1",81,218,56,25,31,137,4,133,233
+"ENT CTX","Emx1",68,647,31,12,19,140,2,138,291
+"Subiculum","Emx1",9,84,NA,NA,NA,NA,NA,NA,NA
+"Microglia","Emx1",15,27,NA,NA,NA,NA,NA,NA,NA
+"MOL","Emx1",29,75,NA,NA,NA,NA,NA,NA,NA
+"Astrocytes","Emx1",32,173,0,0,0,98,1,97,105
+"NFOL","Emx1",2,13,NA,NA,NA,NA,NA,NA,NA
+"PPP","Emx1",5,202,NA,NA,NA,NA,NA,NA,NA
+"Lamp5","Emx1",6,59,NA,NA,NA,NA,NA,NA,NA
+"CA2","Emx1",2,22,NA,NA,NA,NA,NA,NA,NA
+"Endothelial","Emx1",16,55,NA,NA,NA,NA,NA,NA,NA
+"VIP","Emx1",4,43,NA,NA,NA,NA,NA,NA,NA
+"Pericytes","Emx1",7,8,NA,NA,NA,NA,NA,NA,NA
+"PV","Emx1",9,107,NA,NA,NA,NA,NA,NA,NA
+"OPC","Emx1",7,59,NA,NA,NA,NA,NA,NA,NA
+"Immature GC","Emx1",13,17,NA,NA,NA,NA,NA,NA,NA
+"Sncg","Emx1",11,78,NA,NA,NA,NA,NA,NA,NA
+"CGE-derived","Emx1",3,34,NA,NA,NA,NA,NA,NA,NA
+"Mossy cells","Emx1",1,9,NA,NA,NA,NA,NA,NA,NA
+"Neuroblast","Emx1",5,4,NA,NA,NA,NA,NA,NA,NA
+"VLMC","Emx1",5,46,NA,NA,NA,NA,NA,NA,NA
+"MGE-derived","Emx1",6,55,NA,NA,NA,NA,NA,NA,NA
+"SST","Emx1",5,88,NA,NA,NA,NA,NA,NA,NA
+"ABC","Emx1",3,22,NA,NA,NA,NA,NA,NA,NA
+"nIPC","Emx1",1,8,NA,NA,NA,NA,NA,NA,NA
+"VIP (DG)","Emx1",1,7,NA,NA,NA,NA,NA,NA,NA
+"Cajal-Retzius","Emx1",2,2,NA,NA,NA,NA,NA,NA,NA
+"Lamp5 (DG)","Emx1",1,7,NA,NA,NA,NA,NA,NA,NA
+"Car3","Emx1",1,7,NA,NA,NA,NA,NA,NA,NA
+"rest","Nestin",1375,402,138,55,83,38,28,10,308
+"CA3","Nestin",51,96,6,4,2,21,2,19,123
+"CTX","Nestin",195,291,88,32,56,2440,660,1780,909
+"ProS","Nestin",19,39,NA,NA,NA,NA,NA,NA,NA
+"CA1","Nestin",120,244,66,14,52,1628,128,1500,4120
+"Mature GC","Nestin",365,206,225,47,178,5559,3821,1738,1035
+"ENT CTX","Nestin",278,498,268,19,249,5120,2317,2803,766
+"Subiculum","Nestin",44,66,1,0,1,35,2,33,0
+"Microglia","Nestin",430,610,313,28,285,16061,8996,7065,503
+"MOL","Nestin",675,501,288,41,247,15688,8931,6757,397
+"Astrocytes","Nestin",344,122,39,13,26,8915,7080,1835,1279
+"NFOL","Nestin",32,44,0,0,0,0,0,0,51
+"PPP","Nestin",26,124,NA,NA,NA,NA,NA,NA,NA
+"Lamp5","Nestin",25,46,NA,NA,NA,NA,NA,NA,NA
+"CA2","Nestin",1,4,NA,NA,NA,NA,NA,NA,NA
+"Endothelial","Nestin",63,13,NA,NA,NA,NA,NA,NA,NA
+"VIP","Nestin",18,52,NA,NA,NA,NA,NA,NA,NA
+"Pericytes","Nestin",60,16,NA,NA,NA,NA,NA,NA,NA
+"PV","Nestin",32,59,1,1,0,2,0,2,11
+"OPC","Nestin",161,262,73,7,66,8656,3869,4787,1319
+"Immature GC","Nestin",101,45,5,2,3,278,276,2,241
+"Sncg","Nestin",15,18,NA,NA,NA,NA,NA,NA,NA
+"CGE-derived","Nestin",29,44,NA,NA,NA,NA,NA,NA,NA
+"Mossy cells","Nestin",2,2,NA,NA,NA,NA,NA,NA,NA
+"Neuroblast","Nestin",73,21,NA,NA,NA,NA,NA,NA,NA
+"VLMC","Nestin",38,14,NA,NA,NA,NA,NA,NA,NA
+"MGE-derived","Nestin",28,57,NA,NA,NA,NA,NA,NA,NA
+"SST","Nestin",38,68,0,0,0,7,2,5,95
+"ABC","Nestin",31,13,NA,NA,NA,NA,NA,NA,NA
+"nIPC","Nestin",12,8,NA,NA,NA,NA,NA,NA,NA
+"VIP (DG)","Nestin",3,7,NA,NA,NA,NA,NA,NA,NA
+"Cajal-Retzius","Nestin",18,27,NA,NA,NA,NA,NA,NA,NA
+"Lamp5 (DG)","Nestin",8,5,NA,NA,NA,NA,NA,NA,NA
+"Car3","Nestin",7,4,NA,NA,NA,NA,NA,NA,NA

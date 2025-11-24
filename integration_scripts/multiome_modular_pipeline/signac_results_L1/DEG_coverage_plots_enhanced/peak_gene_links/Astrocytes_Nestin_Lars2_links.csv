@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr9",123297178,123366940,69763,"*",0.134781303575864,"Lars2","chr9-123296061-123298295",1.94639714964097,0.025803525863877,"Astrocytes","Nestin"

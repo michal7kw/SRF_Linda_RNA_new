@@ -1,0 +1,5 @@
+Name,Term,ES,nes,NOM p-val,fdr,FWER p-val,Tag %,Gene %,Lead_genes,Gene_Set,Direction
+prerank,Establishment Of Protein Localization To Organelle (GO:0072594),0.8426829667011719,1.7647513174451694,0.0,0.0964879725300258,0.056,3/81,1.06%,Ryr2;Lrrc7;Prickle1,GO_Biological_Process_2023,Up
+prerank,protein-RNA Complex Assembly (GO:0022618),0.7556656897942715,1.764252577199297,0.0,0.04902211507573891,0.057,45/143,11.47%,Celf2;Luc7l2;Celf1;Celf4;Celf3;Ago1;Celf5;Srsf1;Srsf9;Gcfc2;Bop1;Nudt21;Ythdc1;Dicer1;Ago2;Dhx29;Hnrnpc;Cpsf6;Rpsa;Rplp0;Rps28;Ncbp1;Clns1a;Eif5;Mcts1;Eif2d;Luc7l;Sf3b1;Rpl10;Gemin8;Snrpb;Snrpd3;Wdr77;Cpsf7;Rpl38;Strap;Ppan;Ago4;Rbm5;Mrps7;Dhx9;Sart3;Coil;Nop53;Hexim1,GO_Biological_Process_2023,Up
+prerank,Vesicle Budding From Membrane (GO:0006900),-0.940544073845133,-1.6165432897571448,0.0,0.038080712106816024,0.04,1/29,0.02%,Fnbp1l,GO_Biological_Process_2023,Down
+prerank,RNA Polymerase III Abortive And Retractive Initiation R-HSA-749476,0.9178352696100992,1.712925778354927,0.0,0.18370740259648075,0.123,3/38,1.54%,Nfib;Nfia;Nfix,Reactome_2022,Up

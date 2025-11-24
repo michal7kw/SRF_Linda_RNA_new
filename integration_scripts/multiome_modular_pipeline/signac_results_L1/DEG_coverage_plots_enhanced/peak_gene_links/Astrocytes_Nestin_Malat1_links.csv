@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr19",5704553,5802672,98120,"*",-0.17138873434325,"Malat1","chr19-5703906-5705199",-1.94112945151687,0.0261212887781518,"Astrocytes","Nestin"

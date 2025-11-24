@@ -1,0 +1,25 @@
+Number,Pathway
+1,Mrna Splice Site Recog. (Go:0006376)
+2,Reg. Rna Splicing (Go:0043484)
+3,Rrna Proc. (Go:0006364)
+4,Reg. Mrna Proc. (Go:0050684)
+5,"Reg. Mrna Splicing, Via Spliceosome (Go:0048024)"
+6,"Reg. Alternative Mrna Splicing, Via Spliceosome (Go:0000381)"
+7,Spliceosomal Complex Assembly (Go:0000245)
+8,Rna Proc. (Go:0006396)
+9,Mrna Splicing - Major Pathway R-Hsa-72163
+10,Mrna Splicing R-Hsa-72172
+11,Transport Of Mature Mrna Derived From An Intron-Containin...
+12,Proc. Of Capped Intron-Containing Pre-Mrna R-Hsa-72203
+13,Proc. Of Intronless Pre-Mrnas R-Hsa-77595
+14,"Mrna Cis Splicing, Via Spliceosome (Go:0045292)"
+15,+Reg. Of Mrna Proc. (Go:0050685)
+16,"Alternative Mrna Splicing, Via Spliceosome (Go:0000380)"
+17,"+Reg. Of Mrna Splicing, Via Spliceosome (Go:0048026)"
+18,+Reg. Of Rna Splicing (Go:0033120)
+19,Mrna Splicing - Minor Pathway R-Hsa-72165
+20,Proc. Of Capped Intronless Pre-Mrna R-Hsa-75067
+21,Transport Of Mature Mrna Derived From An Intronless Trans...
+22,"Nuclear-Transcribed Mrna Catabolic Process, Exonucleolyti..."
+23,Trna Proc. (Go:0008033)
+24,Snrna Proc. (Go:0016180)

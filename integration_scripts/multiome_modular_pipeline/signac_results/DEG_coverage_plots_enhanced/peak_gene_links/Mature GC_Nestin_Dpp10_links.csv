@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr1",123972616,124045559,72944,"*",0.158552000886788,"Dpp10","chr1-123971241-123973991",2.12949651980978,0.0166066012567482,"Mature GC","Nestin"

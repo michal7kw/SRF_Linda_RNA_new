@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Control (for_DEGs),mean_expr_Mutant (for_DEGs)
+Naaladl2,5.7564955,0.72079206,8.587817130371326e-09,3.833172176141241e-05,0.8881789137380192,0.8452380952380952,1.2593602,1.640626

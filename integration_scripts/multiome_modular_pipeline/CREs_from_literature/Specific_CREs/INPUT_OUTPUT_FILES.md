@@ -1,0 +1,1 @@
+/beegfs/scratch/ric.sessa/kubacki.michal/Documentation/Docs_Linda/Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/INPUT_OUTPUT_FILES.md

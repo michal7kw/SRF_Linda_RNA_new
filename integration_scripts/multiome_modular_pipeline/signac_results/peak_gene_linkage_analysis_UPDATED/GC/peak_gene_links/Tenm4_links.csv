@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr7",96156327,96171244,14918,"*",-0.130763835981099,"Tenm4","chr7-96156100-96156554",-1.66350290397442,0.0481059050214173,"Mature GC","Nestin"

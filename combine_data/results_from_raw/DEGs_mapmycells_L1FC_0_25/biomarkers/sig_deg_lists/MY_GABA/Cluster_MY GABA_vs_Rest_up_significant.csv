@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Cluster_MY GABA (for_DEGs),mean_expr_Rest (for_DEGs)
+Tmsb4x,3.1812298,2.181706,0.0014665123173596881,0.029254035610582645,0.7083333333333334,0.7213114754098361,2.289161,1.0832781

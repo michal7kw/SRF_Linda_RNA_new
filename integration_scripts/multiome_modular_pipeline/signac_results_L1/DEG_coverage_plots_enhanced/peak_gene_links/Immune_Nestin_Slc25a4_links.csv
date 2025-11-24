@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr8",46184458,46211284,26827,"*",0.106311340418684,"Slc25a4","chr8-46183002-46185913",2.41035222317694,0.00796856309597965,"Immune","Nestin"

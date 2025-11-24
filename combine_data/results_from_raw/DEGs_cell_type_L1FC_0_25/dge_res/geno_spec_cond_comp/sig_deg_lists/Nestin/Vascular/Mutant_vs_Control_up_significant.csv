@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,mean_expr_Nestin_Control (for_DEGs),mean_expr_Nestin_Mutant (for_DEGs)
+Naaladl2,4.5043507,0.8691103,6.657621185545732e-06,0.01544383613156031,0.9428571428571428,2.2130315,2.7646952

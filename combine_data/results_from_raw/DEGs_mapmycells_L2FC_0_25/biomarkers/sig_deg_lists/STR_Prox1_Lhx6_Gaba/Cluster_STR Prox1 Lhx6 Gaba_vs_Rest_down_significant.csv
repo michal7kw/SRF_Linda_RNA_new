@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Cluster_STR Prox1 Lhx6 Gaba (for_DEGs),mean_expr_Rest (for_DEGs)
+Nlgn1,-4.137834,-1.8534923,3.505998761430717e-05,0.03611574131562698,1.0,0.9545145231187995,2.2012212,3.4025273

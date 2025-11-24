@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr1",164380386,164458355,77970,"*",-0.109666572331956,"Atp1b1","chr1-164379553-164381218",-1.93792686436296,0.0263160729543847,"GABA","Nestin"

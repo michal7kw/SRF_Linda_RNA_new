@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr8",57962564,58013637,51074,"*",0.113345639785861,"Galntl6","chr8-58013410-58013864",1.86449206645298,0.0311263173300686,"Astrocytes","Nestin"

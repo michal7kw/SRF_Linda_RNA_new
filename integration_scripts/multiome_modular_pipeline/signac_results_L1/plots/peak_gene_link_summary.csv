@@ -1,0 +1,10 @@
+"analysis_id","celltype","genotype","n_links","n_unique_genes","n_unique_peaks","mean_correlation","median_distance"
+"Astrocytes_Nestin","Astrocytes","Nestin",6263,4074,5394,0.0620666661821078,1567
+"Excitatory_Emx1","Excitatory","Emx1",95,93,95,0.122241625245583,18625
+"Excitatory_Nestin","Excitatory","Nestin",9628,6243,8986,0.053294518553524,2231.5
+"GABA_Emx1","GABA","Emx1",395,373,383,0.0988018978543622,1957
+"GABA_Nestin","GABA","Nestin",979,884,940,0.107971257154223,2333
+"Immune_Nestin","Immune","Nestin",10073,5307,8508,0.0476648594037922,1724
+"Oligo_Nestin","Oligo","Nestin",11393,6387,10095,0.048689811314007,1834
+"Unknown_Nestin","Unknown","Nestin",2415,1960,2148,0.07934556514251,1926
+"Vascular_Nestin","Vascular","Nestin",1436,1134,1274,0.0956598275809956,6124

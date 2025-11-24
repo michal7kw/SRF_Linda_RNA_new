@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Control (for_DEGs),mean_expr_Mutant (for_DEGs)
+Snhg14,5.796256,0.7922633,6.781175579481048e-09,6.505859850954118e-05,0.9565217391304348,0.8771929824561403,2.1570144,2.656057

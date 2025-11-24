@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --job-name=3_fold_enrichment_specific_analysis
+#SBATCH --output=logs/3_fold_enrichment_specific_analysis.log
+#SBATCH --error=logs/3_fold_enrichment_specific_analysis.err
+#SBATCH --time=6:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --partition=workq
+
+# Activate conda environment with pyBigWig
+source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh
+conda activate rna_seq_analysis_deep
+
+echo "Conda environment: $CONDA_DEFAULT_ENV"
+echo ""
+
+echo ""
+echo "========================================================================"
+echo "Running Python analysis..."
+echo "========================================================================"
+echo ""
+
+# Run the Python script
+python 3_fold_enrichment_specific_analysis.py

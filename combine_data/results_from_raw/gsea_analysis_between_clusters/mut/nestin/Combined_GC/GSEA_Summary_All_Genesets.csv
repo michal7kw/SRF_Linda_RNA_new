@@ -1,0 +1,2 @@
+Name,Term,ES,nes,NOM p-val,fdr,FWER p-val,Tag %,Gene %,Lead_genes,Gene_Set,Direction
+prerank,Alzheimer disease,0.7584398050413526,1.5843217477830873,0.0,0.22577536788123276,0.147,11/161,1.70%,Grin2a;Cacna1c;Ppp3ca;Grin2b;Snca;Cacna1d;Plcb1;Atf6;Gnaq;Grin1;Mapk1,KEGG_2019_Mouse,Up

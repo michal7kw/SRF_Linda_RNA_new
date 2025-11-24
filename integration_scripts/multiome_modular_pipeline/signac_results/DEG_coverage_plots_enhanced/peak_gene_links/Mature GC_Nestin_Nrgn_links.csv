@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr9",37480155,37552904,72750,"*",0.153952137878726,"Nrgn","chr9-37478699-37481610",1.71297405141784,0.043358656745714,"Mature GC","Nestin"

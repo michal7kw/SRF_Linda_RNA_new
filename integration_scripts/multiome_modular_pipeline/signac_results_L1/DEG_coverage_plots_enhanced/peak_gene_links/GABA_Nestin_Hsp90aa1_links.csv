@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr12",110702728,110728573,25846,"*",0.105870214940564,"Hsp90aa1","chr12-110727898-110729248",2.07756237033682,0.0188748425319074,"GABA","Nestin"

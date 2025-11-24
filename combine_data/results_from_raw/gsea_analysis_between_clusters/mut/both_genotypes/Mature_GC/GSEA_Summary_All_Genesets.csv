@@ -1,0 +1,3 @@
+Name,Term,ES,nes,NOM p-val,fdr,FWER p-val,Tag %,Gene %,Lead_genes,Gene_Set,Direction
+prerank,Vesicle Budding From Membrane (GO:0006900),-0.9446101874773304,-1.542649564619011,0.0,0.23247219587476023,0.19,1/29,0.06%,Fnbp1l,GO_Biological_Process_2023,Down
+prerank,RNA Polymerase III Abortive And Retractive Initiation R-HSA-749476,0.9324687452030219,1.6300528561564909,0.0,0.20984485462238614,0.125,3/38,2.05%,Nfib;Nfia;Nfix,Reactome_2022,Up

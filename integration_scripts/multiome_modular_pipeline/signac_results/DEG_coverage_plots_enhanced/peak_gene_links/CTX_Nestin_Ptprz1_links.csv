@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr6",22875502,22968235,92734,"*",-0.144926894474278,"Ptprz1","chr6-22968099-22968370",-2.48465389744041,0.00648387213837466,"CTX","Nestin"

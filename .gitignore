@@ -1,0 +1,200 @@
+################################################################################
+# Data Files and Archives
+################################################################################
+
+# Compressed archives
+*.gz
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.lzma
+*.tar.lz
+*.tgz
+
+# Bioinformatics data formats
+*.bam
+*.bai
+*.fastq
+*.pkl
+*.mtx
+*.rds
+*.cloupe
+*.h5
+*.loom
+*.h5ad
+*.h5ad.gz
+*.h5seurat
+*.h5mu
+*.bigwig
+*.bw
+*.bed
+*.bedpe
+*.tsv
+*.tsv.gz.tbi
+
+# Analysis and annotation files
+*.rnk
+*.gmt
+*.set
+*.ds
+*.cls
+*.grp
+*.cys
+*.json
+
+# Log and output files
+*.log
+*.log*
+*.out
+*.errors
+*.jobinfo
+
+# Temporary and backup files
+*.bak
+*.old
+_*
+tmp/
+logs/
+
+# Software and executable files
+*.mro
+*.jar
+
+################################################################################
+# Documentation and Configuration
+################################################################################
+
+# Ignore all Markdown files except README
+*.md
+!README.md
+!**/README.md
+
+# Configuration files
+.cursorignore
+.claude
+.kilocodemodes
+
+################################################################################
+# Project-Specific Directories and Files
+################################################################################
+
+# Data directories
+250307_A00626_0942_BHV7KVDMXY_1/HV7KVDMXY/
+cellranger_reference/
+R26_Emx1_Ctrl_adult_20250317134903/
+R26_Emx1_Ctrl_adult_20250317135050/
+R26_*/
+refdata-gex-GRCm39-2024-A/
+cellranger_final_count_data/
+counts_trans/
+cellranger_output_counts/
+RNA_data/
+DATA/
+
+# Results and analysis directories
+post_analysis/results/
+multiome_integration_results/
+combine_data/results_from_raw/DEGs_cell_type_L2FC_0_25/
+combine_data/results_from_raw_archive/
+combine_data/results_from_raw/extracted_for_r/expression_matrix.mtx.npz
+
+# Archive and legacy directories
+Archive/
+Legacy/
+fork0/
+reference/
+Stats/
+slurm_logs/
+Docs/
+InWorking/
+
+# Cluster and pipeline directories
+RUN_ON_CLUSTER/docs
+
+# Specific files
+test.txt
+2025-09-26-is-this-pipeline-beegfsscratchricsessakuback.txt
+integration_scripts/Debigging_notes.txt
+combine_data/ANALYSIS/Enrichment/GSEA/Conditions_from_degs/VISUAL_COMPARISON.txt
+
+################################################################################
+# Multiome Modular Pipeline
+################################################################################
+
+# Pipeline worklogs and documentation
+integration_scripts/multiome_modular_pipeline/Worklogs/2025-10-12-*.txt
+integration_scripts/multiome_modular_pipeline/questions.txt
+integration_scripts/multiome_modular_pipeline/QUICKSTART_FRAGMENT_FIX.txt
+integration_scripts/multiome_modular_pipeline/healthy_nodes.txt
+integration_scripts/multiome_modular_pipeline/docs
+integration_scripts/multiome_modular_pipeline/Alternatives
+
+# Pipeline results and figures
+integration_scripts/multiome_modular_pipeline/multiome_figure/docs/fig2.png
+integration_scripts/multiome_modular_pipeline/multiome_figure/docs/figures.png
+integration_scripts/multiome_modular_pipeline/multiome_figure/docs/Picture1.png
+integration_scripts/multiome_modular_pipeline/multiome_figure/docs/plot.png
+integration_scripts/multiome_modular_pipeline/INTEGRATION_RESULTS/comprehensive_results/README.md
+integration_scripts/multiome_modular_pipeline/fig.png
+
+# Signac results
+integration_scripts/multiome_modular_pipeline/signac_results/bigwig_tracks
+integration_scripts/multiome_modular_pipeline/signac_results/translated_fragments
+integration_scripts/multiome_modular_pipeline/signac_results/fragments_with_prefix
+integration_scripts/multiome_modular_pipeline/signac_results/fragments_with_sample_prefix
+integration_scripts/multiome_modular_pipeline/signac_results_L1/translated_fragments
+integration_scripts/multiome_modular_pipeline/signac_results_L1/fragments_with_prefix
+integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/README.md
+
+# Commented out Signac results (preserved for reference)
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/DEG_coverage_plots_enhanced
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/DEG_coverage_plots_enhanced_separate
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/plots/gaba_accessibility_heatmap
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/plots/*.pdf
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/qc
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/visualizations
+# integration_scripts/multiome_modular_pipeline/signac_results_L1/visualizations_separate
+# integration_scripts/multiome_modular_pipeline/signac_results/DEG_coverage_plots_enhanced
+# integration_scripts/multiome_modular_pipeline/signac_results/DEG_coverage_plots_enhanced_separate
+# integration_scripts/multiome_modular_pipeline/signac_results/plots/gaba_accessibility_heatmap
+# integration_scripts/multiome_modular_pipeline/signac_results/plots/*.pdf
+# integration_scripts/multiome_modular_pipeline/signac_results/qc
+# integration_scripts/multiome_modular_pipeline/signac_results/visualizations
+# integration_scripts/multiome_modular_pipeline/signac_results/visualizations_separate
+# integration_scripts/multiome_modular_pipeline/signac_results/plots/gene_accessibility_regions
+
+################################################################################
+# Cache and Temporary Directories
+################################################################################
+
+**/cache/
+
+################################################################################
+# Figure Hosting - Google Cloud Storage
+################################################################################
+# All figures are hosted on GCS, not in Git
+# See: integration_scripts/multiome_modular_pipeline/GCS_SETUP_GUIDE.md
+
+# PDF and PNG figures (hosted on GCS)
+*.pdf
+*.png
+!docs/workflow_diagrams/*.png
+!README_figures/*.png
+
+# GCS upload logs
+integration_scripts/multiome_modular_pipeline/logs/gcs_upload.log
+
+# GCS backup files
+integration_scripts/multiome_modular_pipeline/scripts/gcs_config.sh.backup.*
+integration_scripts/multiome_modular_pipeline/run_signac_pipeline.sh.backup.*
+integration_scripts/multiome_modular_pipeline/run_signac_pipeline_L1.sh.backup.*
+
+# Keep the manifest file (tracks figure metadata)
+!FIGURES_MANIFEST.json
+*.txt
+*.tab
+
+!INPUT_OUTPUT_FILES.md

@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr19",5802672,5868016,65345,"*",0.161201105854257,"Malat1","chr19-5867745-5868286",1.80265422582705,0.0357212675900635,"Oligo","Nestin"

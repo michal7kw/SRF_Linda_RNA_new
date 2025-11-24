@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr15",36773840,36794547,20708,"*",-0.106407320672737,"Ywhaz","chr15-36773236-36774444",-1.96963241889681,0.0244402566980483,"Astrocytes","Nestin"

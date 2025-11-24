@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Control (for_DEGs),mean_expr_Mutant (for_DEGs)
+B4galt6,-5.040346,-1.8555813,4.6469016575640707e-07,0.004097173191474241,0.2627118644067797,0.7121212121212122,0.62101483,0.21338546

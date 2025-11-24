@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Session genome="mm10" version="8">
+  <Resources>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_sample/Nestin-Ctrl_all_cells.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_sample/Nestin-Mut_all_cells.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_sample/Emx1-Ctrl_all_cells.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_sample/Emx1-Mut_all_cells.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Excitatory_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Excitatory_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Excitatory_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Excitatory_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Unknown_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Unknown_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Unknown_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Unknown_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Oligo_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Oligo_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Oligo_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Oligo_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Immune_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Immune_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Immune_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Immune_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Astrocytes_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Astrocytes_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Astrocytes_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Astrocytes_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Vascular_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Vascular_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Vascular_Emx1-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Vascular_Emx1-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Progenitors_Nestin-Ctrl.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Progenitors_Nestin-Mut.bw"/>
+    <Resource path="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype/Progenitors_Emx1-Mut.bw"/>
+  </Resources>
+  <Panel height="800" name="DataPanel" width="1600">
+    <Track altColor="0,0,178" autoScale="true" color="0,0,178" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" id="Reference sequence" name="Reference sequence" 
+           sortable="false" visible="true"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Nestin-Ctrl_all" name="Nestin-Ctrl_all" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Nestin-Mut_all" name="Nestin-Mut_all" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Emx1-Ctrl_all" name="Emx1-Ctrl_all" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Emx1-Mut_all" name="Emx1-Mut_all" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Excitatory_Nestin-Ctrl" name="Excitatory_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Excitatory_Nestin-Mut" name="Excitatory_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Excitatory_Emx1-Ctrl" name="Excitatory_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Excitatory_Emx1-Mut" name="Excitatory_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Unknown_Nestin-Ctrl" name="Unknown_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Unknown_Nestin-Mut" name="Unknown_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Unknown_Emx1-Ctrl" name="Unknown_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Unknown_Emx1-Mut" name="Unknown_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Oligo_Nestin-Ctrl" name="Oligo_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Oligo_Nestin-Mut" name="Oligo_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Oligo_Emx1-Ctrl" name="Oligo_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Oligo_Emx1-Mut" name="Oligo_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Immune_Nestin-Ctrl" name="Immune_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Immune_Nestin-Mut" name="Immune_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Immune_Emx1-Ctrl" name="Immune_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Immune_Emx1-Mut" name="Immune_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="GABA_Nestin-Ctrl" name="GABA_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="GABA_Nestin-Mut" name="GABA_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="GABA_Emx1-Ctrl" name="GABA_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="GABA_Emx1-Mut" name="GABA_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Astrocytes_Nestin-Ctrl" name="Astrocytes_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Astrocytes_Nestin-Mut" name="Astrocytes_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Astrocytes_Emx1-Ctrl" name="Astrocytes_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Astrocytes_Emx1-Mut" name="Astrocytes_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Vascular_Nestin-Ctrl" name="Vascular_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Vascular_Nestin-Mut" name="Vascular_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="255,140,0" autoScale="true" color="255,140,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Vascular_Emx1-Ctrl" name="Vascular_Emx1-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Vascular_Emx1-Mut" name="Vascular_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,150,0" autoScale="true" color="0,150,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Progenitors_Nestin-Ctrl" name="Progenitors_Nestin-Ctrl" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="0,100,200" autoScale="true" color="0,100,200" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Progenitors_Nestin-Mut" name="Progenitors_Nestin-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+    <Track altColor="200,0,0" autoScale="true" color="200,0,0" displayMode="COLLAPSED" 
+           featureVisibilityWindow="-1" fontSize="10" height="50" id="Progenitors_Emx1-Mut" name="Progenitors_Emx1-Mut" 
+           normalize="false" renderer="BAR_CHART" sortable="true" visible="true" windowFunction="mean"/>
+  </Panel>
+  <PanelLayout dividerFractions="0.8"/>
+  <HiddenAttributes>
+    <Attribute name="DATA FILE"/>
+    <Attribute name="DATA TYPE"/>
+  </HiddenAttributes>
+</Session>

@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr3",14886273,14970019,83747,"*",0.1374680548103,"Car2","chr3-14969941-14970096",2.08635224741667,0.0184733635873938,"Oligo","Nestin"

@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr5",147932771,147957320,24550,"*",-0.108523214601967,"Mtus2","chr5-147932612-147932930",-1.97222467630746,0.0242919819487734,"CTX","Nestin"

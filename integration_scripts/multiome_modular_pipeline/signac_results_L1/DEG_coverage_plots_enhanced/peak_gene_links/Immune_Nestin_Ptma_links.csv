@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr1",86526726,86553695,26970,"*",-0.119793574634305,"Ptma","chr1-86553580-86553810",-1.9396964963608,0.0262082928205796,"Immune","Nestin"

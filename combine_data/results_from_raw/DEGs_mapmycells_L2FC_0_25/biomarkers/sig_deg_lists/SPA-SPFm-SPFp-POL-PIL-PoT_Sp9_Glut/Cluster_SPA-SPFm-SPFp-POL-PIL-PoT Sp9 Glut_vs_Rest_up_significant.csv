@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Cluster_SPA-SPFm-SPFp-POL-PIL-PoT Sp9 Glut (for_DEGs),mean_expr_Rest (for_DEGs)
+Hsp90aa1,3.64676,2.2181032,0.0002655677552857407,0.041374511518944355,0.8125,0.7956654128604693,2.3521068,1.1129843

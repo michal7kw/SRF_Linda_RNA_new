@@ -1,0 +1,2 @@
+names,scores,logfoldchanges,pvals,pvals_adj,pct_nz_group,pct_nz_reference,mean_expr_Control (for_DEGs),mean_expr_Mutant (for_DEGs)
+Grip1os2,-4.5229545,-1.738286,6.098237557237687e-06,0.029253245562069183,0.25,0.6842105263157895,0.4687163,0.16485183

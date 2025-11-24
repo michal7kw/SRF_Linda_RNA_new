@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr11",57011387,57062753,51367,"*",0.105553506204811,"Gria1","chr11-57060193-57065312",2.58633482541133,0.00485013251333864,"Mature GC","Nestin"

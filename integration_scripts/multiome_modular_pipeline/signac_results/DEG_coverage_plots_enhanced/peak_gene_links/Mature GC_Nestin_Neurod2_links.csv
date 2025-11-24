@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr11",98249270,98329648,80379,"*",0.130680805975913,"Neurod2","chr11-98248853-98249686",1.94935317888233,0.0256266309533193,"Mature GC","Nestin"

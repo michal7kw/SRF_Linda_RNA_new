@@ -1,0 +1,11 @@
+"analysis_id","celltype","genotype","n_links","n_unique_genes","n_unique_peaks","mean_correlation","median_distance"
+"Astrocytes_Nestin","Astrocytes","Nestin",1279,1108,1236,0.107723212811022,1422
+"CTX_Nestin","CTX","Nestin",909,836,870,0.0957627785322206,1670
+"ENT CTX_Emx1","ENT CTX","Emx1",291,284,289,0.1024958585597,3600
+"ENT CTX_Nestin","ENT CTX","Nestin",766,716,747,0.110190722153667,1502.5
+"MOL_Nestin","MOL","Nestin",397,378,394,0.106777923400745,6998
+"Mature GC_Nestin","Mature GC","Nestin",1035,946,1008,0.0932700200859468,1604
+"Microglia_Nestin","Microglia","Nestin",503,466,497,0.111355293548431,2970
+"OPC_Nestin","OPC","Nestin",1319,1165,1280,0.103352663682862,1460
+"rest_Emx1","rest","Emx1",5,5,5,0.183596323624248,14835
+"rest_Nestin","rest","Nestin",308,271,307,0.128472724259863,2845

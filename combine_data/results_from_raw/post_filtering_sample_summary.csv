@@ -1,0 +1,5 @@
+sample,n_cells,median_genes_per_cell,median_umi_per_cell
+Emx1_Ctrl,4397,3677.0,10173.0
+Emx1_Mut,5836,3732.0,10897.0
+Nestin_Ctrl,8422,3032.0,7736.5
+Nestin_Mut,9371,3371.0,10206.0

@@ -1,0 +1,4 @@
+cell_type_L1,reason
+Immune,"Low cell count (Emx1_Control=50, Emx1_Mutant=32)"
+Progenitors,"Low cell count (Emx1_Control=39, Emx1_Mutant=93)"
+Ependymal,"Low cell count (Emx1_Control=14, Emx1_Mutant=6)"

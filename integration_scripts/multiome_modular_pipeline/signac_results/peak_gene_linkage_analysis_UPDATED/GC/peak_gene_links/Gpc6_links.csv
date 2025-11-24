@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr14",116886047,116925297,39251,"*",0.127042503371805,"Gpc6","chr14-116885514-116886579",3.15941009514701,0.000790444336922538,"Mature GC","Nestin"

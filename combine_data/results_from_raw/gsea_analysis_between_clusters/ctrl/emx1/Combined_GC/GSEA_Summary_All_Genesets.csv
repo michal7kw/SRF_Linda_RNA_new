@@ -1,0 +1,3 @@
+Name,Term,ES,nes,NOM p-val,fdr,FWER p-val,Tag %,Gene %,Lead_genes,Gene_Set,Direction
+prerank,Alzheimer disease,0.8268589275467974,1.602052560320638,0.0,0.029766354881405305,0.023,17/161,3.29%,Grin2a;Ppp3ca;Cacna1c;Grin2b;Plcb1;Cacna1d;Snca;Gnaq;Mapk1;Atf6;Ppp3r1;Grin1;Ppp3cb;Cdk5r1;Calm1;Calm3;Itpr1,KEGG_2019_Mouse,Up
+prerank,Expression And Translocation Of Olfactory Receptors R-HSA-9752946,-0.8271853275264269,-1.6616167561292923,0.0,0.2360208266883499,0.25,4/95,4.44%,Ldb2;Ebf1;Or51d1;Or52i2,Reactome_2022,Down

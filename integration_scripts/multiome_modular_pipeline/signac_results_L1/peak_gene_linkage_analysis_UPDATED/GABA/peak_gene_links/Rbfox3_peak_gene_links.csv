@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr11",118911597,118972812,61216,"*",0.11430730729427,"Rbfox3","chr11-118972773-118972851",2.62244829138932,0.00436502571504256,"GABA","Nestin"

@@ -1,0 +1,2 @@
+"seqnames","start","end","width","strand","score","gene","peak","zscore","pvalue","celltype","genotype"
+"chr11",30026033,30116410,90378,"*",0.134857683559301,"Eml6","chr11-30115574-30117245",1.86433530037646,0.0311373162492713,"Mature GC","Emx1"
