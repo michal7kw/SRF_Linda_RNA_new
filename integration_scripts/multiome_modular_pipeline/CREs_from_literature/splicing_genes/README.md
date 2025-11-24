@@ -63,53 +63,53 @@ The workflow identifies CREs linked to splicing machinery genes and visualizes A
 ## Generated Plots
 
 ### Metaprofiles (Ctrl vs Mut Comparisons)
-![Nestin Ctrl vs Mut](output/splicing_genes_analysis/heatmaps_deeptools/profiles/metaprofile_nestin_ctrl_vs_mut.png)
+![Nestin Ctrl vs Mut](output/heatmaps_deeptools/profiles/metaprofile_nestin_ctrl_vs_mut.png)
 *ATAC signal at splicing gene CREs comparing Nestin control vs mutant samples*
 
-![Emx1 Ctrl vs Mut](output/splicing_genes_analysis/heatmaps_deeptools/profiles/metaprofile_emx1_ctrl_vs_mut.png)
+![Emx1 Ctrl vs Mut](output/heatmaps_deeptools/profiles/metaprofile_emx1_ctrl_vs_mut.png)
 *ATAC signal at splicing gene CREs comparing Emx1 control vs mutant samples*
 
 ### Heatmaps (Traditional deepTools)
-![All Cell Types Heatmap](output/splicing_genes_analysis/heatmaps_deeptools/heatmap_all_celltypes.png)
+![All Cell Types Heatmap](output/heatmaps_deeptools/heatmap_all_celltypes.png)
 *ATAC signal heatmap for all CREs across all cell types*
 
-![GABA Cell Types Heatmap](output/splicing_genes_analysis/heatmaps_deeptools/heatmap_GABA.png)
+![GABA Cell Types Heatmap](output/heatmaps_deeptools/heatmap_GABA.png)
 *ATAC signal heatmap for CREs in GABA/hippocampal cell types*
 
-![GABA Nestin Heatmap](output/splicing_genes_analysis/heatmaps_deeptools/heatmap_GABA_nestin.png)
+![GABA Nestin Heatmap](output/heatmaps_deeptools/heatmap_GABA_nestin.png)
 *ATAC signal heatmap for GABA CREs in Nestin samples*
 
-![GABA Emx1 Heatmap](output/splicing_genes_analysis/heatmaps_deeptools/heatmap_GABA_emx1.png)
+![GABA Emx1 Heatmap](output/heatmaps_deeptools/heatmap_GABA_emx1.png)
 *ATAC signal heatmap for GABA CREs in Emx1 samples*
 
 ### Metaprofiles (Traditional deepTools)
-![All Cell Types Metaprofile](output/splicing_genes_analysis/heatmaps_deeptools/metaprofile_all_celltypes.png)
+![All Cell Types Metaprofile](output/heatmaps_deeptools/metaprofile_all_celltypes.png)
 *Average ATAC signal profile for all CREs across all cell types*
 
-![GABA Cell Types Metaprofile](output/splicing_genes_analysis/heatmaps_deeptools/metaprofile_GABA.png)
+![GABA Cell Types Metaprofile](output/heatmaps_deeptools/metaprofile_GABA.png)
 *Average ATAC signal profile for CREs in GABA/hippocampal cell types*
 
-![GABA Nestin Metaprofile](output/splicing_genes_analysis/heatmaps_deeptools/metaprofile_GABA_nestin.png)
+![GABA Nestin Metaprofile](output/heatmaps_deeptools/metaprofile_GABA_nestin.png)
 *Average ATAC signal profile for GABA CREs in Nestin samples*
 
-![GABA Emx1 Metaprofile](output/splicing_genes_analysis/heatmaps_deeptools/metaprofile_GABA_emx1.png)
+![GABA Emx1 Metaprofile](output/heatmaps_deeptools/metaprofile_GABA_emx1.png)
 *Average ATAC signal profile for GABA CREs in Emx1 samples*
 
 ### BigWig Direct Visualizations
-![Nestin BigWig Metaprofile](output/splicing_genes_analysis/bigwig_profiles/metaprofile_nestin_ctrl_vs_mut.png)
+![Nestin BigWig Metaprofile](output/bigwig_profiles/metaprofile_nestin_ctrl_vs_mut.png)
 *Direct BigWig signal visualization for Nestin samples*
 
-![Emx1 BigWig Metaprofile](output/splicing_genes_analysis/bigwig_profiles/metaprofile_emx1_ctrl_vs_mut.png)
+![Emx1 BigWig Metaprofile](output/bigwig_profiles/metaprofile_emx1_ctrl_vs_mut.png)
 *Direct BigWig signal visualization for Emx1 samples*
 
 ### Custom Comparison Plots
-![Nestin Ctrl vs Nestin Mut](output/splicing_genes_analysis/custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_nestin_mut.png)
+![Nestin Ctrl vs Nestin Mut](output/custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_nestin_mut.png)
 *Within-genotype comparison: effect of mutation in Nestin background*
 
-![Nestin Ctrl vs Emx1 Mut](output/splicing_genes_analysis/custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_emx1_mut.png)
+![Nestin Ctrl vs Emx1 Mut](output/custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_emx1_mut.png)
 *Cross-genotype comparison: wild-type Nestin vs mutant Emx1*
 
-![Nestin Mut vs Emx1 Mut](output/splicing_genes_analysis/custom_comparisons/profiles/metaprofile_nestin_mut_vs_emx1_mut.png)
+![Nestin Mut vs Emx1 Mut](output/custom_comparisons/profiles/metaprofile_nestin_mut_vs_emx1_mut.png)
 *Mutant-to-mutant comparison: genotype effect under mutation*
 
 ### Individual CRE Plots (Optional)
@@ -189,7 +189,7 @@ The analysis targets genes involved in:
 ## Output Structure
 
 ```
-output/splicing_genes_analysis/
+output/
 ├── splicing_genes_CREs_all_celltypes.tsv
 ├── splicing_genes_CREs_GABA.tsv
 ├── splicing_genes_CREs_GABA_specific.tsv
