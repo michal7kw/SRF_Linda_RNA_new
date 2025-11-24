@@ -53,7 +53,7 @@ print("="*80)
 print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
 # Configuration
-BIGWIG_BASE = "../signac_results_L1/bigwig_tracks_L1/by_celltype"
+BIGWIG_BASE = "../../signac_results_L1/bigwig_tracks_L1/by_celltype"
 OUTPUT_DIR = "output/GABA_DEG_analysis/heatmaps_specific_CREs"
 BED_GABA = "output/GABA_specific_CREs.bed"
 BED_EXCITATORY = "output/Excitatory_specific_CREs.bed"

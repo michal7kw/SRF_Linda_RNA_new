@@ -180,7 +180,7 @@ integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1
 
 # PDF and PNG figures (hosted on GCS)
 *.pdf
-*.png
+# *.png
 !docs/workflow_diagrams/*.png
 !README_figures/*.png
 
