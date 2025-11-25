@@ -3,9 +3,9 @@
 Detailed exploration of hippocampal GABAergic cell types
 
 INPUT FILES:
-- data/table_1.xlsx: Sample and dissection summary
-- data/table_3.xlsx: Cell cluster annotation
-- data/table_8.txt: Cell type assignment of cCREs
+- ../../data/table_1.xlsx: Sample and dissection summary
+- ../../data/table_3.xlsx: Cell cluster annotation
+- ../../data/table_8.txt: Cell type assignment of cCREs
 
 OUTPUT FILES:
 - None (console output only)
@@ -18,7 +18,7 @@ import numpy as np
 print("="*80)
 print("TABLE 3: Exploring hippocampal GABAergic cell types")
 print("="*80)
-table3 = pd.read_excel("data/table_3.xlsx")
+table3 = pd.read_excel("../../data/table_3.xlsx")
 
 # Filter for GABAergic cells
 gaba_subclasses = ['LAMGA', 'VIPGA', 'PVGA', 'SSTGA', 'LSXGA', 'MSGA', 'CNUGA', 'STRGA']
@@ -58,7 +58,7 @@ for ct in hippocampal_cell_types:
 print("\n" + "="*80)
 print("TABLE 1: Hippocampal dissection regions")
 print("="*80)
-table1 = pd.read_excel("data/table_1.xlsx")
+table1 = pd.read_excel("../../data/table_1.xlsx")
 print(f"\nColumns: {table1.columns.tolist()}")
 
 # Check for hippocampus-related regions
@@ -98,7 +98,7 @@ for col in ['Region Name', 'Major Region', 'Sub Region', 'Detail Region']:
 print("\n" + "="*80)
 print("TABLE 8: Understanding cell type naming")
 print("="*80)
-table8 = pd.read_csv("data/table_8.txt", sep="\t")
+table8 = pd.read_csv("../../data/table_8.txt", sep="\t")
 print(f"\nUnique cell types in Table 8: {len(table8['CellType'].unique())}")
 print("\nSample of cell types:")
 print(sorted(table8['CellType'].unique())[:50])

@@ -19,11 +19,11 @@ print("="*80)
 
 # Try different file formats
 import os
-files_16 = [f for f in os.listdir('data') if 'table_16' in f.lower() or '16' in f]
+files_16 = [f for f in os.listdir('../../data') if 'table_16' in f.lower() or '16' in f]
 print(f"Found files: {files_16}")
 
 for file in files_16:
-    filepath = f'data/{file}'
+    filepath = f'../../data/{file}'
     print(f"\nTrying to read: {filepath}")
     try:
         if file.endswith('.xlsx'):
@@ -63,11 +63,11 @@ print("\n" + "="*80)
 print("TABLE 17: Association modules of enhancer-gene pairs")
 print("="*80)
 
-files_17 = [f for f in os.listdir('data') if 'table_17' in f.lower() or '17' in f]
+files_17 = [f for f in os.listdir('../../data') if 'table_17' in f.lower() or '17' in f]
 print(f"Found files: {files_17}")
 
 for file in files_17:
-    filepath = f'data/{file}'
+    filepath = f'../../data/{file}'
     print(f"\nTrying to read: {filepath}")
     try:
         if file.endswith('.xlsx'):
@@ -92,11 +92,11 @@ print("\n" + "="*80)
 print("TABLE 18: Association modules with individual putative enhancers")
 print("="*80)
 
-files_18 = [f for f in os.listdir('data') if 'table_18' in f.lower() or '18' in f]
+files_18 = [f for f in os.listdir('../../data') if 'table_18' in f.lower() or '18' in f]
 print(f"Found files: {files_18}")
 
 for file in files_18:
-    filepath = f'data/{file}'
+    filepath = f'../../data/{file}'
     print(f"\nTrying to read: {filepath}")
     try:
         if file.endswith('.xlsx'):
@@ -132,7 +132,7 @@ for file in files_18:
 print("\n" + "="*80)
 print("All files in data/ directory:")
 print("="*80)
-for file in sorted(os.listdir('data')):
-    filepath = f'data/{file}'
+for file in sorted(os.listdir('../../data')):
+    filepath = f'../../data/{file}'
     size = os.path.getsize(filepath) / (1024*1024)  # MB
     print(f"{file:40s} {size:8.1f} MB")

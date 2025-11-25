@@ -39,8 +39,6 @@ import seaborn as sns
 from scipy import stats
 import os
 from datetime import datetime
-import concurrent.futures
-import multiprocessing
 
 # Try to import pyBigWig
 try:
@@ -93,85 +91,45 @@ def load_bed(bed_file):
     cres['center'] = ((cres['start'] + cres['end']) / 2).astype(int)
     return cres[['chr', 'start', 'end', 'center', 'name']].sort_values(['chr', 'center']).reset_index(drop=True)
 
-def process_chunk(chunk_df, bw_file, window_size, bin_size, n_bins):
-    """Process a chunk of CREs: open BigWig ONCE, extract all signals"""
+def extract_signal_window(bw_file, chrom, center):
+    """Extract signal in bins around genomic position"""
     try:
         bw = pyBigWig.open(bw_file)
-        
-        # Check chromosomes once
-        valid_chroms = set(bw.chroms().keys())
-        
-        signals = np.zeros((len(chunk_df), n_bins))
-        
-        for i, (_, row) in enumerate(chunk_df.iterrows()):
-            chrom = row['chr']
-            center = row['center']
-            
-            if chrom not in valid_chroms:
-                continue
-                
-            start = max(0, center - window_size)
-            end = min(center + window_size, bw.chroms()[chrom])
-            
-            # Extract all bins
-            for b in range(n_bins):
-                bin_start = start + (b * bin_size)
-                bin_end = min(bin_start + bin_size, end)
-                # pyBigWig stats can be slow if called millions of times
-                # But since we keep file open, it's much faster
-                val = bw.stats(chrom, bin_start, bin_end, type="mean")
-                if val and val[0] is not None:
-                    signals[i, b] = val[0]
-                    
+        if chrom not in bw.chroms():
+            bw.close()
+            return np.zeros(N_BINS)
+
+        start = max(0, center - WINDOW_SIZE)
+        end = min(center + WINDOW_SIZE, bw.chroms()[chrom])
+
+        signals = []
+        for i in range(N_BINS):
+            bin_start = start + (i * BIN_SIZE)
+            bin_end = min(bin_start + BIN_SIZE, end)
+            signal = bw.stats(chrom, bin_start, bin_end, type="mean")
+            signals.append(signal[0] if signal and signal[0] is not None else 0.0)
+
         bw.close()
-        return signals
-    except Exception as e:
-        print(f"Error processing chunk: {e}")
-        return np.zeros((len(chunk_df), n_bins))
+        return np.array(signals[:N_BINS])
+    except:
+        return np.zeros(N_BINS)
 
 def extract_signals(cres, conditions, label):
-    """Extract signals using parallel processing"""
+    """Extract signals for all CREs and conditions"""
     matrices = {}
-    
-    # Determine number of workers
-    n_workers = min(multiprocessing.cpu_count(), 8)  # Cap at 8 to be safe
-    print(f"  Using {n_workers} parallel workers")
-    
-    # Split CREs into chunks
-    chunk_size = int(np.ceil(len(cres) / n_workers))
-    chunks = [cres.iloc[i:i + chunk_size] for i in range(0, len(cres), chunk_size)]
-    
     for cond_name, bw_file in conditions.items():
         print(f"\n{cond_name}:")
         if not os.path.exists(bw_file):
             print(f"  Skipping (file not found)")
             continue
-            
-        print(f"  Processing {len(cres)} CREs in parallel...")
-        
-        all_signals = []
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:
-            futures = [
-                executor.submit(process_chunk, chunk, bw_file, WINDOW_SIZE, BIN_SIZE, N_BINS)
-                for chunk in chunks
-            ]
-            
-            for future in concurrent.futures.as_completed(futures):
-                all_signals.append(future.result())
-                
-        # Reassemble matrix (need to ensure order is preserved, but chunks were submitted in order)
-        # Actually as_completed yields in completion order, so we need to map futures to indices
-        # Better approach: map
-        
-        results = []
-        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as executor:
-            results = list(executor.map(process_chunk, chunks, [bw_file]*len(chunks), 
-                                      [WINDOW_SIZE]*len(chunks), [BIN_SIZE]*len(chunks), 
-                                      [N_BINS]*len(chunks)))
-            
-        # Concatenate results
-        matrix = np.vstack(results)
-        print(f"  Completed extraction.")
+
+        matrix = np.zeros((len(cres), N_BINS))
+        for idx, row in cres.iterrows():
+            if idx % 1000 == 0:
+                print(f"  Processing {idx}/{len(cres)}...", end='\r')
+            matrix[idx, :] = extract_signal_window(bw_file, row['chr'], row['center'])
+
+        print(f"  Completed {len(cres)} CREs")
         matrices[cond_name] = matrix
 
     return matrices

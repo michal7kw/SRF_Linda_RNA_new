@@ -3,10 +3,10 @@
 Explore supplementary tables to understand data structure
 
 INPUT FILES:
-- data/table_1.xlsx: Sample and dissection summary
-- data/table_3.xlsx: Cell cluster annotation
-- data/table_7.txt: cCREs list
-- data/table_8.txt: Cell type assignment of cCREs
+- ../../data/table_1.xlsx: Sample and dissection summary
+- ../../data/table_3.xlsx: Cell cluster annotation
+- ../../data/table_7.txt: cCREs list
+- ../../data/table_8.txt: Cell type assignment of cCREs
 
 OUTPUT FILES:
 - None (console output only)
@@ -19,7 +19,7 @@ import numpy as np
 print("="*80)
 print("TABLE 1: Sample and dissection summary")
 print("="*80)
-table1 = pd.read_excel("data/table_1.xlsx")
+table1 = pd.read_excel("../../data/table_1.xlsx")
 print(f"Shape: {table1.shape}")
 print(f"Columns: {table1.columns.tolist()}")
 print("\nFirst few rows:")
@@ -34,7 +34,7 @@ print("\n")
 print("="*80)
 print("TABLE 3: Cell cluster annotation")
 print("="*80)
-table3 = pd.read_excel("data/table_3.xlsx")
+table3 = pd.read_excel("../../data/table_3.xlsx")
 print(f"Shape: {table3.shape}")
 print(f"Columns: {table3.columns.tolist()}")
 print("\nFirst few rows:")
@@ -52,7 +52,7 @@ print("\n")
 print("="*80)
 print("TABLE 7: cCREs list")
 print("="*80)
-table7 = pd.read_csv("data/table_7.txt", sep="\t")
+table7 = pd.read_csv("../../data/table_7.txt", sep="\t")
 print(f"Shape: {table7.shape}")
 print(f"Columns: {table7.columns.tolist()}")
 print("\nFirst few rows:")
@@ -62,7 +62,7 @@ print("\n")
 print("="*80)
 print("TABLE 8: Cell type assignment of cCREs")
 print("="*80)
-table8 = pd.read_csv("data/table_8.txt", sep="\t")
+table8 = pd.read_csv("../../data/table_8.txt", sep="\t")
 print(f"Shape: {table8.shape}")
 print(f"Columns: {table8.columns.tolist()}")
 print("\nFirst few rows:")

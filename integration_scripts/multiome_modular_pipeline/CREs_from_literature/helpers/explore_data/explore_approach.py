@@ -14,9 +14,9 @@ OUTPUT FILES:
 import pandas as pd
 
 # Read the tables
-table1 = pd.read_excel("data/table_1.xlsx")
-table3 = pd.read_excel("data/table_3.xlsx")
-table8 = pd.read_csv("data/table_8.txt", sep="\t")
+table1 = pd.read_excel("../../data/table_1.xlsx")
+table3 = pd.read_excel("../../data/table_3.xlsx")
+table8 = pd.read_csv("../../data/table_8.txt", sep="\t")
 
 print("="*80)
 print("APPROACH 1: Strict hippocampal annotation from Table 3")

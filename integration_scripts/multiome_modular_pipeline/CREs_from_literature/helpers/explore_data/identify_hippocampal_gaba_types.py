@@ -13,9 +13,9 @@ OUTPUT FILES:
 import pandas as pd
 
 # Read tables
-table1 = pd.read_excel("data/table_1.xlsx")
-table2 = pd.read_csv("data/table_2.tsv", sep="\t")
-table8 = pd.read_csv("data/table_8.txt", sep="\t")
+table1 = pd.read_excel("../../data/table_1.xlsx")
+table2 = pd.read_csv("../../data/table_2.tsv", sep="\t")
+table8 = pd.read_csv("../../data/table_8.txt", sep="\t")
 
 # Get hippocampal samples from Table 1
 hpf_samples = table1[table1['Major Region'] == 'HPF']['sample'].tolist()

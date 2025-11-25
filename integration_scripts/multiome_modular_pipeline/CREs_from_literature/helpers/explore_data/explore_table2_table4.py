@@ -3,10 +3,10 @@
 Explore Table 2 to link hippocampal samples to GABAergic cell types
 
 INPUT FILES:
-- data/table_1.xlsx: Sample and dissection summary
-- data/table_2.tsv: Cell metadata with sample assignments
-- data/table_3.xlsx: Cell cluster annotation
-- data/table_4.xlsx: Cell type annotations
+- ../../data/table_1.xlsx: Sample and dissection summary
+- ../../data/table_2.tsv: Cell metadata with sample assignments
+- ../../data/table_3.xlsx: Cell cluster annotation
+- ../../data/table_4.xlsx: Cell type annotations
 
 OUTPUT FILES:
 - None (console output only)
@@ -14,10 +14,10 @@ OUTPUT FILES:
 import pandas as pd
 
 # Read tables
-table1 = pd.read_excel("data/table_1.xlsx")
-table2 = pd.read_csv("data/table_2.tsv", sep="\t")
-table3 = pd.read_excel("data/table_3.xlsx")
-table4 = pd.read_excel("data/table_4.xlsx")
+table1 = pd.read_excel("../../data/table_1.xlsx")
+table2 = pd.read_csv("../../data/table_2.tsv", sep="\t")
+table3 = pd.read_excel("../../data/table_3.xlsx")
+table4 = pd.read_excel("../../data/table_4.xlsx")
 
 print("="*80)
 print("TABLE 2 Structure")

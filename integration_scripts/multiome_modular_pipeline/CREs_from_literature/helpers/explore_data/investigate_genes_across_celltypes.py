@@ -27,9 +27,9 @@ print("INVESTIGATE GENES ACROSS CELL TYPES")
 print("="*80)
 
 # Configuration
-SIGNAC_RESULTS_DIR = "../signac_results_L1"
-GENES_FILE = "genes_inter.txt"
-LITERATURE_CRE_DIR = "output"
+SIGNAC_RESULTS_DIR = "../../../signac_results_L1"
+GENES_FILE = "../../data/genes_inter.txt"
+LITERATURE_CRE_DIR = "../../output"
 
 # Load genes
 genes_of_interest = []
