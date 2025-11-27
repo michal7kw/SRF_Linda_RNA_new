@@ -162,34 +162,3 @@ output/
         ├── metaprofile_GABA_specific.png
         └── metaprofile_Excitatory_specific.png
 ```
-
-## Biological Significance
-
-This analysis demonstrates that:
-
-1. **GABA ATAC samples specifically capture GABAergic chromatin accessibility**
-2. **Cell-type specificity can be quantitatively measured**
-3. **Mutually exclusive CRE sets provide true positive/negative controls**
-4. **The data quality is excellent for downstream regulatory analysis**
-
-## Publication Recommendations
-
-For publication figures:
-
-1. **Use side-by-side comparison** of GABA-specific vs Excitatory-specific heatmaps
-2. **Highlight the mutually exclusive nature** of CRE sets in methods
-3. **Report fold-enrichment values** as quantitative measure of specificity
-4. **Use deepTools plots** (recommended over Python implementation for clarity)
-
-## Troubleshooting
-
-If plots don't show expected differences:
-
-1. Check that CRE sets are truly mutually exclusive (0% overlap)
-2. Verify BigWig files contain GABA ATAC-seq data
-3. Ensure proper scaling (identical scales for comparison)
-4. Review statistics files for quantitative metrics
-
-## References
-
-This pipeline uses CRE annotations from the ENCODE consortium's comprehensive atlas of regulatory elements in mouse brain.

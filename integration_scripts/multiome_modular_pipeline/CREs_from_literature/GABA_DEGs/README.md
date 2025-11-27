@@ -114,12 +114,6 @@ The plots follow the same style as the splicing genes analysis:
 - **Bottom panel**: Difference plot (Condition2 - Condition1)
 - **Colors**: Blue (Ctrl), Red (Nestin-Mut), Orange (Emx1-Mut)
 
-## Dependencies
-
-- Python: numpy, pandas, matplotlib, seaborn, scipy
-- deepTools: computeMatrix
-- Conda environment: `rna_seq_analysis_deep`
-
 ## Related Analyses
 
 This pipeline is modeled after:

@@ -562,6 +562,7 @@ Examples:
     )
 
     # Define comparisons
+    # NOTE: Emx1-Ctrl is a FAILED SAMPLE - use Nestin-Ctrl as reference for both mutants
     comparisons = [
         {
             'name': 'nestin_ctrl_vs_mut',
@@ -573,22 +574,13 @@ Examples:
             'description': 'Within-genotype mutation effect (Nestin)'
         },
         {
-            'name': 'emx1_ctrl_vs_mut',
-            'sample1': 'Emx1-Ctrl',
-            'sample2': 'Emx1-Mut',
-            'color1': '#F18F01',  # Orange
-            'color2': '#C73E1D',  # Red
-            'title': f'Emx1: Ctrl vs Mut\nATAC Signal at ENCODE cCREs ({args.matrix})',
-            'description': 'Within-genotype mutation effect (Emx1)'
-        },
-        {
-            'name': 'nestin_vs_emx1_ctrl',
+            'name': 'nestin_ctrl_vs_emx1_mut',
             'sample1': 'Nestin-Ctrl',
-            'sample2': 'Emx1-Ctrl',
+            'sample2': 'Emx1-Mut',
             'color1': '#2E86AB',  # Blue
-            'color2': '#F18F01',  # Orange
-            'title': f'Baseline Comparison: Nestin-Ctrl vs Emx1-Ctrl\nATAC Signal at ENCODE cCREs ({args.matrix})',
-            'description': 'Genotype baseline comparison (Controls)'
+            'color2': '#C73E1D',  # Red
+            'title': f'Nestin-Ctrl vs Emx1-Mut\nATAC Signal at ENCODE cCREs ({args.matrix})',
+            'description': 'Cross-genotype mutation effect (Nestin-Ctrl as reference)'
         },
         {
             'name': 'nestin_vs_emx1_mut',

@@ -16,12 +16,14 @@ The workflow identifies ENCODE cCREs linked to GABA-specific up-regulated and do
 
 ## Comparisons
 
-Since Emx1-Ctrl sample has quality issues, we analyze 3 comparisons for each DEG set:
+**IMPORTANT**: Emx1-Ctrl is a **FAILED SAMPLE** and is excluded from all analyses. Nestin-Ctrl is used as the reference control for both Nestin-Mut and Emx1-Mut.
+
+We analyze 3 comparisons for each DEG set (up/down):
 
 | Comparison | Description |
 |------------|-------------|
 | Nestin-Ctrl vs Nestin-Mut | Within-genotype mutation effect (Nestin) |
-| Nestin-Ctrl vs Emx1-Mut | Cross-genotype mutation effect |
+| Nestin-Ctrl vs Emx1-Mut | Cross-genotype mutation effect (Nestin-Ctrl as reference) |
 | Nestin-Mut vs Emx1-Mut | Genotype comparison (Mutants only) |
 
 ## Pipeline Steps
@@ -59,10 +61,6 @@ Since Emx1-Ctrl sample has quality issues, we analyze 3 comparisons for each DEG
 - `heatmap_*.png` - Heatmaps for each DEG set
 - `metaprofile_*.png` - Metaprofiles for each DEG set
 
-**Method**: Uses deepTools (computeMatrix + plotHeatmap/plotProfile)
-
-**Runtime**: ~30-60 minutes
-
 ### Step 3: Custom Comparison Visualizations (`3_visualize_deg_comparisons.py`)
 
 **Input**: deepTools matrix files from Step 2
@@ -79,8 +77,6 @@ Since Emx1-Ctrl sample has quality issues, we analyze 3 comparisons for each DEG
 - Difference plots showing signal changes
 - Statistical tests (paired t-test)
 - Optional individual CRE plots
-
-**Runtime**: ~15-30 minutes
 
 ## Usage
 

@@ -51,7 +51,7 @@ echo "Checking prerequisites..."
 echo "========================================================================"
 echo ""
 
-OUTPUT_DIR="output/GABA_DEG_analysis/heatmaps_specific_CREs_deeptools"
+MATRIX_DIR="output/GABA_DEG_analysis/heatmaps_specific_CREs_deeptools"
 MISSING=0
 
 if [ ! -f "$MATRIX_DIR/matrix_GABA_specific.gz" ]; then

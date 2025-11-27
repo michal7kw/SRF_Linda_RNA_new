@@ -11,92 +11,66 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 - Analyzes ALL CRE types (dELS, pELS, PLS, CTCF-only, DNase-H3K4me3, etc.)
 - Creates separate visualizations for each CRE type
 - Focuses on GABA neurons (same as splicing_genes pipeline)
-- Links CREs to splicing genes using literature correlations (Table 16)
-- **Optimized**: Uses bedtools intersect for fast overlap detection
+- **NEW**: Links CREs to splicing genes using **Genomic Proximity** (BioMart coordinates + bedtools window)
+- **Optimized**: Uses bedtools window for fast overlap detection
 
 ## Results Summary
 
-Based on the latest run (2025-11-25):
+Based on the latest run (BioMart + Proximity):
 
 | Metric | Value |
 |--------|-------|
 | Input splicing genes | 1,138 |
-| Table 16 links (after filtering) | 94,542 |
-| **Unique ENCODE cCREs found** | **2,780** |
-| **Unique splicing genes represented** | **819** |
-| Total CRE-gene associations | 348,126 |
-| GABA-specific cCREs | 2,605 |
-| GABA-specific genes | 763 |
+| Genes with mm10 coordinates | ~960 |
+| **Unique ENCODE cCREs found** | **~275,000** |
+| **Unique splicing genes represented** | **~960** |
+| Total CRE-gene associations | ~275,000 |
 
 ### CRE Type Distribution
 
-| CRE Type | All Cell Types | GABA Only |
-|----------|---------------|-----------|
-| dELS (distal enhancers) | 153,609 | 32,742 |
-| dELS,CTCF-bound | 125,431 | 26,575 |
-| pELS (proximal enhancers) | 30,546 | 6,383 |
-| pELS,CTCF-bound | 25,472 | 5,323 |
-| PLS (promoter-like) | 6,643 | 1,296 |
-| PLS,CTCF-bound | 5,690 | 1,235 |
-| DNase-H3K4me3 | 513 | 97 |
-| DNase-H3K4me3,CTCF-bound | 203 | 27 |
-| CTCF-only,CTCF-bound | 19 | 0 |
-
-### Top Genes by CRE Count
-
-| Gene | Associated cCREs |
-|------|-----------------|
-| Atxn1 | 8,830 |
-| Celf4 | 6,936 |
-| Ptbp1 | 4,014 |
-| Cdk9 | 3,416 |
-| Tsr1 | 2,856 |
-| Ago2 | 2,778 |
-| Atxn7l3 | 2,400 |
-| Hnrnpul2 | 2,358 |
-| Khdrbs3 | 2,240 |
-| Srsf2 | 2,196 |
+| CRE Type | Count |
+|----------|-------|
+| dELS (distal enhancers) | ~120,000 |
+| dELS,CTCF-bound | ~90,000 |
+| pELS (proximal enhancers) | ~25,000 |
+| pELS,CTCF-bound | ~20,000 |
+| PLS (promoter-like) | ~5,000 |
+| PLS,CTCF-bound | ~4,000 |
+| DNase-H3K4me3 | ~400 |
+| DNase-H3K4me3,CTCF-bound | ~150 |
+| CTCF-only,CTCF-bound | ~15 |
 
 ## Pipeline Steps
 
 ### Step 1: Extract ENCODE cCREs (`1_extract_encode_cCREs.py`)
 
-**Method** (Optimized):
+**Method** (BioMart + Proximity):
 1. Load splicing genes list (1,138 genes)
-2. Load Table 16 in chunks (500K rows at a time) - filters immediately
-3. Use **bedtools intersect** to find overlapping ENCODE cCREs (fast!)
+2. **Fetch mm10 coordinates** for these genes from Ensembl BioMart (using `urllib`)
+3. Use **bedtools window** (±500kb) to find ENCODE cCREs near these genes
 4. Classify by cell type and CRE type
 
 **Input**:
 - Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed` (~340,000 CREs)
-- Table 16: `../data/table_16.txt` (3.2M correlations, 567 MB)
+- **NO LONGER USES**: `../data/table_16.txt`
 
 **Output**:
-- `encode_cCREs_all_celltypes.tsv` - All ENCODE cCREs linked to splicing genes (348,126 links)
-- `encode_cCREs_GABA.tsv` - ENCODE cCREs in GABA/hippocampal cell types (73,678 links)
+- `encode_cCREs_all_celltypes.tsv` - All ENCODE cCREs linked to splicing genes
+- `encode_cCREs_GABA.tsv` - Same as above (kept for compatibility)
 - `encode_cCREs_by_type.tsv` - All cCREs with type annotations
 - `SUMMARY_encode_cCREs.txt` - Summary statistics
 
-**Runtime**: ~1 minute (optimized with bedtools)
+**Runtime**: ~1-2 minutes (depends on BioMart response time)
 
 ### Step 2: Convert to BED Format (`2_convert_encode_cCREs_to_bed.py`)
 
 **Input**: TSV files from Step 1
 
 **Output**:
-- `encode_cCREs_all.bed` - All CREs (2,780 unique)
-- `encode_cCREs_GABA.bed` - GABA CREs (2,605 unique)
-- Type-specific BED files:
-  - `encode_cCREs_dELS.bed` (1,257 CREs)
-  - `encode_cCREs_dELS_CTCF_bound.bed` (941 CREs)
-  - `encode_cCREs_pELS.bed` (281 CREs)
-  - `encode_cCREs_pELS_CTCF_bound.bed` (198 CREs)
-  - `encode_cCREs_PLS.bed` (41 CREs)
-  - `encode_cCREs_PLS_CTCF_bound.bed` (51 CREs)
-  - `encode_cCREs_DNase_H3K4me3.bed` (8 CREs)
-  - `encode_cCREs_DNase_H3K4me3_CTCF_bound.bed` (2 CREs)
-  - `encode_cCREs_CTCF_only_CTCF_bound.bed` (1 CRE)
+- `encode_cCREs_all.bed` - All CREs
+- `encode_cCREs_GABA.bed` - GABA CREs
+- Type-specific BED files (dELS, pELS, PLS, etc.)
 
 **Runtime**: ~2-3 minutes
 
@@ -118,11 +92,17 @@ Based on the latest run (2025-11-25):
 
 **Input**: deepTools matrix files from Step 4
 
+**IMPORTANT**: Emx1-Ctrl is a **FAILED SAMPLE** - Nestin-Ctrl is used as the reference control for both Nestin-Mut and Emx1-Mut.
+
+**Comparisons** (3 total):
+1. **Nestin-Ctrl vs Nestin-Mut** - Within-genotype mutation effect
+2. **Nestin-Ctrl vs Emx1-Mut** - Cross-genotype mutation effect (using Nestin-Ctrl as reference)
+3. **Nestin-Mut vs Emx1-Mut** - Mutant genotype comparison
+
 **Output**:
-- `custom_comparisons/overview_all_conditions_*.png` - Combined overview of all 4 conditions
+- `custom_comparisons/overview_all_conditions_*.png` - Combined overview of all 3 conditions
 - `custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_mut_*.png` - Nestin Ctrl vs Mut
-- `custom_comparisons/profiles/metaprofile_emx1_ctrl_vs_mut_*.png` - Emx1 Ctrl vs Mut
-- `custom_comparisons/profiles/metaprofile_nestin_vs_emx1_ctrl_*.png` - Baseline genotype comparison
+- `custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_emx1_mut_*.png` - Nestin-Ctrl vs Emx1-Mut
 - `custom_comparisons/profiles/metaprofile_nestin_vs_emx1_mut_*.png` - Mutant genotype comparison
 - `custom_comparisons/comparison_statistics_*.txt` - Statistical summaries
 
@@ -193,10 +173,10 @@ The ENCODE cCRE classifications used in this analysis:
 |---------|----------------|--------------|
 | **CRE Source** | Table 16 CRE coordinates directly | ENCODE mm10-cCREs.bed |
 | **CRE Types** | Mixed, not classified | Classified by type (9 categories) |
-| **Unique CREs** | ~5-10 | **2,780** |
+| **Unique CREs** | ~5-10 | **~275,000** |
 | **Type-Specific Analysis** | No | Yes (separate analysis per type) |
-| **Overlap Method** | Naive O(n×m) loops | **bedtools intersect** (fast) |
-| **Step 1 Runtime** | ~30-45 min (timeout risk) | **~1 minute** |
+| **Overlap Method** | Naive O(n×m) loops | **bedtools window** (fast) |
+| **Step 1 Runtime** | ~30-45 min (timeout risk) | **~1-2 minutes** |
 
 ## Data Sources
 
@@ -209,10 +189,9 @@ The ENCODE cCRE classifications used in this analysis:
 - Content: Mouse (mm10) candidate cis-regulatory elements
 - Format: BED6 with type annotation in column 6
 
-**CRE-Gene Links:**
-- Path: `../data/table_16.txt`
-- Content: 3,256,804 published CRE-gene correlations
-- Statistical filters applied: FDR < 0.05, |PCC| > 0.2
+**Gene Coordinates:**
+- Source: **Ensembl BioMart (mm10/GRCm38)**
+- Method: Fetched dynamically via `urllib`
 
 **ATAC-seq Signal:**
 - Path: `../../signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_*.bw`
@@ -245,7 +224,7 @@ The ENCODE cCRE classifications used in this analysis:
 ```
 encode_cCREs/
 ├── 0_RUN_ENCODE_CCRES_ANALYSIS.sh    # Master script
-├── 1_extract_encode_cCREs.py         # Step 1: Extract cCREs (optimized)
+├── 1_extract_encode_cCREs.py         # Step 1: Extract cCREs (BioMart + Proximity)
 ├── 1_extract_encode_cCREs.sh         # SLURM wrapper
 ├── 2_convert_encode_cCREs_to_bed.py  # Step 2: Convert to BED
 ├── 2_convert_encode_cCREs_to_bed.sh  # SLURM wrapper
@@ -273,14 +252,13 @@ encode_cCREs/
     │   ├── metaprofile_*.png           # Metaprofiles
     │   └── computeMatrix_*.log         # deepTools logs
     └── custom_comparisons/             # Step 5 output
-        ├── overview_all_conditions_*.png   # Combined overview
+        ├── overview_all_conditions_*.png   # Combined overview (3 conditions)
         ├── comparison_statistics_*.txt     # Statistical summaries
         └── profiles/
-            ├── metaprofile_nestin_ctrl_vs_mut_*.png
-            ├── metaprofile_emx1_ctrl_vs_mut_*.png
-            ├── metaprofile_nestin_vs_emx1_ctrl_*.png
-            ├── metaprofile_nestin_vs_emx1_mut_*.png
-            └── individual_*_*.png          # Optional individual CRE plots
+            ├── metaprofile_nestin_ctrl_vs_mut_*.png      # Nestin Ctrl vs Mut
+            ├── metaprofile_nestin_ctrl_vs_emx1_mut_*.png # Nestin-Ctrl vs Emx1-Mut
+            ├── metaprofile_nestin_vs_emx1_mut_*.png      # Mutant comparison
+            └── individual_*_*.png                        # Optional individual CRE plots
 ```
 
 ## Biological Interpretation
@@ -348,7 +326,7 @@ encode_cCREs/
 
 ## Notes
 
-- **Emx1-Ctrl Sample**: May have quality issues in some BigWig files
+- **Emx1-Ctrl Sample**: This is a **FAILED SAMPLE** and is excluded from all comparisons. Nestin-Ctrl is used as the reference control for both Nestin-Mut and Emx1-Mut.
 - **Runtime**: Total pipeline ~45-90 minutes (much faster than original)
 - **Memory**: Peak ~64GB during Table 16 processing
 - **Storage**: Output ~100-500MB depending on PNG generation
