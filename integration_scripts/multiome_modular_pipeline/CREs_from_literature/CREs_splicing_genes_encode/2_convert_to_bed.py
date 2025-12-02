@@ -8,13 +8,13 @@ Creates separate BED files for:
 2. By CRE type (dELS, pELS, CTCF-only, etc.)
 
 INPUT:
-- output/splicing_encode_cCREs_all.tsv
-- output/splicing_encode_cCREs_by_type.tsv
+- output/CREs_splicing_genes_encode_all.tsv
+- output/CREs_splicing_genes_encode_by_type.tsv
 
 OUTPUT:
-- output/splicing_encode_cCREs_all.bed (all CREs, BED6 format)
-- output/splicing_encode_cCREs_GABA.bed (same, for GABA analysis)
-- output/splicing_encode_cCREs_{type}.bed (type-specific BED files)
+- output/CREs_splicing_genes_encode_all.bed (all CREs, BED6 format)
+- output/CREs_splicing_genes_encode_GABA.bed (same, for GABA analysis)
+- output/CREs_splicing_genes_encode_{type}.bed (type-specific BED files)
 
 Usage:
     python 2_convert_to_bed.py
@@ -24,7 +24,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs")
+os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode")
 
 print("="*80)
 print("CONVERT ENCODE cCRE TSV FILES TO BED FORMAT")
@@ -99,9 +99,9 @@ print("="*80)
 print("STEP 1: Converting all CREs")
 print("-"*80)
 
-tsv_all = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_all.tsv")
-bed_all = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_all.bed")
-bed_gaba = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_GABA.bed")
+tsv_all = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_all.tsv")
+bed_all = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_all.bed")
+bed_gaba = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_GABA.bed")
 
 if os.path.exists(tsv_all):
     df_all = pd.read_csv(tsv_all, sep='\t')
@@ -123,7 +123,7 @@ print("\n" + "="*80)
 print("STEP 2: Converting by CRE type")
 print("-"*80)
 
-tsv_by_type = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_by_type.tsv")
+tsv_by_type = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_by_type.tsv")
 
 type_bed_files = {}
 
@@ -143,7 +143,7 @@ if os.path.exists(tsv_by_type):
     for cre_type in sorted(cre_types):
         # Create safe filename (replace special characters)
         safe_type = cre_type.replace(',', '_').replace(' ', '_').replace('-', '_')
-        bed_file = os.path.join(OUTPUT_DIR, f"splicing_encode_cCREs_{safe_type}.bed")
+        bed_file = os.path.join(OUTPUT_DIR, f"CREs_splicing_genes_encode_{safe_type}.bed")
 
         # Filter for this type
         df_type = df_by_type[df_by_type['cre_type'] == cre_type]

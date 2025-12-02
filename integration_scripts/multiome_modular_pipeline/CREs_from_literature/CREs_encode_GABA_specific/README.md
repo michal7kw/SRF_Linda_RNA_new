@@ -1,8 +1,12 @@
 # GABA Cell Type Specific ENCODE cCREs Analysis Pipeline
 
-This pipeline extracts and analyzes ENCODE cCREs (Candidate Cis-Regulatory Elements) that are **specifically associated with GABA/hippocampal cell types**. It uses enhanced SubType filtering from Table 16 to identify regulatory elements active in GABAergic neurons.
+- Focuses on **GABA-specific** regulatory elements
+- Links CREs to genes using **Table 16** (literature correlations)
 
-## Key Features
+> **CRITICAL**: Emx1-Ctrl is a **FAILED SAMPLE** and is excluded from all analyses.
+> Only 3 conditions are analyzed: **Nestin-Ctrl** (reference control), **Nestin-Mut**, and **Emx1-Mut**.
+
+## Pipeline Stepsatures
 
 - **Enhanced GABA SubType Filtering**: Uses keyword matching to identify GABA-specific CREs
 - **Dual Output Strategy**: Creates BOTH Table 16-only AND ENCODE-intersected CRE sets
@@ -155,23 +159,26 @@ output/
 │   ├── metaprofile_GABA_specific.png
 │   ├── heatmap_GABA_specific_nestin.png
 │   ├── metaprofile_GABA_specific_nestin.png
-│   ├── heatmap_GABA_specific_emx1.png
-│   ├── metaprofile_GABA_specific_emx1.png
+│   ├── heatmap_GABA_specific_emx1.png  # Nestin-Ctrl vs Emx1-Mut
+│   ├── matrix_GABA_specific.gz/.tab
+│   ├── matrix_GABA_specific_nestin.gz/.tab
+│   ├── matrix_GABA_specific_emx1.gz/.tab
 │   ├── heatmap_GABA_specific_{type}.png
 │   └── README.txt
 ├── DA_profiles_minSig1.0_minFC1.5/      # DA visualization (lenient thresholds)
 │   ├── metaprofile_nestin_ctrl_vs_mut_all.png
-│   ├── metaprofile_nestin_ctrl_vs_mut_significant.png
-│   ├── metaprofile_emx1_ctrl_vs_mut_all.png
-│   ├── metaprofile_emx1_ctrl_vs_mut_significant.png
-│   ├── profiles/
-│   │   ├── individual_up_*.png
-│   │   └── individual_down_*.png
-│   └── DA_statistics.txt
+│   ├── metaprofile_nestin_ctrl_vs_emx1_mut_all.png
+│   ├── metaprofile_nestin_mut_vs_emx1_mut_all.png
+│   ├── DA_statistics.txt
+│   └── profiles/
+│       └── individual_*.png
 └── DA_profiles_minSig2.0_minFC2.0/      # DA visualization (strict thresholds)
-    ├── metaprofile_*.png
-    ├── profiles/
-    └── DA_statistics.txt
+    ├── metaprofile_nestin_ctrl_vs_mut_all.png
+    ├── metaprofile_nestin_ctrl_vs_emx1_mut_all.png
+    ├── metaprofile_nestin_mut_vs_emx1_mut_all.png
+    ├── DA_statistics.txt
+    └── profiles/
+        └── individual_*.png
 ```
 
 ## Overlap Statistics

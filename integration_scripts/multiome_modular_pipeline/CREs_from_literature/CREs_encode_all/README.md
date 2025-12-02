@@ -11,7 +11,7 @@ The analysis focuses on understanding how SRF mutations affect chromatin accessi
 - Uses high-confidence ENCODE cCREs from **mm10-cCREs.bed**
 - Analyzes ALL CRE types (dELS, pELS, PLS, CTCF-only, DNase-H3K4me3, etc.)
 - Creates separate visualizations for each **CRE type**
-- Focuses on **splicing_genes**
+- Focuses on **CREs_splicing_genes_paper**
 - Links CREs to splicing genes using **Genomic Proximity** (BioMart coordinates + bedtools window)
 
 > **CRITICAL**: Emx1-Ctrl is a **FAILED SAMPLE** and is excluded from all analyses.
@@ -55,7 +55,7 @@ The analysis focuses on understanding how SRF mutations affect chromatin accessi
 4. Classify by CRE type
 
 **Input**:
-- Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- Splicing genes list: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed` (~340,000 CREs)
 
 **Output** (in `output/`):
@@ -210,7 +210,7 @@ The ENCODE cCRE classifications used in this analysis:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -230,9 +230,9 @@ The ENCODE cCRE classifications used in this analysis:
 3. No statistical filtering - purely distance-based
 4. Result: ~275,000 CRE-gene associations
 
-## Key Differences from splicing_genes Pipeline
+## Key Differences from CREs_splicing_genes_paper Pipeline
 
-| Feature | splicing_genes | encode_cCREs |
+| Feature | CREs_splicing_genes_paper | encode_cCREs |
 |---------|----------------|--------------|
 | **CRE Source** | **Table 16** CRE coordinates directly | ENCODE **mm10-cCREs.bed** |
 | **CRE Types** | Mixed, not classified | Classified by type (9 categories) |
@@ -267,7 +267,7 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 ### Other Input Files
 
 **Splicing Genes:**
-- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv`
+- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv`
 - Content: 1,138 genes from Reactome pathways (mRNA splicing, spliceosome assembly)
 
 **ATAC-seq Signal:**

@@ -10,7 +10,7 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 - Uses high-confidence ENCODE cCREs from mm10-cCREs.bed
 - Analyzes ALL CRE types (dELS, pELS, PLS, CTCF-only, DNase-H3K4me3, etc.)
 - Creates separate visualizations for each CRE type
-- Focuses on GABA neurons (same as **splicing_genes** pipeline)
+- Focuses on GABA neurons (same as **CREs_splicing_genes_paper** pipeline)
 - Links CREs to splicing genes using **literature correlations (Table 16)**
 
 ## Results Summary
@@ -67,7 +67,7 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 5. Classify by cell type and CRE type
 
 **Input**:
-- Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- Splicing genes list: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed` (~340,000 CREs)
 - Table 16: `../data/table_16.txt` (3.2M correlations, 567 MB)
 
@@ -177,7 +177,7 @@ The ENCODE cCRE classifications used in this analysis:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -199,9 +199,9 @@ The ENCODE cCRE classifications used in this analysis:
 4. bedtools intersect with mm10-cCREs.bed
 5. Result: 2,780 unique ENCODE cCREs with literature evidence
 
-## Key Differences from splicing_genes Pipeline
+## Key Differences from CREs_splicing_genes_paper Pipeline
 
-| Feature | splicing_genes | encode_cCREs |
+| Feature | CREs_splicing_genes_paper | encode_cCREs |
 |---------|----------------|--------------|
 | **CRE Source** | Table 16 CRE coordinates directly | ENCODE mm10-cCREs.bed |
 | **CRE Types** | Mixed, not classified | Classified by type (9 categories) |
@@ -242,7 +242,7 @@ This pipeline uses **BOTH** data sources:
 ### Other Input Files
 
 **Splicing Genes:**
-- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv`
+- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv`
 - Content: 1,138 genes from Reactome pathways (mRNA splicing, spliceosome assembly)
 
 **ATAC-seq Signal:**

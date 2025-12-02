@@ -423,7 +423,7 @@ echo "========================================================================"
 echo ""
 
 # Get list of genes
-GENE_LIST=$(awk -F'\t' 'NR>1 {print $1}' ../output/splicing_genes_analysis/splicing_genes_CREs_all_celltypes.tsv | sort -u | tr '\n' ', ' | sed 's/,$//')
+GENE_LIST=$(awk -F'\t' 'NR>1 {print $1}' ./output/splicing_genes_CREs_all_celltypes.tsv | sort -u | tr '\n' ', ' | sed 's/,$//')
 
 cat > $OUTPUT_DIR/README.txt << EOFR
 ================================================================================
@@ -451,7 +451,7 @@ These genes are part of:
 SOURCE DATA:
 -----------
 Splicing genes list:
-  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
+  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
   Total: Variable number of genes from Reactome/GO pathways
 
 CRE-gene links:

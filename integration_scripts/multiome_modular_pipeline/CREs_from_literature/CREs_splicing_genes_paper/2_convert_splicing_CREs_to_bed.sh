@@ -34,7 +34,7 @@ echo "Started: $(date)"
 echo ""
 
 # Navigate to CREs_from_literature directory
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_genes"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_paper"
 OUTPUT_DIR="./output"
 
 # ============================================================================

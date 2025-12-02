@@ -414,6 +414,7 @@ Examples:
     print("")
 
     # Define comparisons
+    # Define comparisons
     comparisons = [
         {
             'name': 'nestin_ctrl_vs_mut',
@@ -426,28 +427,19 @@ Examples:
             'description': 'Within-genotype mutation effect (Nestin)'
         },
         {
-            'name': 'emx1_ctrl_vs_mut',
-            'matrix': 'matrix_GABA_specific_emx1.gz',
-            'sample1': 'Emx1-Ctrl',
-            'sample2': 'Emx1-Mut',
-            'color1': '#F18F01',
-            'color2': '#C73E1D',
-            'title': 'Emx1: Ctrl vs Mut',
-            'description': 'Within-genotype mutation effect (Emx1)'
-        }
-    ]
-
-    # Cross-genotype comparisons from main matrix
-    cross_comparisons = [
-        {
             'name': 'nestin_ctrl_vs_emx1_mut',
+            'matrix': 'matrix_GABA_specific_emx1.gz',
             'sample1': 'Nestin-Ctrl',
             'sample2': 'Emx1-Mut',
             'color1': '#2E86AB',
             'color2': '#C73E1D',
             'title': 'Nestin-Ctrl vs Emx1-Mut',
-            'description': 'Cross-genotype comparison'
-        },
+            'description': 'Cross-genotype comparison (Nestin-Ctrl as reference)'
+        }
+    ]
+
+    # Cross-genotype comparisons from main matrix
+    cross_comparisons = [
         {
             'name': 'nestin_mut_vs_emx1_mut',
             'sample1': 'Nestin-Mut',

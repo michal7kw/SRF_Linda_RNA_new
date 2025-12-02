@@ -25,7 +25,7 @@
 #   SKIP_INDIVIDUAL=0 PARALLEL_JOBS=8 sbatch 5_visualize_bigwig_signal.sh
 #
 # Prerequisites:
-# - output/splicing_encode_cCREs_all.bed
+# - output/CREs_splicing_genes_encode_all.bed
 # - BigWig files from Signac pipeline
 #
 # Output:
@@ -41,7 +41,7 @@ echo "========================================================================"
 echo "Started: $(date)"
 echo ""
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode"
 
 # Activate environment
 source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh

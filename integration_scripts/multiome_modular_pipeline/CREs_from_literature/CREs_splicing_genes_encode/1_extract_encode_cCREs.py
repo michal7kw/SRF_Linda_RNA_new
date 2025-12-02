@@ -14,16 +14,16 @@ METHOD:
 
 INPUT FILES:
 1. Splicing genes list:
-   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
+   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
 
 2. ENCODE cCREs:
    ../data/mm10-cCREs.bed
 
 OUTPUT FILES:
-1. splicing_encode_cCREs_all.tsv - All cCRE-gene associations
-2. splicing_encode_cCREs_GABA.tsv - Associations (same, marked for GABA analysis)
-3. splicing_encode_cCREs_by_type.tsv - Associations with CRE type information
-4. SUMMARY_splicing_encode_cCREs.txt - Summary statistics
+1. CREs_splicing_genes_encode_all.tsv - All cCRE-gene associations
+2. CREs_splicing_genes_encode_GABA.tsv - Associations (same, marked for GABA analysis)
+3. CREs_splicing_genes_encode_by_type.tsv - Associations with CRE type information
+4. SUMMARY_CREs_splicing_genes_encode.txt - Summary statistics
 
 Usage:
     python 1_extract_encode_cCREs.py
@@ -39,7 +39,7 @@ import urllib.error
 import time
 from datetime import datetime
 
-os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs")
+os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode")
 
 print("="*80)
 print("EXTRACT ENCODE cCREs ASSOCIATED WITH SPLICING GENES (PROXIMITY)")
@@ -52,7 +52,7 @@ print("", flush=True)
 # =============================================================================
 
 # Input files
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
 ENCODE_CCRES_FILE = "../data/mm10-cCREs.bed"  # ENCODE cCREs
 
 # Output directory
@@ -60,10 +60,10 @@ OUTPUT_DIR = "./output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Output files
-OUTPUT_ALL = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_all.tsv")
-OUTPUT_GABA = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_GABA.tsv")
-OUTPUT_BY_TYPE = os.path.join(OUTPUT_DIR, "splicing_encode_cCREs_by_type.tsv")
-OUTPUT_SUMMARY = os.path.join(OUTPUT_DIR, "SUMMARY_splicing_encode_cCREs.txt")
+OUTPUT_ALL = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_all.tsv")
+OUTPUT_GABA = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_GABA.tsv")
+OUTPUT_BY_TYPE = os.path.join(OUTPUT_DIR, "CREs_splicing_genes_encode_by_type.tsv")
+OUTPUT_SUMMARY = os.path.join(OUTPUT_DIR, "SUMMARY_CREs_splicing_genes_encode.txt")
 
 # BioMart Configuration (mm10 / GRCm38)
 BIOMART_URL = "http://nov2020.archive.ensembl.org/biomart/martservice"
@@ -77,11 +77,11 @@ print("="*80)
 print("STEP 1: Loading splicing genes list")
 print("-"*80, flush=True)
 
-splicing_genes = pd.read_csv(SPLICING_GENES_FILE)
-print(f"Loaded {len(splicing_genes)} splicing genes from Reactome/GO")
+CREs_splicing_genes_paper = pd.read_csv(SPLICING_GENES_FILE)
+print(f"Loaded {len(CREs_splicing_genes_paper)} splicing genes from Reactome/GO")
 
 # Extract unique gene symbols
-splicing_gene_symbols = sorted(list(set(splicing_genes['gene_symbol'].dropna())))
+splicing_gene_symbols = sorted(list(set(CREs_splicing_genes_paper['gene_symbol'].dropna())))
 splicing_gene_symbols = [g for g in splicing_gene_symbols if not g.startswith('[')]
 
 print(f"Unique gene symbols: {len(splicing_gene_symbols)}")
@@ -413,10 +413,10 @@ print()
 print(f"Output directory: {OUTPUT_DIR}/")
 print()
 print("Generated files:")
-print(f"  1. splicing_encode_cCREs_all.tsv ({total_links:,} associations)")
-print(f"  2. splicing_encode_cCREs_GABA.tsv ({total_links:,} associations)")
-print(f"  3. splicing_encode_cCREs_by_type.tsv ({total_links:,} associations)")
-print(f"  4. SUMMARY_splicing_encode_cCREs.txt (summary report)")
+print(f"  1. CREs_splicing_genes_encode_all.tsv ({total_links:,} associations)")
+print(f"  2. CREs_splicing_genes_encode_GABA.tsv ({total_links:,} associations)")
+print(f"  3. CREs_splicing_genes_encode_by_type.tsv ({total_links:,} associations)")
+print(f"  4. SUMMARY_CREs_splicing_genes_encode.txt (summary report)")
 print()
 print("Key Results:")
 print("-"*80)

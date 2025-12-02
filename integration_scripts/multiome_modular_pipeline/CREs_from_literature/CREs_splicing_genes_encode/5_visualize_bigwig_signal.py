@@ -280,12 +280,12 @@ def main():
         print(f"   -> Metaprofile DPI: 300 (always high quality)")
     print()
 
-    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs")
+    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode")
 
     # Define paths
     bigwig_base = "../../signac_results_L1/bigwig_tracks_L1/by_celltype"
-    bed_file = "./output/splicing_encode_cCREs_all.bed"
-    tsv_file = "./output/splicing_encode_cCREs_all.tsv"
+    bed_file = "./output/CREs_splicing_genes_encode_all.bed"
+    tsv_file = "./output/CREs_splicing_genes_encode_all.tsv"
     output_dir = f"./output/bigwig_profiles_minSig{args.min_signal}_minFC{args.min_fc}"
 
     os.makedirs(output_dir, exist_ok=True)

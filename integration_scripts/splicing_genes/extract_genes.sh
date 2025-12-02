@@ -16,7 +16,7 @@ source ~/.bashrc
 conda activate bioinf
 
 # Set working directory to script location
-WORKDIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes"
+WORKDIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper"
 cd "$WORKDIR"
 
 python extract_genes.py

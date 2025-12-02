@@ -31,7 +31,7 @@
 #   SKIP_INDIVIDUAL=0 PARALLEL_JOBS=8 INDIVIDUAL_DPI=100 sbatch 3_create_profiles.sh
 #
 # Prerequisites:
-# - output/splicing_encode_cCREs_all.bed
+# - output/CREs_splicing_genes_encode_all.bed
 # - BigWig files from Signac pipeline (signac_results_L1/bigwig_tracks_L1/)
 #
 # Output:
@@ -47,12 +47,12 @@ echo "========================================================================"
 echo "Started: $(date)"
 echo ""
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode"
 
 # Configuration
 BIGWIG_BASE="../../signac_results_L1/bigwig_tracks_L1/by_celltype"
 OUTPUT_DIR="./output/heatmaps_deeptools"
-BED_ALL="./output/splicing_encode_cCREs_all.bed"
+BED_ALL="./output/CREs_splicing_genes_encode_all.bed"
 
 # Parameters
 WINDOW_SIZE=2000  # bp around CRE center (+/-2kb)
@@ -96,7 +96,7 @@ echo ""
 mkdir -p $OUTPUT_DIR
 
 # Copy BED file to output directory for reference
-cp $BED_ALL $OUTPUT_DIR/splicing_encode_cCREs_all.bed
+cp $BED_ALL $OUTPUT_DIR/CREs_splicing_genes_encode_all.bed
 echo "Copied BED file to output directory"
 echo ""
 

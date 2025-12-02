@@ -35,7 +35,7 @@ DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "CREs_splicing_directional" / "output"
 
 # Input files
-SPLICING_GENES_FILE = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv")
+SPLICING_GENES_FILE = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv")
 TABLE16_FILE = DATA_DIR / "table_16.txt"
 ENCODE_CCRES_FILE = DATA_DIR / "mm10-cCREs.bed"
 
@@ -99,7 +99,7 @@ def parse_coordinate(coord_str):
     return None, None, None
 
 
-def process_table16_chunks(splicing_genes, chunk_size=500000):
+def process_table16_chunks(CREs_splicing_genes_paper, chunk_size=500000):
     """Process Table 16 in chunks to handle large file."""
     print("\n" + "=" * 80)
     print("PROCESSING TABLE 16 (CRE-Gene Correlations)")
@@ -120,7 +120,7 @@ def process_table16_chunks(splicing_genes, chunk_size=500000):
 
         # Filter for splicing genes (case-insensitive)
         chunk['Gene_upper'] = chunk['Gene'].str.upper()
-        splicing_chunk = chunk[chunk['Gene_upper'].isin(splicing_genes)].copy()
+        splicing_chunk = chunk[chunk['Gene_upper'].isin(CREs_splicing_genes_paper)].copy()
 
         if len(splicing_chunk) == 0:
             continue
@@ -326,7 +326,7 @@ def save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba):
     return bed_outputs
 
 
-def write_summary(splicing_genes, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs):
+def write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs):
     """Write summary statistics file."""
     print("\n" + "=" * 80)
     print("WRITING SUMMARY")
@@ -357,7 +357,7 @@ def write_summary(splicing_genes, enhancer_all, enhancer_gaba, silencer_all, sil
 
         f.write("INPUT DATA:\n")
         f.write("-" * 80 + "\n")
-        f.write(f"Splicing genes: {len(splicing_genes):,}\n")
+        f.write(f"Splicing genes: {len(CREs_splicing_genes_paper):,}\n")
         f.write(f"Table 16 (CRE-gene correlations): {TABLE16_FILE}\n")
         f.write(f"ENCODE cCREs: {ENCODE_CCRES_FILE}\n\n")
 
@@ -417,10 +417,10 @@ def main():
     print("proper biological interpretation of accessibility changes.\n")
 
     # Load splicing genes
-    splicing_genes = load_splicing_genes()
+    CREs_splicing_genes_paper = load_splicing_genes()
 
     # Process Table 16 with PCC directionality
-    enhancer_df, silencer_df = process_table16_chunks(splicing_genes)
+    enhancer_df, silencer_df = process_table16_chunks(CREs_splicing_genes_paper)
 
     # Filter for GABA subtypes
     enhancer_all, enhancer_gaba = filter_gaba_subtypes(enhancer_df, "enhancer")
@@ -430,7 +430,7 @@ def main():
     bed_outputs = save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba)
 
     # Write summary
-    write_summary(splicing_genes, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs)
+    write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs)
 
     print("\n" + "=" * 80)
     print("EXTRACTION COMPLETE")

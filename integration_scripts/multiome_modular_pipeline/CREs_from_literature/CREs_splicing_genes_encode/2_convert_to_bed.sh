@@ -14,13 +14,13 @@
 # with deepTools visualization tools.
 #
 # INPUT:
-# - output/splicing_encode_cCREs_all.tsv
-# - output/splicing_encode_cCREs_by_type.tsv
+# - output/CREs_splicing_genes_encode_all.tsv
+# - output/CREs_splicing_genes_encode_by_type.tsv
 #
 # OUTPUT:
-# - output/splicing_encode_cCREs_all.bed
-# - output/splicing_encode_cCREs_GABA.bed
-# - output/splicing_encode_cCREs_{type}.bed (per CRE type)
+# - output/CREs_splicing_genes_encode_all.bed
+# - output/CREs_splicing_genes_encode_GABA.bed
+# - output/CREs_splicing_genes_encode_{type}.bed (per CRE type)
 #
 # Runtime: ~1 minute
 #
@@ -34,7 +34,7 @@ echo "========================================================================"
 echo "Started: $(date)"
 echo ""
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode"
 OUTPUT_DIR="./output"
 
 # ============================================================================
@@ -73,7 +73,7 @@ echo "VERIFYING OUTPUT FILES"
 echo "========================================================================"
 echo ""
 
-for FILE in "splicing_encode_cCREs_all.bed" "splicing_encode_cCREs_GABA.bed"; do
+for FILE in "CREs_splicing_genes_encode_all.bed" "CREs_splicing_genes_encode_GABA.bed"; do
     FULL_PATH="${OUTPUT_DIR}/${FILE}"
     if [ -f "$FULL_PATH" ]; then
         NUM_LINES=$(wc -l < "$FULL_PATH")
@@ -98,9 +98,9 @@ echo "Output directory:"
 echo "  output/"
 echo ""
 echo "Generated BED files:"
-echo "  1. splicing_encode_cCREs_all.bed (all CREs)"
-echo "  2. splicing_encode_cCREs_GABA.bed (for GABA analysis)"
-echo "  3. splicing_encode_cCREs_{type}.bed (per CRE type)"
+echo "  1. CREs_splicing_genes_encode_all.bed (all CREs)"
+echo "  2. CREs_splicing_genes_encode_GABA.bed (for GABA analysis)"
+echo "  3. CREs_splicing_genes_encode_{type}.bed (per CRE type)"
 echo ""
 echo "These files are ready for use with deepTools:"
 echo "  - computeMatrix"

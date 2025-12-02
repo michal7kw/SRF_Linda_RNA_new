@@ -204,7 +204,7 @@ def main():
     print("="*80)
     print()
 
-    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs")
+    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode")
 
     matrix_dir = "./output/custom_comparisons"
     output_dir = f"{matrix_dir}/profiles"

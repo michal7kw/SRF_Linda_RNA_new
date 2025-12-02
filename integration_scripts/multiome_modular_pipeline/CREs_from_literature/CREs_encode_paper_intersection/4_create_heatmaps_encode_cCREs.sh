@@ -411,7 +411,7 @@ ENCODE cCREs:
   Mouse (mm10) candidate cis-regulatory elements from ENCODE
 
 Splicing genes list:
-  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
+  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
 
 CRE-gene links:
   ../data/table_16.txt (literature correlations)

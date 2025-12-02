@@ -83,7 +83,7 @@ cd /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integrat
 
 ### Splicing Genes
 
-- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - **Count**: ~1,141 unique genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing (Reactome, GO)
 

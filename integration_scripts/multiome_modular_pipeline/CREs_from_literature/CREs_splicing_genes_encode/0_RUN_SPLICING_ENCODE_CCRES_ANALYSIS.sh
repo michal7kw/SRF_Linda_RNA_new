@@ -11,7 +11,7 @@
 #
 # DATA SOURCE: ENCODE cCREs (mm10-cCREs.bed) linked by genomic proximity
 #
-# Usage: ./0_RUN_SPLICING_ENCODE_CCRES_ANALYSIS.sh
+# Usage: ./0_RUN_CREs_splicing_genes_encode_ANALYSIS.sh
 
 echo "========================================================================"
 echo "SUBMITTING SPLICING GENES ENCODE cCRE PIPELINE"
@@ -22,7 +22,7 @@ echo "DATA SOURCE: ENCODE cCREs (mm10-cCREs.bed)"
 echo "LINKAGE METHOD: Genomic proximity (+/- 500kb)"
 echo ""
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/splicing_encode_cCREs"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_genes_encode"
 
 # Make all scripts executable
 chmod +x *.sh *.py

@@ -22,7 +22,7 @@ BASE_DIR = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA
 os.chdir(BASE_DIR)
 
 INPUT_FILE = "../Striatum_EP.txt"
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
 
 OUTPUT_DIR = "./output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)

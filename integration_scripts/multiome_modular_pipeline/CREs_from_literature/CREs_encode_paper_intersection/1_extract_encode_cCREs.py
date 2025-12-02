@@ -38,7 +38,7 @@ print("", flush=True)
 # =============================================================================
 
 # Input files
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
 TABLE16_FILE = "../data/table_16.txt"  # Literature CRE-gene correlations
 ENCODE_CCRES_FILE = "../data/mm10-cCREs.bed"  # ENCODE cCREs
 
@@ -64,11 +64,11 @@ print("="*80)
 print("STEP 1: Loading splicing genes list")
 print("-"*80, flush=True)
 
-splicing_genes = pd.read_csv(SPLICING_GENES_FILE)
-print(f"Loaded {len(splicing_genes)} splicing genes from Reactome/GO")
+CREs_splicing_genes_paper = pd.read_csv(SPLICING_GENES_FILE)
+print(f"Loaded {len(CREs_splicing_genes_paper)} splicing genes from Reactome/GO")
 
 # Extract unique gene symbols
-splicing_gene_symbols = set(splicing_genes['gene_symbol'].dropna())
+splicing_gene_symbols = set(CREs_splicing_genes_paper['gene_symbol'].dropna())
 splicing_gene_symbols = {g for g in splicing_gene_symbols if not g.startswith('[')}
 splicing_gene_symbols_upper = {g.upper() for g in splicing_gene_symbols}
 

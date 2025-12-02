@@ -430,7 +430,7 @@ def main():
     # Define paths
     matrix_dir = "./output/heatmaps_deeptools"
     output_dir = f"{matrix_dir}/profiles_minSig{args.min_signal}_minFC{args.min_fc}"
-    bed_file = "./output/splicing_encode_cCREs_all.bed"
+    bed_file = "./output/CREs_splicing_genes_encode_all.bed"
 
     os.makedirs(output_dir, exist_ok=True)
 

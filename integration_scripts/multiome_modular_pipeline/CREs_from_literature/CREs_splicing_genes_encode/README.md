@@ -32,7 +32,7 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -53,9 +53,9 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 4. No statistical filtering - purely distance-based
 5. Result: ENCODE cCREs with type annotations but no correlation evidence
 
-## Comparison with `splicing_genes` Pipeline
+## Comparison with `CREs_splicing_genes_paper` Pipeline
 
-| Feature | `splicing_genes` | `splicing_encode_cCREs` (this pipeline) |
+| Feature | `CREs_splicing_genes_paper` | `CREs_splicing_genes_encode` (this pipeline) |
 |---------|------------------|----------------------------------------|
 | CRE Source | Table 16 (literature) | ENCODE cCREs |
 | Linkage | PCC correlation | Genomic proximity |
@@ -75,7 +75,7 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 
 ```bash
 # Run the complete pipeline
-./0_RUN_SPLICING_ENCODE_CCRES_ANALYSIS.sh
+./0_RUN_CREs_splicing_genes_encode_ANALYSIS.sh
 
 # Or run individual steps
 sbatch 1_extract_encode_cCREs.sh
@@ -89,15 +89,15 @@ sbatch 6_create_custom_comparisons.sh
 ## Output Files
 
 ### Step 1 Output (output/)
-- `splicing_encode_cCREs_all.tsv` - All cCRE-gene associations
-- `splicing_encode_cCREs_GABA.tsv` - Same data for GABA analysis
-- `splicing_encode_cCREs_by_type.tsv` - Associations with CRE type info
-- `SUMMARY_splicing_encode_cCREs.txt` - Summary statistics
+- `CREs_splicing_genes_encode_all.tsv` - All cCRE-gene associations
+- `CREs_splicing_genes_encode_GABA.tsv` - Same data for GABA analysis
+- `CREs_splicing_genes_encode_by_type.tsv` - Associations with CRE type info
+- `SUMMARY_CREs_splicing_genes_encode.txt` - Summary statistics
 
 ### Step 2 Output (output/)
-- `splicing_encode_cCREs_all.bed` - BED6 format for all CREs
-- `splicing_encode_cCREs_GABA.bed` - BED6 format for GABA analysis
-- `splicing_encode_cCREs_{type}.bed` - Type-specific BED files
+- `CREs_splicing_genes_encode_all.bed` - BED6 format for all CREs
+- `CREs_splicing_genes_encode_GABA.bed` - BED6 format for GABA analysis
+- `CREs_splicing_genes_encode_{type}.bed` - Type-specific BED files
 
 ### Step 3-4 Output (output/heatmaps_deeptools/)
 - Heatmaps: `heatmap_*.png`
@@ -153,7 +153,7 @@ SKIP_INDIVIDUAL=0 INDIVIDUAL_DPI=100 sbatch 3_create_profiles.sh
 
 ## Input Requirements
 
-- Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- Splicing genes list: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed`
 - BigWig files: `../../signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_*.bw`
 
@@ -161,12 +161,12 @@ SKIP_INDIVIDUAL=0 INDIVIDUAL_DPI=100 sbatch 3_create_profiles.sh
 
 **CRITICAL: Directory Path Mismatch**
 
-All scripts currently hardcode paths to `splicing_encode_cCREs`, but this directory is named `CREs_splicing_genes_encode`. Before running, either:
-1. Rename this directory to `splicing_encode_cCREs`, OR
+All scripts currently hardcode paths to `CREs_splicing_genes_encode`, but this directory is named `CREs_splicing_genes_encode`. Before running, either:
+1. Rename this directory to `CREs_splicing_genes_encode`, OR
 2. Update the `cd` commands in all scripts to use the correct path
 
 Scripts affected:
-- `0_RUN_SPLICING_ENCODE_CCRES_ANALYSIS.sh`
+- `0_RUN_CREs_splicing_genes_encode_ANALYSIS.sh`
 - `1_extract_encode_cCREs.py` / `.sh`
 - `2_convert_to_bed.py` / `.sh`
 - `3_create_profiles.py` / `.sh`

@@ -545,22 +545,23 @@ Examples:
             )
             print(f"\n  Saved: nestin_specific_loss_{cre_type}.tsv")
 
-            # Create individual CRE plots for top hits (with threshold filtering)
+            # Create individual CRE plots for all CREs (with threshold filtering)
             if not args.skip_individual:
                 individual_dir = NESTIN_LOSS_DIR / f"individual_{cre_type}{suffix}"
                 individual_dir.mkdir(exist_ok=True)
 
-                print(f"\n  Creating individual plots (minSig>={args.min_signal}, minFC>={args.min_fc})...")
-                print(f"  Checking {len(nestin_loss_df)} Nestin-specific loss CREs...")
+                print(f"\n  Creating individual plots for all CREs (minSig>={args.min_signal}, minFC>={args.min_fc})...")
+                print(f"  Checking {len(full_df)} total CREs...")
 
                 plots_created = 0
                 plots_skipped = 0
 
-                for i, (_, row) in enumerate(nestin_loss_df.iterrows()):
+                for i, (_, row) in enumerate(full_df.iterrows()):
                     if plots_created >= args.max_individual:
                         break
 
-                    cre_idx = row['cre_idx']
+                    # Use the actual row index (i) to access the numpy arrays
+                    cre_idx = i
 
                     # Check thresholds
                     passes, info = check_individual_plot_thresholds(
@@ -572,7 +573,7 @@ Examples:
                         continue
 
                     genes = str(row.get('genes', 'unknown')).replace(', ', '_')[:30]
-                    fc = row['fc_nestin']
+                    fc = row.get('fc_nestin', 0)
 
                     output_file = individual_dir / f"cre_{plots_created+1:03d}_{genes}_fc{fc:.1f}.png"
                     create_individual_cre_plot(sample_data, positions, cre_idx, row, output_file,

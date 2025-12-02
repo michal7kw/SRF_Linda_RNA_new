@@ -91,7 +91,6 @@ echo "========================================================================"
 echo ""
 
 # Collect BigWig files
-# NOTE: Emx1-Ctrl is excluded as it is a failed sample
 BIGWIGS=""
 LABELS=""
 MISSING=0
@@ -353,7 +352,6 @@ if [ -f "$BED_TABLE16" ]; then
             --missingDataAsZero \
             -o "$OUTPUT_DIR/matrix_table16_only_emx1.gz" \
             -p $N_PROCESSORS \
-            --outFileNameMatrix "$OUTPUT_DIR/matrix_table16_only_emx1.tab" \
             2>&1
 
         plotHeatmap \
@@ -583,7 +581,7 @@ Processors: 16 (parallel processing)
 CONDITIONS:
 -----------
 - Nestin-Ctrl vs Nestin-Mut
-- Emx1-Ctrl vs Emx1-Mut
+- Nestin-Ctrl vs Emx1-Mut (Emx1-Ctrl excluded)
 
 OUTPUT FILES:
 -------------

@@ -100,7 +100,7 @@ This pipeline uses **ONLY table_16.txt**:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 

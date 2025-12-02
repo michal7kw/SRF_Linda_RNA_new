@@ -285,8 +285,8 @@ echo "========================================================================"
 echo ""
 
 # Get list of genes
-GENE_LIST=$(awk -F'\t' 'NR>1 {print $1}' ../output/splicing_genes_analysis/splicing_genes_CREs_all_celltypes.tsv | sort -u | tr '\n' ', ' | sed 's/,$//')
-N_GENES=$(awk -F'\t' 'NR>1 {print $1}' ../output/splicing_genes_analysis/splicing_genes_CREs_all_celltypes.tsv | sort -u | wc -l)
+GENE_LIST=$(awk -F'\t' 'NR>1 {print $1}' ./output/splicing_genes_CREs_all_celltypes.tsv | sort -u | tr '\n' ', ' | sed 's/,$//')
+N_GENES=$(awk -F'\t' 'NR>1 {print $1}' ./output/splicing_genes_CREs_all_celltypes.tsv | sort -u | wc -l)
 
 cat > $OUTPUT_DIR/README.txt << EOFR
 ================================================================================

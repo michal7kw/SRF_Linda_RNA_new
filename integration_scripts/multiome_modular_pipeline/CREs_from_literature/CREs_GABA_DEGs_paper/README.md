@@ -198,4 +198,4 @@ The plots follow the same style as the splicing genes analysis:
 ## Related Analyses
 
 This pipeline is modeled after:
-- `../splicing_genes/` - CRE analysis for splicing genes
+- `../CREs_splicing_genes_paper/` - CRE analysis for splicing genes
