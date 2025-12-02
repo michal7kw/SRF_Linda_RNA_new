@@ -16,7 +16,15 @@ cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integra
 source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh
 conda activate sc-chromatin2
 
+# Check for filtering parameters (env vars)
+MIN_SIGNAL=${MIN_SIGNAL:-1.0}
+MIN_FC=${MIN_FC:-1.5}
+
+echo "Filtering parameters:"
+echo "  Min Signal: $MIN_SIGNAL"
+echo "  Min FC: $MIN_FC"
+
 # Run visualization script
-python 3_visualize_deg_comparisons.py --skip-individual 
+python 3_visualize_deg_comparisons.py --min-signal $MIN_SIGNAL --min-fc $MIN_FC  
 
 echo "Step 3 completed: $(date)"

@@ -326,10 +326,10 @@ else
     fi
 
     # Emx1 only
-    if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
+    if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
         echo "Creating Emx1 analysis (GABA CREs)..."
-        EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
-        EMX1_LABELS="Emx1-Ctrl Emx1-Mut"
+        EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Nestin-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
+        EMX1_LABELS="Nestin-Ctrl Emx1-Mut"
 
         computeMatrix reference-point \
             --referencePoint center \

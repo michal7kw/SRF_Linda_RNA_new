@@ -285,7 +285,8 @@ def _plot_single_cre_comparison(args):
 def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_file,
                                     output_dir, sample1_name, sample2_name,
                                     color1, color2, comparison_name,
-                                    n_processes=1, dpi=150, max_plots=100):
+                                    n_processes=1, dpi=150, max_plots=100,
+                                    min_signal=1.0, min_fc=1.5):
     """
     Create individual plots for each CRE showing comparison.
 
@@ -297,6 +298,10 @@ def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_fil
         DPI for individual plots (default: 150)
     max_plots : int
         Maximum number of individual plots to create (default: 100)
+    min_signal : float
+        Minimum max signal required to plot (default: 1.0)
+    min_fc : float
+        Minimum fold change required to plot (default: 1.5)
     """
     # Read BED file to get CRE IDs and coordinates
     bed_df = pd.read_csv(bed_file, sep='\t', header=None,
@@ -310,13 +315,47 @@ def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_fil
         gene_map = tsv_df.groupby('cCRE_id1')['Gene'].first().to_dict()
 
     # Limit number of plots
-    n_cres = min(len(bed_df), max_plots)
-    if len(bed_df) > max_plots:
-        print(f"  NOTE: Limiting to {max_plots} individual plots (out of {len(bed_df)} CREs)")
+    # n_cres = min(len(bed_df), max_plots)
+    # if len(bed_df) > max_plots:
+    #     print(f"  NOTE: Limiting to {max_plots} individual plots (out of {len(bed_df)} CREs)")
 
     # Prepare arguments for parallel processing
     plot_args = []
-    for i in range(n_cres):
+    filtered_count = 0
+    
+    for i in range(len(bed_df)):
+        # Check filtering criteria first
+        sample1_signal = data[sample1_name][i, :]
+        sample2_signal = data[sample2_name][i, :]
+        
+        mean1 = np.mean(sample1_signal)
+        mean2 = np.mean(sample2_signal)
+        max_signal = max(np.max(sample1_signal), np.max(sample2_signal))
+        
+        # Calculate Fold Change (handle zeros)
+        if mean1 > 0.01:
+            fc = mean2 / mean1
+        elif mean2 > 0.01:
+            fc = 100.0 # High FC if 1 is 0 and 2 is positive
+        else:
+            fc = 1.0 # Both zero
+            
+        # Check thresholds
+        # 1. Minimum signal check (at least one condition must have signal)
+        if max_signal < min_signal:
+            continue
+            
+        # 2. Fold change check (must be significant change up OR down)
+        # FC >= min_fc OR FC <= 1/min_fc
+        if not (fc >= min_fc or fc <= (1.0/min_fc)):
+            continue
+            
+        filtered_count += 1
+        
+        # Stop if we have enough plots
+        if len(plot_args) >= max_plots:
+            break
+            
         cre_id = bed_df.iloc[i]['cre_id']
         gene = gene_map.get(cre_id, 'Unknown')
         chrom = bed_df.iloc[i]['chr']
@@ -327,6 +366,8 @@ def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_fil
                 sample1_name, sample2_name, color1, color2, comparison_name,
                 output_dir, dpi)
         plot_args.append(args)
+
+    print(f"  Filtered: Found {len(plot_args)} significant plots (checked {i+1}/{len(bed_df)} CREs)")
 
     # Create plots (parallel or sequential)
     if n_processes > 1:
@@ -498,6 +539,10 @@ Examples:
                        help='Maximum number of individual plots per comparison (default: 100)')
     parser.add_argument('--matrix', type=str, default='GABA',
                        help='Matrix to use: GABA, all_celltypes, or CRE type name (default: GABA)')
+    parser.add_argument('--min-signal', type=float, default=1.0, metavar='F',
+                       help='Minimum max signal required to plot (default: 1.0)')
+    parser.add_argument('--min-fc', type=float, default=1.5, metavar='F',
+                       help='Minimum fold change required to plot (default: 1.5)')
 
     args = parser.parse_args()
 
@@ -517,13 +562,15 @@ Examples:
         if args.parallel > 1:
             print(f"   -> Using {args.parallel} parallel processes")
         print(f"   -> Individual plot DPI: {args.individual_dpi}")
+        print(f"   -> Individual plot DPI: {args.individual_dpi}")
         print(f"   -> Max individual plots: {args.max_individual}")
+        print(f"   -> Filtering: Min Signal >= {args.min_signal}, Min FC >= {args.min_fc}")
         print(f"   -> Metaprofile DPI: 300 (always high quality)")
     print()
 
     # Define paths
     matrix_dir = "./output/heatmaps_deeptools"
-    output_dir = f"./output/custom_comparisons"
+    output_dir = f"./output/custom_comparisons_minSig{args.min_signal}_minFC{args.min_fc}"
     bed_file = f"./output/encode_cCREs_{args.matrix}.bed"
     tsv_file = f"./output/encode_cCREs_{args.matrix}.tsv" if args.matrix == 'GABA' else "./output/encode_cCREs_all_celltypes.tsv"
 
@@ -628,7 +675,9 @@ Examples:
                 comp['name'],
                 n_processes=args.parallel,
                 dpi=args.individual_dpi,
-                max_plots=args.max_individual
+                max_plots=args.max_individual,
+                min_signal=args.min_signal,
+                min_fc=args.min_fc
             )
         elif args.skip_individual:
             print(f"\n  Skipping individual CRE plots for {comp['name']} (fast mode)")

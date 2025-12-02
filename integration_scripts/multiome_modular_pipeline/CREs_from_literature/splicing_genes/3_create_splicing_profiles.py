@@ -283,7 +283,8 @@ def _plot_single_cre(args):
     return output_file
 
 def plot_individual_cres(data, regions, bin_labels, bed_file, output_dir,
-                         ctrl_samples, mut_samples, genotype, n_processes=1, dpi=150):
+                         ctrl_samples, mut_samples, genotype, n_processes=1, dpi=150,
+                         min_signal=1.0, min_fc=1.5):
     """
     Create individual plots for each CRE showing Ctrl vs Mut.
 
@@ -308,7 +309,55 @@ def plot_individual_cres(data, regions, bin_labels, bed_file, output_dir,
 
     # Prepare arguments for each CRE
     plot_args = []
+    skipped_count = 0
+    
     for i in range(len(bed_df)):
+        # Check significance first
+        # 1. Max signal check
+        max_val = 0
+        mean_ctrl = 0
+        mean_mut = 0
+        n_ctrl = 0
+        n_mut = 0
+        
+        # Calculate means for FC
+        for s in ctrl_samples:
+            if s in data:
+                sig = data[s][i, :]
+                max_val = max(max_val, np.max(sig))
+                mean_ctrl += np.mean(sig)
+                n_ctrl += 1
+        
+        for s in mut_samples:
+            if s in data:
+                sig = data[s][i, :]
+                max_val = max(max_val, np.max(sig))
+                mean_mut += np.mean(sig)
+                n_mut += 1
+                
+        if n_ctrl > 0: mean_ctrl /= n_ctrl
+        if n_mut > 0: mean_mut /= n_mut
+        
+        # Filter by min signal
+        if max_val < min_signal:
+            skipped_count += 1
+            continue
+            
+        # Filter by FC
+        # Handle zero division
+        if mean_ctrl < 0.01 and mean_mut < 0.01:
+            fc = 1.0
+        elif mean_ctrl < 0.01:
+            fc = 100.0 # High FC if ctrl is 0 and mut is positive
+        else:
+            fc = mean_mut / mean_ctrl
+            
+        # Check if FC meets criteria (up or down)
+        # FC >= min_fc OR FC <= 1/min_fc
+        if not (fc >= min_fc or fc <= (1.0/min_fc)):
+            skipped_count += 1
+            continue
+
         cre_id = bed_df.iloc[i]['cre_id']
         gene = gene_map.get(cre_id, 'Unknown')
         chrom = bed_df.iloc[i]['chr']
@@ -317,6 +366,8 @@ def plot_individual_cres(data, regions, bin_labels, bed_file, output_dir,
 
         plot_args.append((i, cre_id, gene, chrom, start, end, data, bin_labels,
                          ctrl_samples, mut_samples, genotype, output_dir, dpi))
+    
+    print(f"  Filtered: Found {len(plot_args)} significant plots (checked {len(bed_df)} CREs)")
 
     # Create plots (parallel or sequential)
     if n_processes > 1:
@@ -377,6 +428,10 @@ def main():
                        help='Number of parallel processes for individual plots')
     parser.add_argument('--individual-dpi', type=int, default=150, metavar='N',
                        help='DPI for individual plots (metaprofiles always 300)')
+    parser.add_argument('--min-signal', type=float, default=1.0, metavar='F',
+                       help='Minimum max signal required to plot (default: 1.0)')
+    parser.add_argument('--min-fc', type=float, default=1.5, metavar='F',
+                       help='Minimum fold change required to plot (default: 1.5)')
     args = parser.parse_args()
 
     print("="*80)
@@ -392,7 +447,7 @@ def main():
 
     # Define paths
     matrix_dir = "./output/heatmaps_deeptools"
-    output_dir = f"{matrix_dir}/profiles"
+    output_dir = f"{matrix_dir}/profiles_minSig{args.min_signal}_minFC{args.min_fc}"
     bed_file = "./output/splicing_genes_CREs_all.bed"
     # NOTE: Using ALL CREs (not just GABA-specific) but with GABA BigWig files for signal analysis
 
@@ -429,7 +484,8 @@ def main():
                 print("\nCreating individual CRE plots (Nestin)...")
                 plot_individual_cres(data_nestin, regions, bin_labels, bed_file,
                                     output_dir, ctrl_samples, mut_samples, 'Nestin',
-                                    n_processes=args.parallel, dpi=args.individual_dpi)
+                                    n_processes=args.parallel, dpi=args.individual_dpi,
+                                    min_signal=args.min_signal, min_fc=args.min_fc)
             else:
                 print("\nSkipping individual CRE plots (use --no-skip-individual to enable)...")
 
@@ -461,7 +517,7 @@ def main():
             plot_metaprofile_comparison(
                 data_emx1, bin_labels,
                 f"{output_dir}/metaprofile_emx1_ctrl_vs_mut.png",
-                "Emx1: ATAC Signal at Splicing Gene CREs\nCtrl vs Mut Comparison",
+                "Emx1: ATAC Signal at Splicing Gene CREs\nNestin-Ctrl vs Emx1-Mut Comparison",
                 ctrl_samples, mut_samples
             )
 
@@ -470,7 +526,8 @@ def main():
                 print("\nCreating individual CRE plots (Emx1)...")
                 plot_individual_cres(data_emx1, regions, bin_labels, bed_file,
                                     output_dir, ctrl_samples, mut_samples, 'Emx1',
-                                    n_processes=args.parallel, dpi=args.individual_dpi)
+                                    n_processes=args.parallel, dpi=args.individual_dpi,
+                                    min_signal=args.min_signal, min_fc=args.min_fc)
             else:
                 print("\nSkipping individual CRE plots (use --no-skip-individual to enable)...")
 

@@ -185,8 +185,8 @@ echo "STEP 4: Computing signal matrices for EMX1 (Ctrl vs Mut)"
 echo "========================================================================"
 echo ""
 
-EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
-EMX1_LABELS="Emx1-Ctrl Emx1-Mut"
+EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Nestin-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
+EMX1_LABELS="Nestin-Ctrl Emx1-Mut"
 
 echo "Running computeMatrix for Emx1..."
 echo "  Window size: ±${WINDOW_SIZE} bp"
@@ -253,8 +253,19 @@ if [ -n "${INDIVIDUAL_DPI}" ]; then
 fi
 
 echo ""
+FILTER_FLAG=""
+if [ -n "${MIN_SIGNAL}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-signal ${MIN_SIGNAL}"
+    echo "   Min Signal: ${MIN_SIGNAL}"
+fi
+if [ -n "${MIN_FC}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-fc ${MIN_FC}"
+    echo "   Min FC: ${MIN_FC}"
+fi
+
+echo ""
 echo "Running Python visualization script..."
-python 3_create_splicing_profiles.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG
+python 3_create_splicing_profiles.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG $FILTER_FLAG
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Visualization failed!"

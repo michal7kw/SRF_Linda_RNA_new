@@ -198,3 +198,5 @@ integration_scripts/multiome_modular_pipeline/run_signac_pipeline_L1.sh.backup.*
 *.tab
 
 !INPUT_OUTPUT_FILES.md
+
+*minSig1.0_minFC1.5

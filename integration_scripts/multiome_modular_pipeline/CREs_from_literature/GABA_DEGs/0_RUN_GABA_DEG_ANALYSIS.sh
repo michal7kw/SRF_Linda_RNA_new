@@ -257,9 +257,19 @@ if [ -n "${INDIVIDUAL_DPI}" ]; then
     echo "Individual plot DPI: ${INDIVIDUAL_DPI}"
 fi
 
+FILTER_FLAG=""
+if [ -n "${MIN_SIGNAL}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-signal ${MIN_SIGNAL}"
+    echo "Min Signal: ${MIN_SIGNAL}"
+fi
+if [ -n "${MIN_FC}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-fc ${MIN_FC}"
+    echo "Min FC: ${MIN_FC}"
+fi
+
 echo ""
 echo "Running visualization script..."
-python 3_visualize_deg_comparisons.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG 2>&1 | tee logs/3_visualize_deg_comparisons.log
+python 3_visualize_deg_comparisons.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG $FILTER_FLAG 2>&1 | tee logs/3_visualize_deg_comparisons.log
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Visualization failed!"

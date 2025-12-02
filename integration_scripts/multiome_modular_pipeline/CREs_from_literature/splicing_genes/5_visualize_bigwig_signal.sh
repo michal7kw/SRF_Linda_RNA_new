@@ -79,8 +79,19 @@ fi
 
 echo ""
 
+FILTER_FLAG=""
+if [ -n "${MIN_SIGNAL}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-signal ${MIN_SIGNAL}"
+    echo "   Min Signal: ${MIN_SIGNAL}"
+fi
+if [ -n "${MIN_FC}" ]; then
+    FILTER_FLAG="$FILTER_FLAG --min-fc ${MIN_FC}"
+    echo "   Min FC: ${MIN_FC}"
+fi
+
+echo ""
 # Run visualization
-python 5_visualize_bigwig_signal.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG
+python 5_visualize_bigwig_signal.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG $FILTER_FLAG
 
 if [ $? -ne 0 ]; then
     echo ""

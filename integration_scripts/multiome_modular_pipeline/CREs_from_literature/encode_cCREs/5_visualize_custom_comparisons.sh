@@ -84,6 +84,14 @@ echo "  Full mode (with individual plots): $FULL_MODE"
 echo "  Parallel processes: $PARALLEL"
 echo ""
 
+# Check for filtering parameters (env vars)
+MIN_SIGNAL=${MIN_SIGNAL:-1.0}
+MIN_FC=${MIN_FC:-1.5}
+
+echo "Filtering parameters:"
+echo "  Min Signal: $MIN_SIGNAL"
+echo "  Min FC: $MIN_FC"
+
 # Build command
 if [ "$FULL_MODE" = true ]; then
     echo "Running in FULL MODE (with individual CRE plots)..."
@@ -91,12 +99,16 @@ if [ "$FULL_MODE" = true ]; then
         --matrix "$MATRIX" \
         --parallel $PARALLEL \
         --individual-dpi 150 \
-        --max-individual 100
+        --max-individual 100 \
+        --min-signal $MIN_SIGNAL \
+        --min-fc $MIN_FC
 else
     echo "Running in FAST MODE (metaprofiles only)..."
     python 5_visualize_custom_comparisons.py \
         --matrix "$MATRIX" \
-        --skip-individual
+        --skip-individual \
+        --min-signal $MIN_SIGNAL \
+        --min-fc $MIN_FC
 fi
 
 # Check exit status

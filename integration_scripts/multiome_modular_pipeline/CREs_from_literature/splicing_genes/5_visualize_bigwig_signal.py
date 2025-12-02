@@ -385,6 +385,10 @@ Examples:
                        help='Number of parallel processes for individual plots (default: 1)')
     parser.add_argument('--individual-dpi', type=int, default=150, metavar='N',
                        help='DPI for individual plots (metaprofiles always 300, default: 150)')
+    parser.add_argument('--min-signal', type=float, default=1.0, metavar='F',
+                       help='Minimum max signal required to plot (default: 1.0)')
+    parser.add_argument('--min-fc', type=float, default=1.5, metavar='F',
+                       help='Minimum fold change required to plot (default: 1.5)')
 
     args = parser.parse_args()
 
@@ -411,7 +415,7 @@ Examples:
     bed_file = "./output/splicing_genes_CREs_all.bed"
     # NOTE: Using ALL CREs (not just GABA-specific) but with GABA BigWig files ONLY for signal analysis
     tsv_file = "./output/splicing_genes_CREs_all_celltypes.tsv"
-    output_dir = "./output/bigwig_profiles"
+    output_dir = f"./output/bigwig_profiles_minSig{args.min_signal}_minFC{args.min_fc}"
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -497,6 +501,29 @@ Examples:
 
         print(f"    Mean Ctrl: {mean_ctrl:.6f}, Mean Mut: {mean_mut:.6f}, FC: {fold_change:.2f}x")
 
+        # Check significance for plotting
+        is_significant = True
+        
+        # 1. Min signal check
+        max_val = max(np.max(signal_ctrl), np.max(signal_mut))
+        if max_val < args.min_signal:
+            is_significant = False
+            
+        # 2. Fold change check
+        # Handle zero/low values
+        if mean_ctrl < 0.01 and mean_mut < 0.01:
+            fc_check = 1.0
+        elif mean_ctrl < 0.01:
+            fc_check = 100.0
+        else:
+            fc_check = mean_mut / mean_ctrl
+            
+        if not (fc_check >= args.min_fc or fc_check <= (1.0/args.min_fc)):
+            is_significant = False
+            
+        # Store significance
+        info['is_significant'] = is_significant
+
     # Create individual plots (optional, parallel or sequential)
     if not args.skip_individual:
         print(f"\nCreating Nestin individual CRE plots...")
@@ -506,6 +533,10 @@ Examples:
             print(f"  Using {args.parallel} parallel processes...")
             plot_args = []
             for i, row in bed_df.iterrows():
+                # Check if significant (using index to match cre_info_nestin)
+                if not cre_info_nestin[i]['is_significant']:
+                    continue
+                    
                 cre_id = row['cre_id']
                 gene = gene_map.get(cre_id, 'Unknown')
                 chrom = row['chr']
@@ -525,6 +556,10 @@ Examples:
         else:
             # Sequential processing
             for i, row in bed_df.iterrows():
+                # Check if significant
+                if not cre_info_nestin[i]['is_significant']:
+                    continue
+
                 cre_id = row['cre_id']
                 gene = gene_map.get(cre_id, 'Unknown')
                 chrom = row['chr']
@@ -561,7 +596,7 @@ Examples:
     print("EMX1: Extracting BigWig signals")
     print("="*80)
 
-    bw_emx1_ctrl = f"{bigwig_base}/GABA_Emx1-Ctrl.bw"
+    bw_emx1_ctrl = f"{bigwig_base}/GABA_Nestin-Ctrl.bw"
     bw_emx1_mut = f"{bigwig_base}/GABA_Emx1-Mut.bw"
 
     if not os.path.exists(bw_emx1_ctrl):
@@ -617,6 +652,28 @@ Examples:
 
         print(f"    Mean Ctrl: {mean_ctrl:.6f}, Mean Mut: {mean_mut:.6f}, FC: {fold_change:.2f}x")
 
+        # Check significance for plotting
+        is_significant = True
+        
+        # 1. Min signal check
+        max_val = max(np.max(signal_ctrl), np.max(signal_mut))
+        if max_val < args.min_signal:
+            is_significant = False
+            
+        # 2. Fold change check
+        if mean_ctrl < 0.01 and mean_mut < 0.01:
+            fc_check = 1.0
+        elif mean_ctrl < 0.01:
+            fc_check = 100.0
+        else:
+            fc_check = mean_mut / mean_ctrl
+            
+        if not (fc_check >= args.min_fc or fc_check <= (1.0/args.min_fc)):
+            is_significant = False
+            
+        # Store significance
+        info['is_significant'] = is_significant
+
     # Create individual plots (optional, parallel or sequential)
     if not args.skip_individual:
         print(f"\nCreating Emx1 individual CRE plots...")
@@ -626,6 +683,10 @@ Examples:
             print(f"  Using {args.parallel} parallel processes...")
             plot_args = []
             for i, row in bed_df.iterrows():
+                # Check if significant
+                if not cre_info_emx1[i]['is_significant']:
+                    continue
+
                 cre_id = row['cre_id']
                 gene = gene_map.get(cre_id, 'Unknown')
                 chrom = row['chr']
@@ -645,6 +706,10 @@ Examples:
         else:
             # Sequential processing
             for i, row in bed_df.iterrows():
+                # Check if significant
+                if not cre_info_emx1[i]['is_significant']:
+                    continue
+
                 cre_id = row['cre_id']
                 gene = gene_map.get(cre_id, 'Unknown')
                 chrom = row['chr']
@@ -666,7 +731,7 @@ Examples:
     plot_metaprofile_comparison(
         signals_emx1_ctrl, signals_emx1_mut, positions,
         f"{output_dir}/metaprofile_emx1_ctrl_vs_mut.png",
-        "Emx1: ATAC Signal at Splicing Gene CREs\nCtrl vs Mut Comparison",
+        "Emx1: ATAC Signal at Splicing Gene CREs\nNestin-Ctrl vs Emx1-Mut Comparison",
         cre_info_emx1
     )
 
