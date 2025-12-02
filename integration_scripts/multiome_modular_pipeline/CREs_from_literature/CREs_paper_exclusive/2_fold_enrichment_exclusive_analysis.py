@@ -57,12 +57,12 @@ MATRIX_FILES = {
 }
 
 # Sample names (order matters - must match matrix column order)
-SAMPLES = ["Nestin-Ctrl", "Nestin-Mut", "Emx1-Ctrl", "Emx1-Mut"]
+# NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - only using Nestin-Ctrl as control
+SAMPLES = ["Nestin-Ctrl", "Nestin-Mut", "Emx1-Mut"]
 
 COLORS = {
     "Nestin-Ctrl": "#2E86AB",
     "Nestin-Mut": "#A23B72",
-    "Emx1-Ctrl": "#F18F01",
     "Emx1-Mut": "#C73E1D"
 }
 

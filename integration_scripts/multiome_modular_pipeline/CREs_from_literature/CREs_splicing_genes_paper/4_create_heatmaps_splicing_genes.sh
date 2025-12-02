@@ -111,24 +111,26 @@ echo "STEP 2: Checking BigWig files"
 echo "========================================================================"
 echo ""
 
-# Collect BigWig files
+# Collect BigWig files (excluding Emx1-Ctrl which is a failed sample)
 BIGWIGS=""
 LABELS=""
 MISSING=0
 
-for GENOTYPE in Nestin Emx1; do
-    for CONDITION in Ctrl Mut; do
-        BW_FILE="$BIGWIG_BASE/GABA_${GENOTYPE}-${CONDITION}.bw"
-        if [ -f "$BW_FILE" ]; then
-            BIGWIGS="$BIGWIGS $BW_FILE"
-            LABELS="$LABELS ${GENOTYPE}-${CONDITION}"
-            echo "  ✓ Found: GABA_${GENOTYPE}-${CONDITION}.bw"
-        else
-            echo "  ✗ Missing: $BW_FILE"
-            MISSING=$((MISSING + 1))
-        fi
-    done
+# Only check for: Nestin-Ctrl, Nestin-Mut, Emx1-Mut (NOT Emx1-Ctrl)
+for SAMPLE in "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut"; do
+    BW_FILE="$BIGWIG_BASE/GABA_${SAMPLE}.bw"
+    if [ -f "$BW_FILE" ]; then
+        BIGWIGS="$BIGWIGS $BW_FILE"
+        LABELS="$LABELS ${SAMPLE}"
+        echo "  ✓ Found: GABA_${SAMPLE}.bw"
+    else
+        echo "  ✗ Missing: $BW_FILE"
+        MISSING=$((MISSING + 1))
+    fi
 done
+
+echo ""
+echo "NOTE: Emx1-Ctrl excluded (failed sample)"
 
 if [ $MISSING -gt 0 ]; then
     echo ""
@@ -364,11 +366,12 @@ if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Nestin-M
     echo ""
 fi
 
-# Emx1 only
-if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
+# Emx1 analysis (using Nestin-Ctrl as control since Emx1-Ctrl is a failed sample)
+if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
     echo "Creating Emx1 analysis (GABA CREs)..."
-    EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
-    EMX1_LABELS="Emx1-Ctrl Emx1-Mut"
+    echo "NOTE: Using Nestin-Ctrl as control (Emx1-Ctrl is a failed sample)"
+    EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Nestin-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
+    EMX1_LABELS="Nestin-Ctrl Emx1-Mut"
 
     computeMatrix reference-point \
         --referencePoint center \
@@ -487,8 +490,8 @@ CONDITIONS:
 -----------
 - Nestin-Ctrl
 - Nestin-Mut
-- Emx1-Ctrl
 - Emx1-Mut
+NOTE: Emx1-Ctrl excluded (failed sample); Nestin-Ctrl used as control for Emx1
 
 OUTPUT FILES:
 -------------

@@ -465,7 +465,7 @@ Examples:
         print(f"   -> Metaprofile DPI: 300 (always high quality)")
     print()
 
-    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/GABA_DEGs")
+    os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_paper")
 
     # Define paths
     matrix_dir = "./output"

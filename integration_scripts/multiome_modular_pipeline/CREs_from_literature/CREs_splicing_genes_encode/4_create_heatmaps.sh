@@ -107,30 +107,31 @@ fi
 echo ""
 
 # ============================================================================
-# Step 2: Check BigWig files
+# Step 2: Check BigWig files (Emx1-Ctrl excluded - failed sample)
 # ============================================================================
 echo "========================================================================"
 echo "STEP 2: Checking BigWig files"
 echo "========================================================================"
 echo ""
+echo "NOTE: Emx1-Ctrl is excluded (failed sample)"
+echo ""
 
-# Collect BigWig files
+# Collect BigWig files - only valid samples (excluding Emx1-Ctrl)
 BIGWIGS=""
 LABELS=""
 MISSING=0
 
-for GENOTYPE in Nestin Emx1; do
-    for CONDITION in Ctrl Mut; do
-        BW_FILE="$BIGWIG_BASE/GABA_${GENOTYPE}-${CONDITION}.bw"
-        if [ -f "$BW_FILE" ]; then
-            BIGWIGS="$BIGWIGS $BW_FILE"
-            LABELS="$LABELS ${GENOTYPE}-${CONDITION}"
-            echo "  Found: GABA_${GENOTYPE}-${CONDITION}.bw"
-        else
-            echo "  Missing: $BW_FILE"
-            MISSING=$((MISSING + 1))
-        fi
-    done
+# Check required samples: Nestin-Ctrl, Nestin-Mut, Emx1-Mut
+for SAMPLE in "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut"; do
+    BW_FILE="$BIGWIG_BASE/GABA_${SAMPLE}.bw"
+    if [ -f "$BW_FILE" ]; then
+        BIGWIGS="$BIGWIGS $BW_FILE"
+        LABELS="$LABELS ${SAMPLE}"
+        echo "  Found: GABA_${SAMPLE}.bw"
+    else
+        echo "  Missing: $BW_FILE"
+        MISSING=$((MISSING + 1))
+    fi
 done
 
 if [ $MISSING -gt 0 ]; then
@@ -400,7 +401,7 @@ if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut
         --refPointLabel "CRE Center" \
         --heatmapHeight 10 \
         --heatmapWidth 3 \
-        --plotTitle "Emx1: ATAC Signal at Splicing ENCODE cCREs (n=$N_GABA_CRES)" \
+        --plotTitle "Nestin-Ctrl vs Emx1-Mut: ATAC Signal at Splicing ENCODE cCREs (n=$N_GABA_CRES)" \
         --xAxisLabel "Distance from CRE Center (bp)" \
         2>&1 | grep -v "^$"
 
@@ -409,9 +410,9 @@ if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut
     plotProfile \
         -m $OUTPUT_DIR/matrix_GABA_emx1.gz \
         -o $OUTPUT_DIR/metaprofile_GABA_emx1.png \
-        --plotTitle "Emx1: ATAC Signal at Splicing ENCODE cCREs (n=$N_GABA_CRES)" \
+        --plotTitle "Nestin-Ctrl vs Emx1-Mut: ATAC Signal at Splicing ENCODE cCREs (n=$N_GABA_CRES)" \
         --refPointLabel "CRE Center" \
-        --colors '#F18F01' '#C73E1D' \
+        --colors '#2E86AB' '#F18F01' \
         --plotHeight 6 \
         --plotWidth 8 \
         2>&1 | grep -v "^$"
@@ -437,13 +438,15 @@ echo "Generated files:"
 echo "  Heatmaps:"
 echo "    - heatmap_all.png"
 echo "    - heatmap_GABA.png"
-echo "    - heatmap_GABA_nestin.png"
-echo "    - heatmap_GABA_emx1.png"
+echo "    - heatmap_GABA_nestin.png (Nestin-Ctrl vs Nestin-Mut)"
+echo "    - heatmap_GABA_emx1.png (Nestin-Ctrl vs Emx1-Mut)"
 echo "  Metaprofiles:"
 echo "    - metaprofile_all.png"
 echo "    - metaprofile_GABA.png"
 echo "    - metaprofile_GABA_nestin.png"
 echo "    - metaprofile_GABA_emx1.png"
+echo ""
+echo "NOTE: Emx1-Ctrl excluded (failed sample) - Nestin-Ctrl used as baseline"
 echo ""
 echo "Completed: $(date)"
 echo "========================================================================"

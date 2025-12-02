@@ -14,7 +14,7 @@ METHOD:
 
 INPUT FILES:
 1. Splicing genes list:
-   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
+   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
 
 2. ENCODE cCREs:
    ../data/mm10-cCREs.bed
@@ -52,7 +52,7 @@ print("", flush=True)
 # =============================================================================
 
 # Input files
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
 ENCODE_CCRES_FILE = "../data/mm10-cCREs.bed"  # ENCODE cCREs
 
 # Output directory

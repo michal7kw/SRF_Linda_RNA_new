@@ -206,7 +206,7 @@ create_analysis() {
         --averageType mean \
         --plotHeight 7 \
         --plotWidth 10 \
-        --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+        --colors '#2E86AB' '#A23B72' '#C73E1D' \
         --yAxisLabel "Mean ATAC Signal" \
         2>&1
 
@@ -404,7 +404,7 @@ ENCODE cCREs:
   Mouse (mm10) candidate cis-regulatory elements from ENCODE
 
 Splicing genes list:
-  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
+  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
 
 CRE-gene links:
   ../data/table_16.txt (literature correlations)

@@ -574,8 +574,9 @@ Examples:
     # Define paths
     matrix_dir = "./output/heatmaps_deeptools"
     output_dir = f"./output/custom_comparisons_minSig{args.min_signal}_minFC{args.min_fc}"
-    bed_file = f"./output/encode_cCREs_{args.matrix}.bed"
-    tsv_file = f"./output/encode_cCREs_{args.matrix}.tsv" if args.matrix != 'all_celltypes' else "./output/encode_cCREs_linked.tsv"
+    # Handle naming mismatch: matrix is "all_celltypes" but BED file is "all"
+    bed_file = "./output/encode_cCREs_all.bed" if args.matrix == 'all_celltypes' else f"./output/encode_cCREs_{args.matrix}.bed"
+    tsv_file = "./output/encode_cCREs_linked.tsv" if args.matrix == 'all_celltypes' else f"./output/encode_cCREs_{args.matrix}.tsv"
 
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(f"{output_dir}/profiles", exist_ok=True)

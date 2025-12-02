@@ -186,6 +186,7 @@ echo ""
 
 # GABA metaprofile
 echo "Creating GABA metaprofile..."
+# NOTE: 3 samples (Emx1-Ctrl excluded)
 plotProfile \
     -m $OUTPUT_DIR/matrix_GABA_all_conditions.gz \
     -o $OUTPUT_DIR/metaprofile_GABA_all_conditions.png \
@@ -194,7 +195,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0.015 \
     2>&1 | grep -v "^$"
@@ -203,6 +204,7 @@ echo "✓ Saved: metaprofile_GABA_all_conditions.png (auto-scaled)"
 echo ""
 
 # Excitatory metaprofile
+# NOTE: 3 samples (Emx1-Ctrl excluded)
 echo "Creating Excitatory metaprofile..."
 plotProfile \
     -m $OUTPUT_DIR/matrix_Excitatory_all_conditions.gz \
@@ -212,7 +214,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0.015 \
     2>&1 | grep -v "^$"
@@ -261,8 +263,9 @@ if [ -f "$OUTPUT_DIR/matrix_GABA_nestin.gz" ]; then
     echo ""
 fi
 
+# NOTE: Emx1-Ctrl excluded (failed sample) - only Emx1-Mut in matrix
 if [ -f "$OUTPUT_DIR/matrix_GABA_emx1.gz" ]; then
-    echo "Creating Emx1 heatmap and metaprofile..."
+    echo "Creating Emx1 heatmap and metaprofile (Emx1-Mut only)..."
 
     plotHeatmap \
         -m $OUTPUT_DIR/matrix_GABA_emx1.gz \
@@ -274,16 +277,16 @@ if [ -f "$OUTPUT_DIR/matrix_GABA_emx1.gz" ]; then
         --refPointLabel "CRE Center" \
         --heatmapHeight 25 \
         --heatmapWidth 5 \
-        --plotTitle "Emx1: ATAC Signal at GABA CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut: ATAC Signal at GABA CREs (n=$N_GABA_CRES)" \
         --xAxisLabel "Distance from CRE Center (bp)" \
         2>&1 | grep -v "^$"
 
     plotProfile \
         -m $OUTPUT_DIR/matrix_GABA_emx1.gz \
         -o $OUTPUT_DIR/metaprofile_GABA_emx1.png \
-        --plotTitle "Emx1: Metaprofile at GABA CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut: Metaprofile at GABA CREs (n=$N_GABA_CRES)" \
         --refPointLabel "CRE Center" \
-        --colors '#F18F01' '#C73E1D' \
+        --colors '#C73E1D' \
         --plotHeight 6 \
         --plotWidth 8 \
         --yMin 0 \

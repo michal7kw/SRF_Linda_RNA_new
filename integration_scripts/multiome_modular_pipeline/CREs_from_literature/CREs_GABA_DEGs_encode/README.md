@@ -95,20 +95,19 @@ We analyze 3 comparisons for each DEG set (up/down):
 ```bash
 cd /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_encode
 
-# Run complete pipeline with SLURM job dependencies
-./0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh
+# Run complete pipeline as a single SLURM job
+sbatch 0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh
 
-# Or with options
-./0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh --skip-individual  # Fast mode
-./0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh --parallel 8       # Parallel individual plots
-./0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh --dry-run          # Show what would run
+# Monitor progress
+squeue -u $USER
+tail -f logs/0_RUN_GABA_DEG_ENCODE_ANALYSIS.log
 ```
 
-**Total runtime: ~60-120 minutes**
+**SLURM Resources**: 8 hours, 16 CPUs, 64GB RAM
 
 ### Step 3 Visualization Options
 
-The visualization script supports additional filtering options:
+The visualization script (`3_visualize_deg_comparisons.py`) supports filtering options when run directly:
 
 | Option | Default | Description |
 |--------|---------|-------------|

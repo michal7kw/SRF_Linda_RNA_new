@@ -16,8 +16,6 @@ Run the complete pipeline with a single command:
 sbatch 0_RUN_GABA_DEG_ANALYSIS.sh
 ```
 
-> **Note**: The scripts use hardcoded paths to `../GABA_DEGs/` as the working directory. This is a symlink/copy setup where the README is in `CREs_GABA_DEGs_paper/` for documentation purposes.
-
 ## Pipeline Steps
 
 | Script | Description | Runtime |

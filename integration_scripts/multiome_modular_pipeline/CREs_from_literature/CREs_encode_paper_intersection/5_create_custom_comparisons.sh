@@ -11,10 +11,11 @@
 # Custom ATAC Signal Comparisons for ENCODE cCREs
 #
 # This script creates custom comparisons across genotypes and conditions:
-# 1. Nestin-Ctrl vs Nestin-Mut
-# 2. Emx1-Ctrl vs Emx1-Mut
-# 3. Nestin-Ctrl vs Emx1-Ctrl (baseline comparison)
-# 4. Nestin-Mut vs Emx1-Mut (mutant comparison)
+# 1. Nestin-Ctrl vs Nestin-Mut (within-genotype mutation effect)
+# 2. Nestin-Ctrl vs Emx1-Mut (cross-genotype, using Nestin-Ctrl as control)
+# 3. Nestin-Mut vs Emx1-Mut (mutant comparison)
+#
+# NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - using Nestin-Ctrl as control
 #
 # Prerequisites:
 # - output/encode_cCREs_GABA.bed
@@ -109,7 +110,8 @@ echo ""
 
 MISSING=0
 
-for SAMPLE in "GABA_Nestin-Ctrl" "GABA_Nestin-Mut" "GABA_Emx1-Ctrl" "GABA_Emx1-Mut"; do
+# NOTE: Emx1-Ctrl is excluded (failed sample) - using only Nestin-Ctrl as control
+for SAMPLE in "GABA_Nestin-Ctrl" "GABA_Nestin-Mut" "GABA_Emx1-Mut"; do
     BW_FILE="$BIGWIG_BASE/${SAMPLE}.bw"
     if [ -f "$BW_FILE" ]; then
         echo "  Found: ${SAMPLE}.bw"
@@ -118,6 +120,8 @@ for SAMPLE in "GABA_Nestin-Ctrl" "GABA_Nestin-Mut" "GABA_Emx1-Ctrl" "GABA_Emx1-M
         MISSING=$((MISSING + 1))
     fi
 done
+
+echo "  Skipped: GABA_Emx1-Ctrl.bw (failed sample - excluded from analysis)"
 
 if [ $MISSING -gt 0 ]; then
     echo ""
@@ -159,37 +163,9 @@ fi
 echo "Matrix computed: Nestin-Ctrl vs Nestin-Mut"
 echo ""
 
-# Comparison 2: Emx1-Ctrl vs Emx1-Mut
+# Comparison 2: Nestin-Ctrl vs Emx1-Mut (using Nestin-Ctrl as control since Emx1-Ctrl failed)
 echo "========================================================================"
-echo "STEP 3B: Computing matrix for EMX1-CTRL vs EMX1-MUT"
-echo "========================================================================"
-echo ""
-
-computeMatrix reference-point \
-    --referencePoint center \
-    -b $WINDOW_SIZE -a $WINDOW_SIZE \
-    -R $BED_GABA \
-    -S "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" "$BIGWIG_BASE/GABA_Emx1-Mut.bw" \
-    --samplesLabel "Emx1-Ctrl" "Emx1-Mut" \
-    --binSize $BIN_SIZE \
-    --sortRegions keep \
-    --missingDataAsZero \
-    -o $OUTPUT_DIR/matrix_emx1_ctrl_vs_mut.gz \
-    -p $N_PROCESSORS \
-    --outFileNameMatrix $OUTPUT_DIR/matrix_emx1_ctrl_vs_mut.tab \
-    2>&1 | tee $OUTPUT_DIR/computeMatrix_emx1_ctrl_vs_mut.log
-
-if [ ! -f "$OUTPUT_DIR/matrix_emx1_ctrl_vs_mut.gz" ]; then
-    echo "ERROR: computeMatrix failed for Emx1-Ctrl vs Emx1-Mut"
-    exit 1
-fi
-
-echo "Matrix computed: Emx1-Ctrl vs Emx1-Mut"
-echo ""
-
-# Comparison 3: Nestin-Ctrl vs Emx1-Ctrl (baseline)
-echo "========================================================================"
-echo "STEP 3C: Computing matrix for NESTIN-CTRL vs EMX1-CTRL"
+echo "STEP 3B: Computing matrix for NESTIN-CTRL vs EMX1-MUT"
 echo "========================================================================"
 echo ""
 
@@ -197,27 +173,27 @@ computeMatrix reference-point \
     --referencePoint center \
     -b $WINDOW_SIZE -a $WINDOW_SIZE \
     -R $BED_GABA \
-    -S "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" \
-    --samplesLabel "Nestin-Ctrl" "Emx1-Ctrl" \
+    -S "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" "$BIGWIG_BASE/GABA_Emx1-Mut.bw" \
+    --samplesLabel "Nestin-Ctrl" "Emx1-Mut" \
     --binSize $BIN_SIZE \
     --sortRegions keep \
     --missingDataAsZero \
-    -o $OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_ctrl.gz \
+    -o $OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_mut.gz \
     -p $N_PROCESSORS \
-    --outFileNameMatrix $OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_ctrl.tab \
-    2>&1 | tee $OUTPUT_DIR/computeMatrix_nestin_ctrl_vs_emx1_ctrl.log
+    --outFileNameMatrix $OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_mut.tab \
+    2>&1 | tee $OUTPUT_DIR/computeMatrix_nestin_ctrl_vs_emx1_mut.log
 
-if [ ! -f "$OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_ctrl.gz" ]; then
-    echo "ERROR: computeMatrix failed for Nestin-Ctrl vs Emx1-Ctrl"
+if [ ! -f "$OUTPUT_DIR/matrix_nestin_ctrl_vs_emx1_mut.gz" ]; then
+    echo "ERROR: computeMatrix failed for Nestin-Ctrl vs Emx1-Mut"
     exit 1
 fi
 
-echo "Matrix computed: Nestin-Ctrl vs Emx1-Ctrl"
+echo "Matrix computed: Nestin-Ctrl vs Emx1-Mut"
 echo ""
 
-# Comparison 4: Nestin-Mut vs Emx1-Mut
+# Comparison 3: Nestin-Mut vs Emx1-Mut
 echo "========================================================================"
-echo "STEP 3D: Computing matrix for NESTIN-MUT vs EMX1-MUT"
+echo "STEP 3C: Computing matrix for NESTIN-MUT vs EMX1-MUT"
 echo "========================================================================"
 echo ""
 
@@ -310,16 +286,15 @@ focusing on within-genotype and cross-genotype comparisons.
 
 COMPARISONS PERFORMED:
 ----------------------
+NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - using Nestin-Ctrl as control
+
 1. Nestin-Ctrl vs Nestin-Mut
    -> Within-genotype comparison (effect of mutation in Nestin background)
 
-2. Emx1-Ctrl vs Emx1-Mut
-   -> Within-genotype comparison (effect of mutation in Emx1 background)
+2. Nestin-Ctrl vs Emx1-Mut
+   -> Cross-genotype comparison (using Nestin-Ctrl as control for Emx1-Mut)
 
-3. Nestin-Ctrl vs Emx1-Ctrl
-   -> Baseline genotype comparison (control samples)
-
-4. Nestin-Mut vs Emx1-Mut
+3. Nestin-Mut vs Emx1-Mut
    -> Mutant genotype comparison (mutation effect across genotypes)
 
 PARAMETERS:
@@ -333,20 +308,18 @@ OUTPUT FILES:
 -------------
 Metaprofiles (comparison overlays):
   - profiles/metaprofile_nestin_ctrl_vs_mut_GABA.png
-  - profiles/metaprofile_emx1_ctrl_vs_mut_GABA.png
-  - profiles/metaprofile_nestin_vs_emx1_ctrl_GABA.png
+  - profiles/metaprofile_nestin_ctrl_vs_emx1_mut_GABA.png
   - profiles/metaprofile_nestin_vs_emx1_mut_GABA.png
 
 Overview:
-  - overview_all_conditions_GABA.png
+  - overview_all_conditions_GABA.png (3 conditions: Nestin-Ctrl, Nestin-Mut, Emx1-Mut)
 
 Statistics:
   - comparison_statistics_GABA.txt
 
 Signal matrices (reusable):
   - matrix_nestin_ctrl_vs_mut.gz / .tab
-  - matrix_emx1_ctrl_vs_mut.gz / .tab
-  - matrix_nestin_ctrl_vs_emx1_ctrl.gz / .tab
+  - matrix_nestin_ctrl_vs_emx1_mut.gz / .tab
   - matrix_nestin_mut_vs_emx1_mut.gz / .tab
 
 INTERPRETATION GUIDE:
@@ -355,28 +328,24 @@ Comparison 1 (Nestin-Ctrl vs Nestin-Mut):
   - Shows effect of mutation within Nestin genotype
   - Higher signal in Mut = Increased accessibility due to mutation
 
-Comparison 2 (Emx1-Ctrl vs Emx1-Mut):
-  - Shows effect of mutation within Emx1 genotype
-  - Compare with Comparison 1 for genotype-specific mutation effects
+Comparison 2 (Nestin-Ctrl vs Emx1-Mut):
+  - Uses Nestin-Ctrl as control for Emx1-Mut (since Emx1-Ctrl failed)
+  - Shows combined effect of genotype + mutation
 
-Comparison 3 (Nestin-Ctrl vs Emx1-Ctrl):
-  - Shows baseline genotype differences in controls
-  - Differences indicate genotype-specific regulatory patterns
-
-Comparison 4 (Nestin-Mut vs Emx1-Mut):
+Comparison 3 (Nestin-Mut vs Emx1-Mut):
   - Shows genotype effect under mutation
-  - Compare with Comparison 3 to see if mutation alters genotype differences
+  - Differences indicate genotype-specific mutation responses
 
 KEY QUESTIONS TO ADDRESS:
 --------------------------
-1. Does mutation consistently affect chromatin accessibility?
-   -> Compare Comparisons 1 and 2
+1. Does mutation affect chromatin accessibility in Nestin?
+   -> Check Comparison 1
 
-2. Are there baseline genotype differences?
+2. How does Emx1-Mut compare to baseline Nestin-Ctrl?
+   -> Check Comparison 2
+
+3. Do Nestin-Mut and Emx1-Mut show similar patterns?
    -> Check Comparison 3
-
-3. Does mutation affect genotypes differently?
-   -> Compare Comparisons 3 and 4
 
 Generated by: 5_create_custom_comparisons.sh
 ================================================================================
@@ -398,13 +367,12 @@ echo "CREs analyzed: $N_CRES GABA-specific ENCODE cCREs"
 echo ""
 echo "Generated files:"
 echo ""
-echo "  Matrices (4 comparisons):"
+echo "  Matrices (3 comparisons - Emx1-Ctrl excluded):"
 echo "      - matrix_nestin_ctrl_vs_mut.gz"
-echo "      - matrix_emx1_ctrl_vs_mut.gz"
-echo "      - matrix_nestin_ctrl_vs_emx1_ctrl.gz"
+echo "      - matrix_nestin_ctrl_vs_emx1_mut.gz"
 echo "      - matrix_nestin_mut_vs_emx1_mut.gz"
 echo ""
-echo "  Metaprofiles (4 comparison overlays):"
+echo "  Metaprofiles (3 comparison overlays):"
 ls -1 $OUTPUT_DIR/profiles/metaprofile_*.png 2>/dev/null | while read f; do
     echo "      - $(basename $f)"
 done

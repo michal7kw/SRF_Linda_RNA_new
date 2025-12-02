@@ -414,7 +414,8 @@ Examples:
     print("")
 
     # Define comparisons
-    # Define comparisons
+    # NOTE: Emx1-Ctrl is excluded as it is a failed sample.
+    #       Using Nestin-Ctrl as control for Emx1-Mut comparison.
     comparisons = [
         {
             'name': 'nestin_ctrl_vs_mut',

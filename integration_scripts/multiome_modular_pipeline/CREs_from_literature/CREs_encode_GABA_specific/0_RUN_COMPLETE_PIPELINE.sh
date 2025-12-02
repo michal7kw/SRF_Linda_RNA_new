@@ -108,17 +108,22 @@ echo "STEP 4: Visualizing differentially accessible CREs"
 echo "========================================================================"
 echo ""
 
-# Run with default thresholds (minSig=2.0, minFC=2.0)
-python 4_visualize_DA_CREs.py --min-signal 2.0 --min-fc 2.0 --skip-individual
+# Run with minSig=2.0, minFC=2.0 WITH individual plots
+echo "Running with thresholds: minSig=2.0, minFC=2.0 (WITH individual CRE plots)..."
+python 4_visualize_DA_CREs.py --min-signal 2.0 --min-fc 2.0 --parallel 8 --max-individual 100
 
 if [ $? -ne 0 ]; then
-    echo "WARNING: Step 4 had issues"
+    echo "WARNING: Step 4 (minSig=2.0, minFC=2.0) had issues"
 fi
 
-# Also run with stricter thresholds
+# Run with stricter thresholds minSig=2.0, minFC=3.0 WITH individual plots
 echo ""
-echo "Running with stricter thresholds (minSig=2.0, minFC=2.0)..."
-python 4_visualize_DA_CREs.py --min-signal 3.0 --min-fc 2.0 --skip-individual
+echo "Running with stricter thresholds: minSig=2.0, minFC=3.0 (WITH individual CRE plots)..."
+python 4_visualize_DA_CREs.py --min-signal 2.0 --min-fc 3.0 --parallel 8 --max-individual 100
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: Step 4 (minSig=2.0, minFC=3.0) had issues"
+fi
 
 # ============================================================================
 # Final Summary
@@ -154,9 +159,13 @@ echo "  ENCODE-intersected:"
 echo "    output/heatmaps_deeptools/heatmap_GABA_specific.png"
 echo "    output/heatmaps_deeptools/heatmap_GABA_specific_{nestin,emx1}.png"
 echo ""
-echo "Step 4 - DA Visualization:"
-echo "  output/DA_profiles_minSig1.0_minFC1.5/"
+echo "Step 4 - DA Visualization (WITH individual CRE plots):"
 echo "  output/DA_profiles_minSig2.0_minFC2.0/"
+echo "    - metaprofiles for all comparisons"
+echo "    - profiles/ subfolder with individual CRE plots"
+echo "  output/DA_profiles_minSig2.0_minFC3.0/"
+echo "    - metaprofiles for all comparisons"
+echo "    - profiles/ subfolder with individual CRE plots"
 echo ""
 echo "RECOMMENDATION:"
 echo "  Use TABLE 16-ONLY for maximum coverage (all GABA CREs)"

@@ -1,4 +1,12 @@
 #!/bin/bash
+#SBATCH --job-name=splicing_directional_pipeline
+#SBATCH --output=logs/0_pipeline_%j.out
+#SBATCH --error=logs/0_pipeline_%j.err
+#SBATCH --time=8:00:00
+#SBATCH --mem=64G
+#SBATCH --cpus-per-task=16
+#SBATCH --partition=workq
+
 # =============================================================================
 # SPLICING GENE CRE ANALYSIS PIPELINE - WITH DIRECTIONALITY
 # =============================================================================
@@ -17,213 +25,391 @@
 #   1. Nestin-Ctrl (within-genotype mutation effect)
 #   2. Emx1-Mut (genotype-specific response)
 #
-# BIOLOGICAL HYPOTHESIS:
-#   If splicing disturbances are caused by reduced splicing gene expression
-#   in Nestin-MUT, we expect to see:
-#   - Loss of accessibility at ENHANCER-like CREs
-#   - Pattern: Nestin-Ctrl HIGH → Nestin-Mut LOW, Emx1-Mut HIGH/NORMAL
-#
-# PIPELINE STEPS:
-#   1. Extract CREs with PCC directionality (enhancers vs silencers)
-#   2. Compute signal matrices with deepTools
-#   3. Visualize comparisons and identify Nestin-specific loss
-#
 # USAGE:
-#   ./0_RUN_SPLICING_DIRECTIONAL_PIPELINE.sh [OPTIONS]
+#   sbatch 0_RUN_SPLICING_DIRECTIONAL_PIPELINE.sh
 #
-# OPTIONS:
-#   --dry-run           Show what would be executed without running
-#   --skip-individual   Skip individual CRE plots (faster)
-#   --step N            Run only step N (1, 2, or 3)
-#   --help              Show this help message
+# ENVIRONMENT VARIABLES (optional):
+#   SKIP_INDIVIDUAL=1    Skip individual CRE plots (faster)
+#   MIN_SIGNAL=2.0       Minimum signal threshold for individual plots
+#   MIN_FC=2.0           Minimum fold change for individual plots
+#   MAX_INDIVIDUAL=50    Maximum number of individual plots
 #
 # =============================================================================
 
 set -e
 
 # Script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_splicing_directional"
 cd "${SCRIPT_DIR}"
 
 # Create logs directory
 mkdir -p logs
 
-# Default options
-DRY_RUN=0
-SKIP_INDIVIDUAL=0
-SINGLE_STEP=""
+# Activate conda environment
+source /opt/common/tools/ric.cosr/miniconda3/bin/activate
+conda activate rna_seq_analysis_deep
 
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --dry-run)
-            DRY_RUN=1
-            shift
-            ;;
-        --skip-individual)
-            SKIP_INDIVIDUAL=1
-            shift
-            ;;
-        --step)
-            SINGLE_STEP="$2"
-            shift 2
-            ;;
-        --help|-h)
-            head -50 "$0" | grep "^#" | sed 's/^# //' | sed 's/^#//'
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-    esac
-done
-
-# Export options for child scripts
-export SKIP_INDIVIDUAL
+# Parse environment variables with defaults
+SKIP_INDIVIDUAL="${SKIP_INDIVIDUAL:-0}"
+MIN_SIGNAL="${MIN_SIGNAL:-2.0}"
+MIN_FC="${MIN_FC:-2.0}"
+MAX_INDIVIDUAL="${MAX_INDIVIDUAL:-50}"
+INDIVIDUAL_DPI="${INDIVIDUAL_DPI:-150}"
 
 echo "=============================================================================="
 echo "SPLICING GENE CRE ANALYSIS PIPELINE - WITH DIRECTIONALITY"
 echo "=============================================================================="
 echo ""
 echo "Date: $(date)"
+echo "Job ID: ${SLURM_JOB_ID}"
 echo "Working directory: ${SCRIPT_DIR}"
 echo ""
-echo "Options:"
-echo "  Dry run: ${DRY_RUN}"
-echo "  Skip individual plots: ${SKIP_INDIVIDUAL}"
-echo "  Single step: ${SINGLE_STEP:-'all'}"
+echo "Settings:"
+echo "  SKIP_INDIVIDUAL: ${SKIP_INDIVIDUAL}"
+echo "  MIN_SIGNAL: ${MIN_SIGNAL}"
+echo "  MIN_FC: ${MIN_FC}"
+echo "  MAX_INDIVIDUAL: ${MAX_INDIVIDUAL}"
+echo "  INDIVIDUAL_DPI: ${INDIVIDUAL_DPI}"
 echo ""
 
 # =============================================================================
 # STEP 1: Extract CREs with PCC directionality
 # =============================================================================
 
-run_step1() {
-    echo "=============================================================================="
-    echo "STEP 1: Extract Splicing Gene CREs with Directionality"
-    echo "=============================================================================="
+echo "=============================================================================="
+echo "STEP 1: Extract Splicing Gene CREs with Directionality"
+echo "=============================================================================="
+echo "Start time: $(date)"
+echo ""
 
-    if [[ ${DRY_RUN} -eq 1 ]]; then
-        echo "[DRY RUN] Would execute: sbatch 1_extract_splicing_CREs_directional.sh"
-        echo "step1_job_id=12345"
-        return
-    fi
+python "${SCRIPT_DIR}/1_extract_splicing_CREs_directional.py"
 
-    step1_job=$(sbatch --parsable 1_extract_splicing_CREs_directional.sh)
-    echo "Submitted Step 1: Job ID ${step1_job}"
-    echo "${step1_job}"
-}
+echo ""
+echo "Step 1 complete: $(date)"
 
 # =============================================================================
 # STEP 2: Compute signal matrices
 # =============================================================================
 
-run_step2() {
-    local depend="$1"
+echo ""
+echo "=============================================================================="
+echo "STEP 2: Compute Signal Matrices"
+echo "=============================================================================="
+echo "Start time: $(date)"
+echo ""
 
+# Paths
+OUTPUT_DIR="${SCRIPT_DIR}/output"
+MATRIX_DIR="${OUTPUT_DIR}/matrices"
+HEATMAP_DIR="${OUTPUT_DIR}/heatmaps_deeptools"
+
+# BigWig files (GABA cell type) - NOTE: Emx1-Ctrl EXCLUDED (failed sample)
+BIGWIG_DIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/signac_results_L1/bigwig_tracks_L1/by_celltype"
+NESTIN_CTRL="${BIGWIG_DIR}/GABA_Nestin-Ctrl.bw"
+NESTIN_MUT="${BIGWIG_DIR}/GABA_Nestin-Mut.bw"
+EMX1_MUT="${BIGWIG_DIR}/GABA_Emx1-Mut.bw"
+
+# Parameters
+WINDOW_SIZE=2000
+BIN_SIZE=50
+PROCESSORS=16
+
+# Create directories
+mkdir -p "${MATRIX_DIR}" "${HEATMAP_DIR}"
+
+echo "BigWig files:"
+echo "  Nestin-Ctrl: ${NESTIN_CTRL}"
+echo "  Nestin-Mut:  ${NESTIN_MUT}"
+echo "  Emx1-Mut:    ${EMX1_MUT}"
+echo ""
+echo "NOTE: Emx1-Ctrl is EXCLUDED (failed sample)"
+echo ""
+
+# Verify files exist
+for bw in "${NESTIN_CTRL}" "${NESTIN_MUT}" "${EMX1_MUT}"; do
+    if [[ ! -f "${bw}" ]]; then
+        echo "ERROR: BigWig file not found: ${bw}"
+        exit 1
+    fi
+done
+
+# Process each CRE type (enhancers and silencers)
+for CRE_TYPE in "enhancer" "silencer"; do
+    BED_FILE="${OUTPUT_DIR}/${CRE_TYPE}_CREs_GABA.bed"
+
+    if [[ ! -f "${BED_FILE}" ]]; then
+        echo "WARNING: BED file not found: ${BED_FILE}"
+        echo "         Skipping ${CRE_TYPE} analysis"
+        continue
+    fi
+
+    CRE_COUNT=$(wc -l < "${BED_FILE}")
     echo ""
     echo "=============================================================================="
-    echo "STEP 2: Compute Signal Matrices"
+    echo "Processing ${CRE_TYPE^^} CREs (${CRE_COUNT} regions)"
     echo "=============================================================================="
 
-    if [[ ${DRY_RUN} -eq 1 ]]; then
-        echo "[DRY RUN] Would execute: sbatch --dependency=afterok:${depend} 2_compute_signal_matrices.sh"
-        echo "step2_job_id=12346"
-        return
-    fi
+    # Output files
+    MATRIX_FILE="${MATRIX_DIR}/matrix_${CRE_TYPE}_GABA.gz"
+    MATRIX_TAB="${MATRIX_DIR}/matrix_${CRE_TYPE}_GABA.tab"
+    HEATMAP_FILE="${HEATMAP_DIR}/heatmap_${CRE_TYPE}_all_conditions.png"
+    PROFILE_FILE="${HEATMAP_DIR}/metaprofile_${CRE_TYPE}_all_conditions.png"
 
-    if [[ -n "${depend}" ]]; then
-        step2_job=$(sbatch --parsable --dependency=afterok:${depend} 2_compute_signal_matrices.sh)
-    else
-        step2_job=$(sbatch --parsable 2_compute_signal_matrices.sh)
-    fi
-    echo "Submitted Step 2: Job ID ${step2_job}"
-    echo "${step2_job}"
-}
+    # Compute matrix with all 3 conditions
+    echo ""
+    echo "Computing signal matrix..."
+    echo "  Window: +/- ${WINDOW_SIZE} bp"
+    echo "  Bin size: ${BIN_SIZE} bp"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${BED_FILE}" \
+        --scoreFileName "${NESTIN_CTRL}" "${NESTIN_MUT}" "${EMX1_MUT}" \
+        --samplesLabel "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut" \
+        --outFileName "${MATRIX_FILE}" \
+        --outFileNameMatrix "${MATRIX_TAB}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    echo "  Saved: ${MATRIX_FILE}"
+
+    # Create heatmap
+    echo ""
+    echo "Creating heatmap..."
+
+    plotHeatmap \
+        --matrixFile "${MATRIX_FILE}" \
+        --outFileName "${HEATMAP_FILE}" \
+        --colorMap "RdYlBu_r" \
+        --whatToShow "heatmap and colorbar" \
+        --sortUsing mean \
+        --sortUsingSamples 1 \
+        --zMin 0 \
+        --heatmapHeight 15 \
+        --heatmapWidth 5 \
+        --dpi 300 \
+        --plotTitle "${CRE_TYPE^} CREs at Splicing Genes (GABA)"
+
+    echo "  Saved: ${HEATMAP_FILE}"
+
+    # Create metaprofile
+    echo ""
+    echo "Creating metaprofile..."
+
+    plotProfile \
+        --matrixFile "${MATRIX_FILE}" \
+        --outFileName "${PROFILE_FILE}" \
+        --colors "#3182bd" "#de2d26" "#ff7f00" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "${CRE_TYPE^} CREs at Splicing Genes (GABA)" \
+        --yAxisLabel "ATAC Signal" \
+        --regionsLabel "${CRE_TYPE^} CREs"
+
+    echo "  Saved: ${PROFILE_FILE}"
+
+    # Create pairwise comparison matrices
+    echo ""
+    echo "Creating pairwise comparison matrices..."
+
+    # Comparison 1: Nestin-Ctrl vs Nestin-Mut
+    MATRIX_NESTIN="${MATRIX_DIR}/matrix_${CRE_TYPE}_nestin_comparison.gz"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${BED_FILE}" \
+        --scoreFileName "${NESTIN_CTRL}" "${NESTIN_MUT}" \
+        --samplesLabel "Nestin-Ctrl" "Nestin-Mut" \
+        --outFileName "${MATRIX_NESTIN}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    plotProfile \
+        --matrixFile "${MATRIX_NESTIN}" \
+        --outFileName "${HEATMAP_DIR}/metaprofile_${CRE_TYPE}_nestin_ctrl_vs_mut.png" \
+        --colors "#3182bd" "#de2d26" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "Nestin Ctrl vs Mut: ${CRE_TYPE^} CREs" \
+        --yAxisLabel "ATAC Signal"
+
+    echo "  Saved: metaprofile_${CRE_TYPE}_nestin_ctrl_vs_mut.png"
+
+    # Comparison 2: Nestin-Ctrl vs Emx1-Mut
+    MATRIX_CROSS="${MATRIX_DIR}/matrix_${CRE_TYPE}_cross_comparison.gz"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${BED_FILE}" \
+        --scoreFileName "${NESTIN_CTRL}" "${EMX1_MUT}" \
+        --samplesLabel "Nestin-Ctrl" "Emx1-Mut" \
+        --outFileName "${MATRIX_CROSS}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    plotProfile \
+        --matrixFile "${MATRIX_CROSS}" \
+        --outFileName "${HEATMAP_DIR}/metaprofile_${CRE_TYPE}_nestin_ctrl_vs_emx1_mut.png" \
+        --colors "#3182bd" "#ff7f00" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "Nestin-Ctrl vs Emx1-Mut: ${CRE_TYPE^} CREs" \
+        --yAxisLabel "ATAC Signal"
+
+    echo "  Saved: metaprofile_${CRE_TYPE}_nestin_ctrl_vs_emx1_mut.png"
+
+    # Comparison 3: Nestin-Mut vs Emx1-Mut
+    MATRIX_MUT="${MATRIX_DIR}/matrix_${CRE_TYPE}_mutant_comparison.gz"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${BED_FILE}" \
+        --scoreFileName "${NESTIN_MUT}" "${EMX1_MUT}" \
+        --samplesLabel "Nestin-Mut" "Emx1-Mut" \
+        --outFileName "${MATRIX_MUT}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    plotProfile \
+        --matrixFile "${MATRIX_MUT}" \
+        --outFileName "${HEATMAP_DIR}/metaprofile_${CRE_TYPE}_nestin_mut_vs_emx1_mut.png" \
+        --colors "#de2d26" "#ff7f00" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "Nestin-Mut vs Emx1-Mut: ${CRE_TYPE^} CREs" \
+        --yAxisLabel "ATAC Signal"
+
+    echo "  Saved: metaprofile_${CRE_TYPE}_nestin_mut_vs_emx1_mut.png"
+
+done
+
+# Create combined heatmap comparing enhancers vs silencers
+echo ""
+echo "=============================================================================="
+echo "Creating combined enhancer vs silencer comparison"
+echo "=============================================================================="
+
+ENHANCER_BED="${OUTPUT_DIR}/enhancer_CREs_GABA.bed"
+SILENCER_BED="${OUTPUT_DIR}/silencer_CREs_GABA.bed"
+
+if [[ -f "${ENHANCER_BED}" && -f "${SILENCER_BED}" ]]; then
+    COMBINED_MATRIX="${MATRIX_DIR}/matrix_combined_enhancer_silencer.gz"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${ENHANCER_BED}" "${SILENCER_BED}" \
+        --scoreFileName "${NESTIN_CTRL}" "${NESTIN_MUT}" "${EMX1_MUT}" \
+        --samplesLabel "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut" \
+        --outFileName "${COMBINED_MATRIX}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    plotHeatmap \
+        --matrixFile "${COMBINED_MATRIX}" \
+        --outFileName "${HEATMAP_DIR}/heatmap_combined_enhancer_vs_silencer.png" \
+        --colorMap "RdYlBu_r" \
+        --whatToShow "heatmap and colorbar" \
+        --sortUsing mean \
+        --sortUsingSamples 1 \
+        --zMin 0 \
+        --heatmapHeight 15 \
+        --heatmapWidth 5 \
+        --dpi 300 \
+        --regionsLabel "Enhancer CREs" "Silencer CREs" \
+        --plotTitle "Enhancer vs Silencer CREs at Splicing Genes"
+
+    plotProfile \
+        --matrixFile "${COMBINED_MATRIX}" \
+        --outFileName "${HEATMAP_DIR}/metaprofile_combined_enhancer_vs_silencer.png" \
+        --colors "#3182bd" "#de2d26" "#ff7f00" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "Enhancer vs Silencer CREs at Splicing Genes" \
+        --yAxisLabel "ATAC Signal" \
+        --regionsLabel "Enhancer CREs" "Silencer CREs"
+
+    echo "  Saved: heatmap_combined_enhancer_vs_silencer.png"
+    echo "  Saved: metaprofile_combined_enhancer_vs_silencer.png"
+fi
+
+echo ""
+echo "Step 2 complete: $(date)"
 
 # =============================================================================
 # STEP 3: Visualize and identify Nestin-specific loss
 # =============================================================================
 
-run_step3() {
-    local depend="$1"
+echo ""
+echo "=============================================================================="
+echo "STEP 3: Visualize Comparisons and Identify Nestin-Specific Loss"
+echo "=============================================================================="
+echo "Start time: $(date)"
+echo ""
 
-    echo ""
-    echo "=============================================================================="
-    echo "STEP 3: Visualize Comparisons and Identify Nestin-Specific Loss"
-    echo "=============================================================================="
-
-    if [[ ${DRY_RUN} -eq 1 ]]; then
-        echo "[DRY RUN] Would execute: sbatch --dependency=afterok:${depend} 3_visualize_directional_comparisons.sh"
-        echo "step3_job_id=12347"
-        return
-    fi
-
-    if [[ -n "${depend}" ]]; then
-        step3_job=$(sbatch --parsable --dependency=afterok:${depend} 3_visualize_directional_comparisons.sh)
-    else
-        step3_job=$(sbatch --parsable 3_visualize_directional_comparisons.sh)
-    fi
-    echo "Submitted Step 3: Job ID ${step3_job}"
-    echo "${step3_job}"
-}
-
-# =============================================================================
-# MAIN EXECUTION
-# =============================================================================
-
-if [[ -n "${SINGLE_STEP}" ]]; then
-    # Run single step
-    case ${SINGLE_STEP} in
-        1)
-            run_step1
-            ;;
-        2)
-            run_step2 ""
-            ;;
-        3)
-            run_step3 ""
-            ;;
-        *)
-            echo "ERROR: Invalid step number: ${SINGLE_STEP}"
-            echo "Valid steps: 1, 2, 3"
-            exit 1
-            ;;
-    esac
-else
-    # Run full pipeline with dependencies
-    step1_job_id=$(run_step1 | tail -1)
-    step2_job_id=$(run_step2 "${step1_job_id}" | tail -1)
-    step3_job_id=$(run_step3 "${step2_job_id}" | tail -1)
-
-    echo ""
-    echo "=============================================================================="
-    echo "PIPELINE SUBMITTED"
-    echo "=============================================================================="
-    echo ""
-    echo "Job chain:"
-    echo "  Step 1 (Extract CREs):     ${step1_job_id}"
-    echo "  Step 2 (Compute matrices): ${step2_job_id} (depends on ${step1_job_id})"
-    echo "  Step 3 (Visualize):        ${step3_job_id} (depends on ${step2_job_id})"
-    echo ""
-    echo "Monitor progress:"
-    echo "  squeue -u \$USER"
-    echo ""
-    echo "View logs:"
-    echo "  tail -f logs/1_extract_splicing_CREs_*.log"
-    echo "  tail -f logs/2_compute_signal_matrices_*.log"
-    echo "  tail -f logs/3_visualize_directional_*.log"
-    echo ""
-    echo "Expected outputs:"
-    echo "  output/enhancer_CREs_GABA.bed"
-    echo "  output/silencer_CREs_GABA.bed"
-    echo "  output/heatmaps_deeptools/*.png"
-    echo "  output/visualizations/*.png"
-    echo "  output/nestin_specific_loss/*.tsv"
-    echo ""
-    echo "Estimated total runtime: ~2-3 hours"
+# Build arguments for visualization script
+VIZ_ARGS=""
+if [[ "${SKIP_INDIVIDUAL}" == "1" ]]; then
+    VIZ_ARGS="${VIZ_ARGS} --skip-individual"
 fi
+VIZ_ARGS="${VIZ_ARGS} --max-individual ${MAX_INDIVIDUAL}"
+VIZ_ARGS="${VIZ_ARGS} --min-signal ${MIN_SIGNAL}"
+VIZ_ARGS="${VIZ_ARGS} --min-fc ${MIN_FC}"
+VIZ_ARGS="${VIZ_ARGS} --individual-dpi ${INDIVIDUAL_DPI}"
+
+echo "Running visualization with arguments: ${VIZ_ARGS}"
+echo ""
+
+python "${SCRIPT_DIR}/3_visualize_directional_comparisons.py" ${VIZ_ARGS}
 
 echo ""
-echo "Date: $(date)"
+echo "Step 3 complete: $(date)"
+
+# =============================================================================
+# PIPELINE COMPLETE
+# =============================================================================
+
+echo ""
+echo "=============================================================================="
+echo "PIPELINE COMPLETE"
+echo "=============================================================================="
+echo ""
+echo "End time: $(date)"
+echo ""
+echo "Output directories:"
+echo "  ${OUTPUT_DIR}/matrices/"
+echo "  ${OUTPUT_DIR}/heatmaps_deeptools/"
+echo "  ${OUTPUT_DIR}/visualizations/"
+echo "  ${OUTPUT_DIR}/nestin_specific_loss/"
+echo ""
+echo "Key output files:"
+echo "  output/enhancer_CREs_GABA.bed"
+echo "  output/silencer_CREs_GABA.bed"
+echo "  output/heatmaps_deeptools/*.png"
+echo "  output/visualizations/*.png"
+echo "  output/nestin_specific_loss/*.tsv"
+echo ""

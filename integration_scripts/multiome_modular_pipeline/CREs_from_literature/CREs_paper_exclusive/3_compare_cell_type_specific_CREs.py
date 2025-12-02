@@ -20,8 +20,8 @@ INPUT FILES:
 - Excitatory_specific_CREs.bed: BED file with excitatory neuron-specific CREs (mutually exclusive set)
 - GABA_Nestin-Ctrl.bw: BigWig file with ATAC-seq signal for GABA neurons, Nestin-Cre control condition
 - GABA_Nestin-Mut.bw: BigWig file with ATAC-seq signal for GABA neurons, Nestin-Cre mutant condition
-- GABA_Emx1-Ctrl.bw: BigWig file with ATAC-seq signal for GABA neurons, Emx1-Cre control condition
 - GABA_Emx1-Mut.bw: BigWig file with ATAC-seq signal for GABA neurons, Emx1-Cre mutant condition
+NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - only using Nestin-Ctrl as control
 
 OUTPUT FILES:
 - heatmap_GABA_specific.png: Heatmap showing ATAC signal at GABA-specific CREs (positive control)
@@ -64,17 +64,16 @@ WINDOW_SIZE = 2000
 BIN_SIZE = 50
 N_BINS = WINDOW_SIZE * 2 // BIN_SIZE
 
+# NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - only using Nestin-Ctrl as control
 CONDITIONS = {
     "Nestin-Ctrl": f"{BIGWIG_BASE}/GABA_Nestin-Ctrl.bw",
     "Nestin-Mut": f"{BIGWIG_BASE}/GABA_Nestin-Mut.bw",
-    "Emx1-Ctrl": f"{BIGWIG_BASE}/GABA_Emx1-Ctrl.bw",
     "Emx1-Mut": f"{BIGWIG_BASE}/GABA_Emx1-Mut.bw"
 }
 
 COLORS = {
     "Nestin-Ctrl": "#2E86AB",
     "Nestin-Mut": "#A23B72",
-    "Emx1-Ctrl": "#F18F01",
     "Emx1-Mut": "#C73E1D"
 }
 
@@ -294,8 +293,8 @@ print(f"\n{'='*80}")
 print("STEP 4: Creating heatmaps...")
 print("-"*80)
 
-# GABA-specific heatmap
-fig, axes = plt.subplots(1, 4, figsize=(16, 12), sharey=True)
+# GABA-specific heatmap (3 conditions - Emx1-Ctrl excluded)
+fig, axes = plt.subplots(1, 3, figsize=(14, 12), sharey=True)
 fig.suptitle(f'POSITIVE CONTROL: ATAC Signal at GABA-specific CREs (n={len(cres_gaba):,})',
              fontsize=16, fontweight='bold')
 
@@ -323,8 +322,8 @@ plt.savefig(os.path.join(OUTPUT_DIR, "heatmap_GABA_specific.png"), dpi=300, bbox
 plt.close()
 print("✓ Saved: heatmap_GABA_specific.png")
 
-# Excitatory-specific heatmap
-fig, axes = plt.subplots(1, 4, figsize=(16, 12), sharey=True)
+# Excitatory-specific heatmap (3 conditions - Emx1-Ctrl excluded)
+fig, axes = plt.subplots(1, 3, figsize=(14, 12), sharey=True)
 fig.suptitle(f'NEGATIVE CONTROL: ATAC Signal at Excitatory-specific CREs (n={len(cres_excitatory):,})',
              fontsize=16, fontweight='bold')
 

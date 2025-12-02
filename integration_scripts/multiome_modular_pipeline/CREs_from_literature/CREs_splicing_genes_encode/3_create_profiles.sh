@@ -109,25 +109,26 @@ fi
 echo ""
 
 # ============================================================================
-# Step 2: Check BigWig files
+# Step 2: Check BigWig files (Emx1-Ctrl excluded - failed sample)
 # ============================================================================
 echo "========================================================================"
 echo "STEP 2: Checking BigWig files"
 echo "========================================================================"
 echo ""
+echo "NOTE: Emx1-Ctrl is excluded (failed sample)"
+echo ""
 
 MISSING=0
 
-for GENOTYPE in Nestin Emx1; do
-    for CONDITION in Ctrl Mut; do
-        BW_FILE="$BIGWIG_BASE/GABA_${GENOTYPE}-${CONDITION}.bw"
-        if [ -f "$BW_FILE" ]; then
-            echo "  Found: GABA_${GENOTYPE}-${CONDITION}.bw"
-        else
-            echo "  Missing: $BW_FILE"
-            MISSING=$((MISSING + 1))
-        fi
-    done
+# Check only valid samples: Nestin-Ctrl, Nestin-Mut, Emx1-Mut
+for SAMPLE in "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut"; do
+    BW_FILE="$BIGWIG_BASE/GABA_${SAMPLE}.bw"
+    if [ -f "$BW_FILE" ]; then
+        echo "  Found: GABA_${SAMPLE}.bw"
+    else
+        echo "  Missing: $BW_FILE"
+        MISSING=$((MISSING + 1))
+    fi
 done
 
 if [ $MISSING -gt 0 ]; then
@@ -372,7 +373,9 @@ echo ""
 echo "Output directory: $OUTPUT_DIR/"
 echo ""
 echo "CREs analyzed: $N_CRES ENCODE cCREs linked to splicing genes"
-echo "Signal analysis: GABA BigWig files (Nestin/Emx1 Ctrl vs Mut)"
+echo "Signal analysis: GABA BigWig files"
+echo "  - Nestin: Nestin-Ctrl vs Nestin-Mut"
+echo "  - Emx1: Nestin-Ctrl vs Emx1-Mut (Emx1-Ctrl excluded - failed sample)"
 echo ""
 echo "Generated files:"
 echo ""

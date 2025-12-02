@@ -32,7 +32,7 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -62,6 +62,20 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 | Filtering | FDR < 0.05, \|PCC\| > 0.2 | Distance-based (+/- 500kb) |
 | CRE Types | Literature-defined | ENCODE annotations (pELS, dELS, etc.) |
 
+## Sample Information
+
+**Available Samples:**
+- Nestin-Ctrl
+- Nestin-Mut
+- Emx1-Mut
+
+**Excluded Sample:**
+- **Emx1-Ctrl** - Failed sample, excluded from all analyses
+
+**Control Strategy:**
+- For Nestin comparisons: Nestin-Ctrl vs Nestin-Mut
+- For Emx1 comparisons: Nestin-Ctrl vs Emx1-Mut (Nestin-Ctrl used as baseline)
+
 ## Pipeline Steps
 
 1. **1_extract_encode_cCREs**: Extract ENCODE cCREs near splicing genes using BioMart coordinates
@@ -74,10 +88,10 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 ## Quick Start
 
 ```bash
-# Run the complete pipeline
-./0_RUN_CREs_splicing_genes_encode_ANALYSIS.sh
+# Run the complete pipeline (recommended - runs all steps sequentially)
+sbatch 0_RUN_SPLICING_ENCODE_CCRES_ANALYSIS.sh
 
-# Or run individual steps
+# Or run individual steps separately
 sbatch 1_extract_encode_cCREs.sh
 sbatch 2_convert_to_bed.sh
 sbatch 3_create_profiles.sh
@@ -85,6 +99,8 @@ sbatch 4_create_heatmaps.sh
 sbatch 5_visualize_bigwig_signal.sh
 sbatch 6_create_custom_comparisons.sh
 ```
+
+**Master script resources:** 8 hours, 16 CPUs, 64GB RAM
 
 ## Output Files
 
@@ -153,24 +169,13 @@ SKIP_INDIVIDUAL=0 INDIVIDUAL_DPI=100 sbatch 3_create_profiles.sh
 
 ## Input Requirements
 
-- Splicing genes list: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
+- Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed`
 - BigWig files: `../../signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_*.bw`
 
-## Known Issues
+## Notes
 
-**CRITICAL: Directory Path Mismatch**
-
-All scripts currently hardcode paths to `CREs_splicing_genes_encode`, but this directory is named `CREs_splicing_genes_encode`. Before running, either:
-1. Rename this directory to `CREs_splicing_genes_encode`, OR
-2. Update the `cd` commands in all scripts to use the correct path
-
-Scripts affected:
-- `0_RUN_CREs_splicing_genes_encode_ANALYSIS.sh`
-- `1_extract_encode_cCREs.py` / `.sh`
-- `2_convert_to_bed.py` / `.sh`
-- `3_create_profiles.py` / `.sh`
-- `4_create_heatmaps.sh`
-- `5_visualize_bigwig_signal.py` / `.sh`
-- `6_visualize_custom_comparisons.py`
-- `6_create_custom_comparisons.sh`
+**Emx1-Ctrl Sample Exclusion:**
+- Emx1-Ctrl is a failed sample and is excluded from all analyses
+- All Emx1 comparisons use Nestin-Ctrl as the baseline/control
+- This affects steps 3, 4, 5, and 6 of the pipeline

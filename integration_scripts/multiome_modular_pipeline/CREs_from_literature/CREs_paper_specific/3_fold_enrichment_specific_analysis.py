@@ -48,12 +48,12 @@ MATRIX_FILES = {
     "Excitatory": os.path.join(MATRIX_DIR, "matrix_Excitatory_all_conditions.gz")
 }
 
-SAMPLES = ["Nestin-Ctrl", "Nestin-Mut", "Emx1-Ctrl", "Emx1-Mut"]
+# NOTE: Emx1-Ctrl is excluded (failed sample)
+SAMPLES = ["Nestin-Ctrl", "Nestin-Mut", "Emx1-Mut"]
 
 COLORS = {
     "Nestin-Ctrl": "#2E86AB",
     "Nestin-Mut": "#A23B72",
-    "Emx1-Ctrl": "#F18F01",
     "Emx1-Mut": "#C73E1D"
 }
 

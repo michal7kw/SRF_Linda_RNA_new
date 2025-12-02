@@ -13,7 +13,7 @@ CORRECT APPROACH:
 
 INPUT FILES:
 1. Splicing genes list:
-   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
+   /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
 
 2. CRE-gene correlations (LITERATURE DATA):
    ../data/table_16.txt (567 MB, literature CRE-gene correlations)
@@ -54,7 +54,7 @@ print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 # =============================================================================
 
 # Input files
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
 TABLE16_FILE = "../data/table_16.txt"  # Literature CRE-gene correlations
 
 # Statistical filters (same as link_genes_to_cres.py)

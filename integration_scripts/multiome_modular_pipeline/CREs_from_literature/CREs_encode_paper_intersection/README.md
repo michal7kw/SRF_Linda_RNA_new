@@ -67,7 +67,7 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 5. Classify by cell type and CRE type
 
 **Input**:
-- Splicing genes list: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
+- Splicing genes list: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
 - ENCODE cCREs: `../data/mm10-cCREs.bed` (~340,000 CREs)
 - Table 16: `../data/table_16.txt` (3.2M correlations, 567 MB)
 
@@ -110,12 +110,13 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 **Input**: deepTools matrix files from Step 4
 
 **Output**:
-- `custom_comparisons/overview_all_conditions_*.png` - Combined overview of all 4 conditions
+- `custom_comparisons/overview_all_conditions_*.png` - Combined overview of all 3 conditions
 - `custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_mut_*.png` - Nestin Ctrl vs Mut
-- `custom_comparisons/profiles/metaprofile_emx1_ctrl_vs_mut_*.png` - Emx1 Ctrl vs Mut
-- `custom_comparisons/profiles/metaprofile_nestin_vs_emx1_ctrl_*.png` - Baseline genotype comparison
+- `custom_comparisons/profiles/metaprofile_nestin_ctrl_vs_emx1_mut_*.png` - Nestin-Ctrl vs Emx1-Mut (cross-genotype)
 - `custom_comparisons/profiles/metaprofile_nestin_vs_emx1_mut_*.png` - Mutant genotype comparison
 - `custom_comparisons/comparison_statistics_*.txt` - Statistical summaries
+
+**NOTE**: Emx1-Ctrl is excluded (failed sample) - Nestin-Ctrl is used as control for all comparisons
 
 **Features**:
 - Publication-quality metaprofiles (DPI 300)
@@ -127,7 +128,7 @@ The workflow identifies ENCODE cCREs linked to splicing machinery genes and visu
 
 ### Quick Analysis (Recommended)
 ```bash
-cd /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/encode_cCREs
+cd /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_encode_paper_intersection
 
 # Run complete pipeline with SLURM job dependencies
 ./0_RUN_ENCODE_CCRES_ANALYSIS.sh
@@ -177,7 +178,7 @@ The ENCODE cCRE classifications used in this analysis:
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../splicing_genes/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -242,23 +243,17 @@ This pipeline uses **BOTH** data sources:
 ### Other Input Files
 
 **Splicing Genes:**
-- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv`
+- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv`
 - Content: 1,138 genes from Reactome pathways (mRNA splicing, spliceosome assembly)
 
 **ATAC-seq Signal:**
 - Path: `../../signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_*.bw`
-- Files: GABA_Nestin-Ctrl.bw, GABA_Nestin-Mut.bw, GABA_Emx1-Ctrl.bw, GABA_Emx1-Mut.bw
+- Files: GABA_Nestin-Ctrl.bw, GABA_Nestin-Mut.bw, GABA_Emx1-Mut.bw
+- **NOTE**: GABA_Emx1-Ctrl.bw is EXCLUDED (failed sample) - Nestin-Ctrl is used as control for all comparisons
 
 ## Technical Details
 
 ### SLURM Resources
-
-| Step | Time | CPUs | Memory |
-|------|------|------|--------|
-| Step 1 | 2:00:00 | 16 | 64GB |
-| Step 2 | 0:30:00 | 2 | 16GB |
-| Step 4 | 4:00:00 | 16 | 64GB |
-| Step 5 | 2:00:00 | 8 | 32GB |
 
 ### deepTools Parameters
 - **Window Size**: ±2000 bp around CRE center

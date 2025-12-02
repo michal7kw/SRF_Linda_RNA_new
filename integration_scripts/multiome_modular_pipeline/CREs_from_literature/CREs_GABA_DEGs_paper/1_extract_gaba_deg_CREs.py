@@ -33,7 +33,7 @@ import numpy as np
 import os
 from datetime import datetime
 
-os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/GABA_DEGs")
+os.chdir("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_paper")
 
 print("="*80)
 print("EXTRACT CREs ASSOCIATED WITH GABA DIFFERENTIALLY EXPRESSED GENES")

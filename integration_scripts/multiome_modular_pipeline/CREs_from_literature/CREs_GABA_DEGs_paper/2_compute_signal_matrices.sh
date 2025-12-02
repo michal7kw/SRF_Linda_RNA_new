@@ -37,7 +37,7 @@ echo "========================================================================"
 echo "Started: $(date)"
 echo ""
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/GABA_DEGs"
+cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_paper"
 
 # Configuration
 BIGWIG_BASE="../../signac_results_L1/bigwig_tracks_L1/by_celltype"

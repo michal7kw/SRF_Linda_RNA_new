@@ -177,23 +177,28 @@ echo "STEP 2: Checking BigWig files"
 echo "------------------------------------------------------------------------"
 
 # Collect BigWig files
+# NOTE: Emx1-Ctrl is excluded (failed sample) - using only Nestin-Ctrl as control
 BIGWIGS=""
 LABELS=""
 MISSING=0
 
-for GENOTYPE in Nestin Emx1; do
-    for CONDITION in Ctrl Mut; do
-        BW_FILE="$BIGWIG_BASE/GABA_${GENOTYPE}-${CONDITION}.bw"
-        if [ -f "$BW_FILE" ]; then
-            BIGWIGS="$BIGWIGS $BW_FILE"
-            LABELS="$LABELS ${GENOTYPE}-${CONDITION}"
-            echo "  ✓ Found: GABA_${GENOTYPE}-${CONDITION}.bw"
-        else
-            echo "  ✗ Missing: $BW_FILE"
-            MISSING=$((MISSING + 1))
-        fi
-    done
+# Define samples to include (excluding Emx1-Ctrl which is a failed sample)
+SAMPLES_TO_INCLUDE="Nestin-Ctrl Nestin-Mut Emx1-Mut"
+
+for SAMPLE in $SAMPLES_TO_INCLUDE; do
+    BW_FILE="$BIGWIG_BASE/GABA_${SAMPLE}.bw"
+    if [ -f "$BW_FILE" ]; then
+        BIGWIGS="$BIGWIGS $BW_FILE"
+        LABELS="$LABELS ${SAMPLE}"
+        echo "  ✓ Found: GABA_${SAMPLE}.bw"
+    else
+        echo "  ✗ Missing: $BW_FILE"
+        MISSING=$((MISSING + 1))
+    fi
 done
+
+echo ""
+echo "NOTE: Emx1-Ctrl excluded (failed sample)"
 
 if [ $MISSING -gt 0 ]; then
     echo ""
@@ -398,6 +403,7 @@ echo "------------------------------------------------------------------------"
 echo "Creating individual metaprofiles with common scale..."
 
 # GABA metaprofile
+# NOTE: 3 samples (Emx1-Ctrl excluded)
 echo "Creating GABA metaprofile (Y-axis: auto-scaled)..."
 plotProfile \
     -m $OUTPUT_DIR/matrix_GABA_all_conditions.gz \
@@ -407,7 +413,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0 \
     2>&1 | grep -v "^$"
@@ -415,6 +421,7 @@ plotProfile \
 echo "✓ Saved: metaprofile_GABA_all_conditions.png"
 
 # Excitatory metaprofile (auto-scaled independently)
+# NOTE: 3 samples (Emx1-Ctrl excluded)
 echo "Creating Excitatory metaprofile (Y-axis: auto-scaled)..."
 plotProfile \
     -m $OUTPUT_DIR/matrix_Excitatory_all_conditions.gz \
@@ -424,7 +431,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0 \
     2>&1 | grep -v "^$"
@@ -495,10 +502,11 @@ if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Nestin-M
 fi
 
 # Emx1 only (GABA CREs)
-if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
-    echo "Creating Emx1 analysis (GABA CREs)..."
-    EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
-    EMX1_LABELS="Emx1-Ctrl Emx1-Mut"
+# NOTE: Emx1-Ctrl is excluded (failed sample) - only Emx1-Mut is analyzed
+if [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
+    echo "Creating Emx1 analysis (GABA CREs) - Emx1-Mut only (Emx1-Ctrl excluded)..."
+    EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Mut.bw"
+    EMX1_LABELS="Emx1-Mut"
 
     computeMatrix reference-point \
         --referencePoint center \
@@ -524,7 +532,7 @@ if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.b
         --refPointLabel "CRE Center" \
         --heatmapHeight 25 \
         --heatmapWidth 5 \
-        --plotTitle "Emx1: ATAC Signal at GABA CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut: ATAC Signal at GABA CREs (n=$N_GABA_CRES)" \
         --xAxisLabel "Distance from CRE Center (bp)" \
         2>&1 | grep -v "^$"
 
@@ -533,9 +541,9 @@ if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.b
     plotProfile \
         -m $OUTPUT_DIR/matrix_GABA_emx1.gz \
         -o $OUTPUT_DIR/metaprofile_GABA_emx1.png \
-        --plotTitle "Emx1: Metaprofile at GABA CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut: Metaprofile at GABA CREs (n=$N_GABA_CRES)" \
         --refPointLabel "CRE Center" \
-        --colors '#F18F01' '#C73E1D' \
+        --colors '#C73E1D' \
         --plotHeight 6 \
         --plotWidth 8 \
         --yAxisLabel "Mean ATAC Signal" \

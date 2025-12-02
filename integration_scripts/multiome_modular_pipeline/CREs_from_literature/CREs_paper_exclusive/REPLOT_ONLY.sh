@@ -184,6 +184,7 @@ echo "========================================================================"
 echo ""
 
 # GABA-specific metaprofile
+# NOTE: 3 samples (Emx1-Ctrl excluded - failed sample)
 echo "Creating GABA-specific metaprofile..."
 plotProfile \
     -m $OUTPUT_DIR/matrix_GABA_specific.gz \
@@ -193,7 +194,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0.015 \
     2>&1 | grep -v "^$"
@@ -202,6 +203,7 @@ echo "✓ Saved: metaprofile_GABA_specific.png (auto-scaled)"
 echo ""
 
 # Excitatory-specific metaprofile
+# NOTE: 3 samples (Emx1-Ctrl excluded - failed sample)
 echo "Creating Excitatory-specific metaprofile..."
 plotProfile \
     -m $OUTPUT_DIR/matrix_Excitatory_specific.gz \
@@ -211,7 +213,7 @@ plotProfile \
     --averageType mean \
     --plotHeight 7 \
     --plotWidth 10 \
-    --colors '#2E86AB' '#A23B72' '#F18F01' '#C73E1D' \
+    --colors '#2E86AB' '#A23B72' '#C73E1D' \
     --yAxisLabel "Mean ATAC Signal" \
     --yMin 0.015 \
     2>&1 | grep -v "^$"
@@ -260,7 +262,8 @@ if [ -f "$OUTPUT_DIR/matrix_GABA_specific_nestin.gz" ]; then
 fi
 
 if [ -f "$OUTPUT_DIR/matrix_GABA_specific_emx1.gz" ]; then
-    echo "Creating Emx1 heatmap and metaprofile..."
+    # NOTE: Emx1-Ctrl excluded (failed sample) - comparing Nestin-Ctrl vs Emx1-Mut
+    echo "Creating Emx1-Mut vs Nestin-Ctrl heatmap and metaprofile..."
 
     plotHeatmap \
         -m $OUTPUT_DIR/matrix_GABA_specific_emx1.gz \
@@ -272,16 +275,16 @@ if [ -f "$OUTPUT_DIR/matrix_GABA_specific_emx1.gz" ]; then
         --refPointLabel "CRE Center" \
         --heatmapHeight 25 \
         --heatmapWidth 5 \
-        --plotTitle "Emx1: ATAC Signal at GABA-specific CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut vs Nestin-Ctrl: ATAC Signal at GABA-specific CREs (n=$N_GABA_CRES)" \
         --xAxisLabel "Distance from CRE Center (bp)" \
         2>&1 | grep -v "^$"
 
     plotProfile \
         -m $OUTPUT_DIR/matrix_GABA_specific_emx1.gz \
         -o $OUTPUT_DIR/metaprofile_GABA_specific_emx1.png \
-        --plotTitle "Emx1: Metaprofile at GABA-specific CREs (n=$N_GABA_CRES)" \
+        --plotTitle "Emx1-Mut vs Nestin-Ctrl: Metaprofile at GABA-specific CREs (n=$N_GABA_CRES)" \
         --refPointLabel "CRE Center" \
-        --colors '#F18F01' '#C73E1D' \
+        --colors '#2E86AB' '#C73E1D' \
         --plotHeight 6 \
         --plotWidth 8 \
         2>&1 | grep -v "^$"

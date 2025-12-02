@@ -1,4 +1,13 @@
 #!/bin/bash
+#SBATCH --job-name=0_RUN_COMPLETE_EXCLUSIVE_PIPELINE
+#SBATCH --output=logs/0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.log
+#SBATCH --error=logs/0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.err
+#SBATCH --time=00:10:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+#SBATCH --partition=workq
+
+################################################################################
 # Master script to run the complete Exclusive CREs pipeline
 #
 # This script submits the following jobs to SLURM with dependencies:
@@ -15,15 +24,26 @@
 #             ├─→ Step 3 (pyBigWig comparison)
 #             └─→ Step 4 (link CREs to genes) ──→ Step 5 (visualize DA CREs)
 #
-# Usage: ./0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.sh
+# Samples analyzed (Emx1-Ctrl EXCLUDED - failed sample):
+#   - Nestin-Ctrl (reference control)
+#   - Nestin-Mut
+#   - Emx1-Mut
+#
+# Usage: sbatch 0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.sh
 #
 # Utility Scripts (not in main pipeline):
 # - REPLOT_ONLY.sh: Re-run plotting without recomputing matrices
+################################################################################
+
+# Change to script directory (use absolute path for SLURM compatibility)
+SCRIPT_DIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_paper_exclusive"
+cd "$SCRIPT_DIR" || { echo "ERROR: Cannot cd to $SCRIPT_DIR"; exit 1; }
 
 echo "========================================================================"
 echo "SUBMITTING EXCLUSIVE CRES PIPELINE"
 echo "========================================================================"
 echo "Started: $(date)"
+echo "Working directory: $(pwd)"
 echo ""
 
 # Create logs directory
@@ -35,6 +55,9 @@ echo "  2. Fold enrichment analysis"
 echo "  3. pyBigWig comparison plots"
 echo "  4. Link CREs to genes"
 echo "  5. Visualize DA CREs"
+echo ""
+echo "Samples: Nestin-Ctrl, Nestin-Mut, Emx1-Mut"
+echo "NOTE: Emx1-Ctrl EXCLUDED (failed sample)"
 echo ""
 
 # Submit Step 1
@@ -96,3 +119,5 @@ echo "  - output/GABA_DEG_analysis/heatmaps_specific_CREs_deeptools/"
 echo "  - output/GABA_specific_CREs_genes.tsv"
 echo "  - output/Excitatory_specific_CREs_genes.tsv"
 echo ""
+echo "Completed submission: $(date)"
+echo "========================================================================"

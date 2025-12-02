@@ -94,13 +94,13 @@ This pipeline uses **ONLY table_16.txt**:
 4. Result: CREs with **literature-validated** gene links (no ENCODE type annotations)
 
 ### Other Data Sources
-- **Signal Data**: GABA BigWig files (Nestin-Ctrl, Nestin-Mut, Emx1-Mut)
-- **Note**: Emx1-Ctrl is not used (Nestin-Ctrl serves as control for Emx1 comparisons)
+- **Signal Data**: GABA BigWig files (Nestin-Ctrl, Nestin-Mut, Emx1-Mut only)
+- **IMPORTANT**: Emx1-Ctrl is a failed sample and completely excluded from all analyses; Nestin-Ctrl serves as control for Emx1 comparisons
 
 ## Genes Analyzed
 
 **Gene Set**: Splicing-related genes from Reactome pathways
-- **Source**: `/beegfs/.../CREs_splicing_genes_paper/extracted_genes_final.csv`
+- **Source**: `/beegfs/.../integration_scripts/splicing_genes/extracted_genes_final.csv`
 - **Count**: 1,138 genes
 - **Pathways**: mRNA splicing, spliceosome assembly, RNA processing
 
@@ -187,7 +187,7 @@ output/
 
 ## Notes
 
-- **Emx1-Ctrl Handling**: Emx1-Ctrl sample not used; Nestin-Ctrl serves as control for Emx1 comparisons
+- **Emx1-Ctrl Excluded**: Emx1-Ctrl is a failed sample and completely excluded from analysis; Nestin-Ctrl serves as control for all Emx1 comparisons
 - **Literature Data**: All CREs from published correlations Table 16
 - **GABA Signal Only**: Analysis uses GABA BigWig files for all CRE types
 - **Reusable Matrices**: deepTools matrices can be reused for additional analyses

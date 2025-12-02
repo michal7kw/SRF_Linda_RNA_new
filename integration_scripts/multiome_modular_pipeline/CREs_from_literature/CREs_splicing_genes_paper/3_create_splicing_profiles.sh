@@ -319,7 +319,7 @@ All CREs are shared between GABA and other cell types (not GABA-specific)
 GENOTYPE COMPARISONS:
 ---------------------
 1. Nestin: Nestin-Ctrl vs Nestin-Mut
-2. Emx1: Emx1-Ctrl vs Emx1-Mut
+2. Emx1: Nestin-Ctrl vs Emx1-Mut (Emx1-Ctrl is a failed sample)
 
 PARAMETERS:
 -----------
@@ -341,10 +341,10 @@ Metaprofiles (Ctrl vs Mut comparison):
 
 Individual CRE profiles:
   - profiles/individual_Nestin_<Gene>_<CRE_ID>.png
-      → One plot per CRE showing Nestin Ctrl vs Mut
+      → One plot per CRE showing Nestin-Ctrl vs Nestin-Mut
 
   - profiles/individual_Emx1_<Gene>_<CRE_ID>.png
-      → One plot per CRE showing Emx1 Ctrl vs Mut
+      → One plot per CRE showing Nestin-Ctrl vs Emx1-Mut
 
 Signal matrices (reusable):
   - matrix_GABA_nestin.gz / matrix_GABA_nestin.tab

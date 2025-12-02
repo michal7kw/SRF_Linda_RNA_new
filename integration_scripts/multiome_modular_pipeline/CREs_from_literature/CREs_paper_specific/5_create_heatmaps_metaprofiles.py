@@ -83,17 +83,16 @@ SCALE_BUFFER = 1.2      # 20% buffer above percentile
 MIN_SIGNAL_THRESHOLD = 0.05  # Minimum signal in any condition
 
 # Conditions to analyze
+# NOTE: Emx1-Ctrl is excluded (failed sample)
 CONDITIONS = {
     "Nestin-Ctrl": f"{BIGWIG_BASE}/GABA_Nestin-Ctrl.bw",
     "Nestin-Mut": f"{BIGWIG_BASE}/GABA_Nestin-Mut.bw",
-    "Emx1-Ctrl": f"{BIGWIG_BASE}/GABA_Emx1-Ctrl.bw",
     "Emx1-Mut": f"{BIGWIG_BASE}/GABA_Emx1-Mut.bw"
 }
 
 CONDITION_COLORS = {
     "Nestin-Ctrl": "#2E86AB",
     "Nestin-Mut": "#A23B72",
-    "Emx1-Ctrl": "#F18F01",
     "Emx1-Mut": "#C73E1D"
 }
 
@@ -362,7 +361,8 @@ print("-"*80)
 # Heatmap 1: All conditions side-by-side
 print("\nCreating combined heatmap (all conditions)...")
 
-fig, axes = plt.subplots(1, 4, figsize=(16, 12), sharey=True)
+# NOTE: 3 conditions (Emx1-Ctrl excluded)
+fig, axes = plt.subplots(1, 3, figsize=(12, 12), sharey=True)
 fig.suptitle(f'ATAC Signal at GABA-Specific CREs (n={len(cres_sorted)})',
              fontsize=16, fontweight='bold', y=0.995)
 
@@ -410,7 +410,8 @@ if 'cluster' in cres_sorted.columns and len(signal_matrices_sorted) > 0:
             print(f"  Skipping cluster {cluster_id+1} (too few CREs: {n_in_cluster})")
             continue
 
-        fig, axes = plt.subplots(1, 4, figsize=(16, 8), sharey=True)
+        # NOTE: 3 conditions (Emx1-Ctrl excluded)
+        fig, axes = plt.subplots(1, 3, figsize=(12, 8), sharey=True)
         fig.suptitle(f'ATAC Signal: Cluster {cluster_id+1} (n={n_in_cluster} CREs)',
                      fontsize=16, fontweight='bold', y=0.995)
 
@@ -596,59 +597,9 @@ if "Nestin-Ctrl" in signal_matrices_sorted and "Nestin-Mut" in signal_matrices_s
     plt.close()
     print(f"✓ Saved: comparison_nestin_ctrl_vs_mut.png")
 
-# Plot 2: Emx1 Ctrl vs Mut
-print("\nCreating Emx1 comparison...")
-
-if "Emx1-Ctrl" in signal_matrices_sorted and "Emx1-Mut" in signal_matrices_sorted:
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    # Metaprofile comparison
-    ax = axes[0]
-    for condition_name in ["Emx1-Ctrl", "Emx1-Mut"]:
-        matrix = signal_matrices_sorted[condition_name]
-        mean_signal = np.nanmean(matrix, axis=0)
-        sem_signal = stats.sem(matrix, axis=0, nan_policy='omit')
-
-        color = CONDITION_COLORS[condition_name]
-        ax.plot(x_coords, mean_signal, color=color, linewidth=3,
-               label=condition_name)
-        ax.fill_between(x_coords,
-                       mean_signal - sem_signal,
-                       mean_signal + sem_signal,
-                       color=color, alpha=0.2)
-
-    ax.axvline(0, color='gray', linestyle='--', alpha=0.5)
-    ax.set_xlabel('Distance from CRE Center (bp)', fontsize=12)
-    ax.set_ylabel('Mean ATAC Signal', fontsize=12)
-    ax.set_title('Emx1: Control vs Mutant', fontsize=13, fontweight='bold')
-    ax.legend(fontsize=11)
-    ax.grid(True, alpha=0.3, linestyle=':')
-
-    # Difference plot
-    ax = axes[1]
-    ctrl_mean = np.nanmean(signal_matrices_sorted["Emx1-Ctrl"], axis=0)
-    mut_mean = np.nanmean(signal_matrices_sorted["Emx1-Mut"], axis=0)
-    diff = mut_mean - ctrl_mean
-
-    ax.plot(x_coords, diff, color='purple', linewidth=3)
-    ax.axhline(0, color='gray', linestyle='--', alpha=0.5)
-    ax.axvline(0, color='gray', linestyle='--', alpha=0.5)
-    ax.fill_between(x_coords, 0, diff, where=(diff < 0),
-                     color='blue', alpha=0.3, label='Decreased in Mut')
-    ax.fill_between(x_coords, 0, diff, where=(diff >= 0),
-                     color='red', alpha=0.3, label='Increased in Mut')
-
-    ax.set_xlabel('Distance from CRE Center (bp)', fontsize=12)
-    ax.set_ylabel('Signal Difference (Mut - Ctrl)', fontsize=12)
-    ax.set_title('Emx1: Signal Change', fontsize=13, fontweight='bold')
-    ax.legend(fontsize=11)
-    ax.grid(True, alpha=0.3, linestyle=':')
-
-    plt.tight_layout()
-    plot_file = os.path.join(OUTPUT_DIR, "comparison_emx1_ctrl_vs_mut.png")
-    plt.savefig(plot_file, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"✓ Saved: comparison_emx1_ctrl_vs_mut.png")
+# Plot 2: Emx1 Ctrl vs Mut - SKIPPED (Emx1-Ctrl is a failed sample)
+print("\nSkipping Emx1 comparison (Emx1-Ctrl excluded - failed sample)")
+print("  NOTE: Only Emx1-Mut is available for analysis")
 
 # ============================================================================
 # STEP 9: Save signal matrices and CRE annotations
@@ -732,15 +683,13 @@ with open(report_file, 'w') as f:
         f.write(f"  Mut mean: {mut_mean:.4f}\n")
         f.write(f"  Change: {pct_change:+.1f}%\n\n")
 
-    # Emx1 comparison
-    if "Emx1-Ctrl" in signal_matrices_sorted and "Emx1-Mut" in signal_matrices_sorted:
-        ctrl_mean = np.nanmean(signal_matrices_sorted["Emx1-Ctrl"])
+    # Emx1 comparison - SKIPPED (Emx1-Ctrl excluded)
+    f.write(f"Emx1:\n")
+    f.write(f"  NOTE: Emx1-Ctrl excluded (failed sample)\n")
+    if "Emx1-Mut" in signal_matrices_sorted:
         mut_mean = np.nanmean(signal_matrices_sorted["Emx1-Mut"])
-        pct_change = 100 * (mut_mean - ctrl_mean) / ctrl_mean
-        f.write(f"Emx1:\n")
-        f.write(f"  Ctrl mean: {ctrl_mean:.4f}\n")
-        f.write(f"  Mut mean: {mut_mean:.4f}\n")
-        f.write(f"  Change: {pct_change:+.1f}%\n\n")
+        f.write(f"  Emx1-Mut mean: {mut_mean:.4f}\n")
+    f.write(f"  Ctrl vs Mut comparison: Not available\n\n")
 
     f.write("OUTPUT FILES:\n")
     f.write("-"*80 + "\n")
@@ -752,7 +701,7 @@ with open(report_file, 'w') as f:
     f.write("  - metaprofile_by_cluster.png\n\n")
     f.write("Comparisons:\n")
     f.write("  - comparison_nestin_ctrl_vs_mut.png\n")
-    f.write("  - comparison_emx1_ctrl_vs_mut.png\n\n")
+    f.write("  NOTE: Emx1 comparison not available (Emx1-Ctrl excluded)\n\n")
     f.write("Data:\n")
     f.write("  - GABA_CREs_with_clusters.tsv\n")
     f.write("  - signal_matrix_*.npy (numpy arrays)\n\n")

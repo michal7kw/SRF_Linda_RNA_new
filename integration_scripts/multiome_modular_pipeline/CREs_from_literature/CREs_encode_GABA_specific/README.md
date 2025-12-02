@@ -6,7 +6,7 @@
 > **CRITICAL**: Emx1-Ctrl is a **FAILED SAMPLE** and is excluded from all analyses.
 > Only 3 conditions are analyzed: **Nestin-Ctrl** (reference control), **Nestin-Mut**, and **Emx1-Mut**.
 
-## Pipeline Stepsatures
+## Key Features
 
 - **Enhanced GABA SubType Filtering**: Uses keyword matching to identify GABA-specific CREs
 - **Dual Output Strategy**: Creates BOTH Table 16-only AND ENCODE-intersected CRE sets
@@ -103,9 +103,9 @@ The visualization step (Step 4) filters for significant differential accessibili
 | **min_signal** | 2.0 | 2.0 | Minimum max signal required across conditions |
 | **min_fc** | 2.0 | 2.0 | Minimum fold change (FC >= X OR FC <= 1/X) |
 
-**Note**: The complete pipeline (`0_RUN_COMPLETE_PIPELINE.sh`) runs BOTH threshold sets:
-1. First with `2.0/2.0` (lenient)
-2. Then with `3.0/2.0` (strict)
+**Note**: The complete pipeline (`0_RUN_COMPLETE_PIPELINE.sh`) runs BOTH threshold sets WITH individual CRE plots:
+1. First with `minSig=2.0, minFC=2.0`
+2. Then with `minSig=2.0, minFC=3.0` (stricter fold change)
 
 ## Running the Pipeline
 
@@ -165,20 +165,20 @@ output/
 │   ├── matrix_GABA_specific_emx1.gz/.tab
 │   ├── heatmap_GABA_specific_{type}.png
 │   └── README.txt
-├── DA_profiles_minSig1.0_minFC1.5/      # DA visualization (lenient thresholds)
+├── DA_profiles_minSig2.0_minFC2.0/      # DA visualization (minSig=2.0, minFC=2.0)
 │   ├── metaprofile_nestin_ctrl_vs_mut_all.png
 │   ├── metaprofile_nestin_ctrl_vs_emx1_mut_all.png
 │   ├── metaprofile_nestin_mut_vs_emx1_mut_all.png
 │   ├── DA_statistics.txt
 │   └── profiles/
-│       └── individual_*.png
-└── DA_profiles_minSig2.0_minFC2.0/      # DA visualization (strict thresholds)
+│       └── individual_*.png          # Individual CRE plots
+└── DA_profiles_minSig2.0_minFC3.0/      # DA visualization (minSig=2.0, minFC=3.0)
     ├── metaprofile_nestin_ctrl_vs_mut_all.png
     ├── metaprofile_nestin_ctrl_vs_emx1_mut_all.png
     ├── metaprofile_nestin_mut_vs_emx1_mut_all.png
     ├── DA_statistics.txt
     └── profiles/
-        └── individual_*.png
+        └── individual_*.png          # Individual CRE plots
 ```
 
 ## Overlap Statistics
@@ -226,11 +226,12 @@ This helps you understand:
 
 #### Genotype-Specific Heatmaps
 
-**Nestin Genotype (Table 16-only):**
+**Nestin: Ctrl vs Mut (Table 16-only):**
 ![Nestin Table16 Heatmap](output/heatmaps_deeptools/heatmap_table16_only_nestin.png)
 
-**Emx1 Genotype (Table 16-only):**
+**Nestin-Ctrl vs Emx1-Mut (Table 16-only):**
 ![Emx1 Table16 Heatmap](output/heatmaps_deeptools/heatmap_table16_only_emx1.png)
+*Note: Uses Nestin-Ctrl as control since Emx1-Ctrl is excluded*
 
 ### Metaprofiles
 

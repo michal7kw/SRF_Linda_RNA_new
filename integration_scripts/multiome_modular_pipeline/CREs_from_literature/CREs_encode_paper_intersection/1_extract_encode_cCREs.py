@@ -38,7 +38,7 @@ print("", flush=True)
 # =============================================================================
 
 # Input files
-SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv"
+SPLICING_GENES_FILE = "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv"
 TABLE16_FILE = "../data/table_16.txt"  # Literature CRE-gene correlations
 ENCODE_CCRES_FILE = "../data/mm10-cCREs.bed"  # ENCODE cCREs
 

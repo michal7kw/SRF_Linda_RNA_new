@@ -1,78 +1,184 @@
 #!/bin/bash
-# Master script to run the complete ENCODE cCREs Analysis Pipeline
+#SBATCH --job-name=encode_cCREs_pipeline
+#SBATCH --output=logs/0_RUN_ENCODE_CCRES_ANALYSIS.log
+#SBATCH --error=logs/0_RUN_ENCODE_CCRES_ANALYSIS.err
+#SBATCH --time=8:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --partition=workq
+
+################################################################################
+# ENCODE cCREs Analysis Pipeline - Complete Pipeline
 #
-# This script submits the following jobs to SLURM with dependencies:
-# 1. 1_extract_encode_cCREs.sh - Extracts ENCODE cCREs linked to splicing genes
-# 2. 2_convert_encode_cCREs_to_bed.sh - Converts TSV to BED format (all + by type)
-# 4. 4_create_heatmaps_encode_cCREs.sh - Creates heatmaps and metaprofiles for all CRE types
-# 5a. 5_create_custom_comparisons.sh - Creates custom comparison matrices
-# 5b. 5_visualize_custom_comparisons.sh - Creates custom comparison visualizations
+# This script runs the complete pipeline for extracting and visualizing
+# ENCODE cCREs linked to splicing genes.
 #
-# Usage: ./0_RUN_ENCODE_CCRES_ANALYSIS.sh
+# Pipeline Steps:
+# 1. Extract ENCODE cCREs linked to splicing genes
+# 2. Convert TSV to BED format
+# 3. Create heatmaps and metaprofiles with deepTools
+# 4. Create custom comparison matrices
+# 5. Create custom comparison visualizations
+#
+# NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - using Nestin-Ctrl as control
+#
+# Prerequisites:
+# - ../data/table_16.txt
+# - ../data/mm10-cCREs.bed
+# - BigWig files from Signac pipeline
+#
+# Usage:
+#   sbatch 0_RUN_ENCODE_CCRES_ANALYSIS.sh
+################################################################################
 
 echo "========================================================================"
-echo "SUBMITTING ENCODE cCREs ANALYSIS PIPELINE"
+echo "ENCODE cCREs ANALYSIS PIPELINE - COMPLETE PIPELINE"
 echo "========================================================================"
 echo "Started: $(date)"
 echo ""
 
-# Submit Step 1: Extract ENCODE cCREs
-JOB1=$(sbatch --parsable 1_extract_encode_cCREs.sh)
-echo "Submitted Step 1: 1_extract_encode_cCREs.sh"
-echo "  Job ID: $JOB1"
-echo "  Description: Extract ENCODE cCREs linked to splicing genes"
-echo ""
+# Change to script directory (use absolute path for SLURM compatibility)
+SCRIPT_DIR="/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_encode_paper_intersection"
+cd "$SCRIPT_DIR"
 
-# Submit Step 2: Convert to BED format (depends on Step 1)
-JOB2=$(sbatch --parsable --dependency=afterok:$JOB1 2_convert_encode_cCREs_to_bed.sh)
-echo "Submitted Step 2: 2_convert_encode_cCREs_to_bed.sh"
-echo "  Job ID: $JOB2"
-echo "  Dependency: afterok:$JOB1"
-echo "  Description: Convert TSV to BED format (all + by CRE type)"
-echo ""
+mkdir -p logs
 
-# Submit Step 4: Create heatmaps (depends on Step 2)
-JOB4=$(sbatch --parsable --dependency=afterok:$JOB2 4_create_heatmaps_encode_cCREs.sh)
-echo "Submitted Step 4: 4_create_heatmaps_encode_cCREs.sh"
-echo "  Job ID: $JOB4"
-echo "  Dependency: afterok:$JOB2"
-echo "  Description: Create heatmaps and metaprofiles for all CRE types"
-echo ""
+# Activate conda
+source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh
 
-# Submit Step 5a: Create custom comparisons (depends on Step 4)
-JOB5a=$(sbatch --parsable --dependency=afterok:$JOB4 5_create_custom_comparisons.sh)
-echo "Submitted Step 5a: 5_create_custom_comparisons.sh"
-echo "  Job ID: $JOB5a"
-echo "  Dependency: afterok:$JOB4"
-echo "  Description: Create custom comparison matrices"
+# ============================================================================
+# Step 1: Extract ENCODE cCREs linked to splicing genes
+# ============================================================================
 echo ""
-
-# Submit Step 5b: Custom comparison visualizations (depends on Step 5a)
-JOB5b=$(sbatch --parsable --dependency=afterok:$JOB5a 5_visualize_custom_comparisons.sh)
-echo "Submitted Step 5b: 5_visualize_custom_comparisons.sh"
-echo "  Job ID: $JOB5b"
-echo "  Dependency: afterok:$JOB5a"
-echo "  Description: Create custom comparison visualizations (metaprofiles, statistics)"
-echo ""
-
 echo "========================================================================"
-echo "PIPELINE SUBMITTED SUCCESSFULLY"
+echo "STEP 1: Extracting ENCODE cCREs linked to splicing genes"
 echo "========================================================================"
 echo ""
-echo "Monitor status with: squeue -u $USER"
+
+# Use sc-chromatin2 for bedtools (required for intersection)
+conda activate sc-chromatin2
+echo "Using environment: sc-chromatin2 (with bedtools)"
+echo "bedtools version: $(bedtools --version)"
+
+python 1_extract_encode_cCREs.py
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: Step 1 failed!"
+    exit 1
+fi
+
+echo "Step 1 completed successfully"
+
+# ============================================================================
+# Step 2: Convert to BED format
+# ============================================================================
 echo ""
-echo "Job chain:"
-echo "  $JOB1 (Extract) → $JOB2 (Convert) → $JOB4 (Heatmaps) → $JOB5a (Create) → $JOB5b (Visualize)"
+echo "========================================================================"
+echo "STEP 2: Converting TSV to BED format"
+echo "========================================================================"
 echo ""
-echo "Expected runtime:"
-echo "  Step 1: ~30-45 minutes (extracting overlaps)"
-echo "  Step 2: ~5-10 minutes (converting to BED)"
-echo "  Step 4: ~2-3 hours (creating heatmaps for all CRE types)"
-echo "  Step 5a: ~15-30 minutes (create custom comparison matrices)"
-echo "  Step 5b: ~15-30 minutes (custom comparison visualizations)"
-echo "  Total: ~3-4 hours"
+
+# Switch to rna_seq_analysis_deep for pandas
+conda activate rna_seq_analysis_deep
+echo "Using environment: rna_seq_analysis_deep"
+
+python 2_convert_encode_cCREs_to_bed.py
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: Step 2 failed!"
+    exit 1
+fi
+
+echo "Step 2 completed successfully"
+
+# ============================================================================
+# Step 3: Create heatmaps with deepTools
+# ============================================================================
 echo ""
-echo "Output will be in: ./output/"
-echo "  - Heatmaps: ./output/heatmaps_deeptools/"
-echo "  - Comparisons: ./output/custom_comparisons/"
+echo "========================================================================"
+echo "STEP 3: Creating heatmaps with deepTools"
+echo "========================================================================"
+echo ""
+
+# rna_seq_analysis_deep has deepTools
+bash 4_create_heatmaps_encode_cCREs.sh
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: Step 3 had issues (may be due to missing BigWig files)"
+fi
+
+echo "Step 3 completed"
+
+# ============================================================================
+# Step 4: Create custom comparison matrices
+# ============================================================================
+echo ""
+echo "========================================================================"
+echo "STEP 4: Creating custom comparison matrices"
+echo "========================================================================"
+echo ""
+
+bash 5_create_custom_comparisons.sh
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: Step 4 had issues"
+fi
+
+echo "Step 4 completed"
+
+# ============================================================================
+# Step 5: Create custom comparison visualizations
+# ============================================================================
+echo ""
+echo "========================================================================"
+echo "STEP 5: Creating custom comparison visualizations"
+echo "========================================================================"
+echo ""
+
+python 5_visualize_custom_comparisons.py --skip-individual
+
+if [ $? -ne 0 ]; then
+    echo "WARNING: Step 5 had issues"
+fi
+
+echo "Step 5 completed"
+
+# ============================================================================
+# Final Summary
+# ============================================================================
+echo ""
+echo "========================================================================"
+echo "PIPELINE COMPLETE!"
+echo "========================================================================"
+echo ""
+echo "NOTE: Emx1-Ctrl is excluded (failed sample) - Nestin-Ctrl used as control"
+echo ""
+echo "Output files:"
+echo ""
+echo "Step 1 - Extraction:"
+echo "  output/encode_cCREs_all_celltypes.tsv"
+echo "  output/encode_cCREs_GABA.tsv"
+echo "  output/encode_cCREs_by_type.tsv"
+echo "  output/SUMMARY_encode_cCREs.txt"
+echo ""
+echo "Step 2 - BED files:"
+echo "  output/encode_cCREs_all.bed"
+echo "  output/encode_cCREs_GABA.bed"
+echo "  output/encode_cCREs_{type}.bed"
+echo ""
+echo "Step 3 - Heatmaps:"
+echo "  output/heatmaps_deeptools/heatmap_*.png"
+echo "  output/heatmaps_deeptools/metaprofile_*.png"
+echo ""
+echo "Steps 4-5 - Custom Comparisons:"
+echo "  output/custom_comparisons/matrix_*.gz"
+echo "  output/custom_comparisons/profiles/metaprofile_*.png"
+echo "  output/custom_comparisons/overview_all_conditions_*.png"
+echo ""
+echo "Comparisons performed (3 total):"
+echo "  1. Nestin-Ctrl vs Nestin-Mut (within-genotype)"
+echo "  2. Nestin-Ctrl vs Emx1-Mut (cross-genotype)"
+echo "  3. Nestin-Mut vs Emx1-Mut (mutant comparison)"
+echo ""
+echo "Completed: $(date)"
 echo "========================================================================"

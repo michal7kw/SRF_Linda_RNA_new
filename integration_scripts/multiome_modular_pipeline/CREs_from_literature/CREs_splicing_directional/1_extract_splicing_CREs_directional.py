@@ -35,7 +35,7 @@ DATA_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "CREs_splicing_directional" / "output"
 
 # Input files
-SPLICING_GENES_FILE = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv")
+SPLICING_GENES_FILE = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv")
 TABLE16_FILE = DATA_DIR / "table_16.txt"
 ENCODE_CCRES_FILE = DATA_DIR / "mm10-cCREs.bed"
 

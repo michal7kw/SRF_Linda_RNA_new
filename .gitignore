@@ -201,4 +201,4 @@ integration_scripts/multiome_modular_pipeline/run_signac_pipeline_L1.sh.backup.*
 
 *minSig1.0_minFC1.5
 *minSig2.0_minFC2.0
-*.png
+# *.png

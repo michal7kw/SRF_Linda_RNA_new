@@ -1,5 +1,14 @@
 #!/bin/bash
-# Master script to run the complete Specific CREs pipeline (OLD workflow)
+#SBATCH --job-name=0_RUN_COMPLETE_SPECIFIC_PIPELINE
+#SBATCH --output=logs/0_RUN_COMPLETE_SPECIFIC_PIPELINE_%j.log
+#SBATCH --error=logs/0_RUN_COMPLETE_SPECIFIC_PIPELINE_%j.err
+#SBATCH --time=00:10:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+#SBATCH --partition=workq
+
+################################################################################
+# Master script to run the complete Specific CREs pipeline
 #
 # This script submits the following jobs to SLURM with dependencies:
 # 1. 1_extract_hippocampal_interneuron_CREs.sh (Extracts GABA CREs)
@@ -10,19 +19,33 @@
 # 6. 6_link_CREs_to_genes.sh (Links CREs to genes using Table 16)
 # 7. 7_visualize_DA_CREs.sh (Visualizes Differentially Accessible CREs)
 #
+# Samples analyzed (Emx1-Ctrl excluded - failed sample):
+# - Nestin-Ctrl
+# - Nestin-Mut
+# - Emx1-Mut
+#
 # Utility scripts (not in main pipeline):
 # - REPLOT_ONLY_OLD.sh (Fast replotting from existing matrices)
 #
-# Usage: ./0_RUN_COMPLETE_SPECIFIC_PIPELINE.sh
+# Usage: sbatch 0_RUN_COMPLETE_SPECIFIC_PIPELINE.sh
+################################################################################
 
-echo "========================================================================"
-echo "SUBMITTING SPECIFIC CRES PIPELINE (OLD WORKFLOW)"
-echo "========================================================================"
-echo "Started: $(date)"
-echo ""
+set -e  # Exit on error
+
+# Use SLURM_SUBMIT_DIR (the directory where sbatch was called)
+# This is more reliable than BASH_SOURCE when running under SLURM
+SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+cd "$SCRIPT_DIR"
 
 # Ensure logs directory exists
 mkdir -p logs
+
+echo "========================================================================"
+echo "SUBMITTING SPECIFIC CRES PIPELINE"
+echo "========================================================================"
+echo "Started: $(date)"
+echo "Working directory: $SCRIPT_DIR"
+echo ""
 
 # Submit Step 1
 JOB1=$(sbatch --parsable 1_extract_hippocampal_interneuron_CREs.sh)
@@ -84,15 +107,39 @@ echo "========================================================================"
 echo "PIPELINE SUBMITTED SUCCESSFULLY"
 echo "========================================================================"
 echo ""
+echo "Samples analyzed:"
+echo "  - Nestin-Ctrl (control)"
+echo "  - Nestin-Mut"
+echo "  - Emx1-Mut"
+echo "  NOTE: Emx1-Ctrl excluded (failed sample)"
+echo ""
 echo "Job dependency graph:"
-echo "  Step 1 ─────────────────────────────────────────────┐"
-echo "       │                                              │"
-echo "       └──> Step 2 ──┬──> Step 3 (fold enrichment)   │"
-echo "                     ├──> Step 4 (GABA vs Excitatory) │"
-echo "                     ├──> Step 5 (heatmaps)          │"
-echo "                     ├──> Step 6 (CRE-gene links)    │"
-echo "                     │         │                     │"
-echo "                     └─────────┴──> Step 7 (DA CREs) │"
+echo ""
+echo "  Step 1 (Extract GABA CREs)"
+echo "       |"
+echo "       v"
+echo "  Step 2 (Main Analysis) ----+---> Step 3 (Fold Enrichment)"
+echo "       |                     |"
+echo "       |                     +---> Step 4 (GABA vs Excitatory)"
+echo "       |                     |"
+echo "       |                     +---> Step 5 (Heatmaps)"
+echo "       |                     |"
+echo "       +-------------------> Step 6 (CRE-Gene Links)"
+echo "                                  |"
+echo "                                  v"
+echo "                             Step 7 (DA CRE Visualization)"
+echo ""
+echo "Job IDs:"
+echo "  Step 1: $JOB1"
+echo "  Step 2: $JOB2"
+echo "  Step 3: $JOB3"
+echo "  Step 4: $JOB4"
+echo "  Step 5: $JOB5"
+echo "  Step 6: $JOB6"
+echo "  Step 7: $JOB7"
 echo ""
 echo "Monitor status with: squeue -u $USER"
+echo "View logs in: $SCRIPT_DIR/logs/"
 echo ""
+echo "Completed submission: $(date)"
+echo "========================================================================"

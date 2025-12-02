@@ -16,6 +16,9 @@ INPUT FILES:
 - output/GABA_specific_CREs_genes_linked.tsv (gene linkage)
 - output/GABA_specific_CREs.bed
 
+NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - only using Nestin-Ctrl as control.
+Available samples: Nestin-Ctrl, Nestin-Mut, Emx1-Mut
+
 OUTPUT FILES:
 - Individual CRE plots with gene annotations
 - Metaprofiles for each comparison

@@ -267,7 +267,7 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 ### Other Input Files
 
 **Splicing Genes:**
-- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv`
+- Path: `/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv`
 - Content: 1,138 genes from Reactome pathways (mRNA splicing, spliceosome assembly)
 
 **ATAC-seq Signal:**

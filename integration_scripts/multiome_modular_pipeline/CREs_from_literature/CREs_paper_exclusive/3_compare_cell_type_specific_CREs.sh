@@ -107,19 +107,23 @@ if [ -f "output/GABA_specific_CREs.bed" ] && [ -f "output/Excitatory_specific_CR
 fi
 
 # Check BigWig files
+# NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - only using Nestin-Ctrl as control
 BIGWIG_BASE="../../signac_results_L1/bigwig_tracks_L1/by_celltype"
 
 echo "Checking BigWig files..."
-for GENOTYPE in Nestin Emx1; do
-    for CONDITION in Ctrl Mut; do
-        BW_FILE="$BIGWIG_BASE/GABA_${GENOTYPE}-${CONDITION}.bw"
-        if [ -f "$BW_FILE" ]; then
-            echo "  ✓ Found: GABA_${GENOTYPE}-${CONDITION}.bw"
-        else
-            echo "  ✗ Missing: $BW_FILE"
-            MISSING=$((MISSING + 1))
-        fi
-    done
+echo "  NOTE: Emx1-Ctrl excluded (failed sample)"
+
+# Define samples to include (excluding Emx1-Ctrl)
+SAMPLE_LIST=("Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut")
+
+for SAMPLE in "${SAMPLE_LIST[@]}"; do
+    BW_FILE="$BIGWIG_BASE/GABA_${SAMPLE}.bw"
+    if [ -f "$BW_FILE" ]; then
+        echo "  ✓ Found: GABA_${SAMPLE}.bw"
+    else
+        echo "  ✗ Missing: $BW_FILE"
+        MISSING=$((MISSING + 1))
+    fi
 done
 
 echo ""

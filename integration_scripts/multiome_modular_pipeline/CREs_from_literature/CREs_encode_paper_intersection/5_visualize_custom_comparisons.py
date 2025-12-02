@@ -4,9 +4,10 @@ Create Custom Comparison Visualizations for ENCODE cCREs
 
 This script creates visualizations for comparisons of ATAC signal at ENCODE cCREs:
 1. Nestin-Ctrl vs Nestin-Mut (within-genotype mutation effect)
-2. Emx1-Ctrl vs Emx1-Mut (within-genotype mutation effect)
-3. Nestin-Ctrl vs Emx1-Ctrl (genotype baseline comparison)
-4. Nestin-Mut vs Emx1-Mut (genotype mutation comparison)
+2. Nestin-Ctrl vs Emx1-Mut (cross-genotype, using Nestin-Ctrl as control)
+3. Nestin-Mut vs Emx1-Mut (genotype mutation comparison)
+
+NOTE: Emx1-Ctrl is EXCLUDED (failed sample) - using Nestin-Ctrl as control
 
 INPUT:
 - deepTools matrix files (matrix_GABA.tab or other existing matrices)
@@ -381,14 +382,14 @@ def plot_combined_overview(data, bin_labels, output_file, title, n_cres):
     """
     fig, ax = plt.subplots(figsize=(12, 8))
 
+    # NOTE: Emx1-Ctrl is excluded (failed sample) - using only Nestin-Ctrl as control
     colors = {
         'Nestin-Ctrl': '#2E86AB',  # Blue
         'Nestin-Mut': '#A23B72',   # Magenta
-        'Emx1-Ctrl': '#F18F01',    # Orange
         'Emx1-Mut': '#C73E1D'      # Red
     }
 
-    for sample_name in ['Nestin-Ctrl', 'Nestin-Mut', 'Emx1-Ctrl', 'Emx1-Mut']:
+    for sample_name in ['Nestin-Ctrl', 'Nestin-Mut', 'Emx1-Mut']:
         if sample_name in data:
             sample_data = data[sample_name]
             sample_mean = np.mean(sample_data, axis=0)
@@ -563,6 +564,7 @@ Examples:
     )
 
     # Define comparisons
+    # NOTE: Emx1-Ctrl is excluded (failed sample) - using Nestin-Ctrl as control
     comparisons = [
         {
             'name': 'nestin_ctrl_vs_mut',
@@ -574,22 +576,13 @@ Examples:
             'description': 'Within-genotype mutation effect (Nestin)'
         },
         {
-            'name': 'emx1_ctrl_vs_mut',
-            'sample1': 'Emx1-Ctrl',
-            'sample2': 'Emx1-Mut',
-            'color1': '#F18F01',  # Orange
-            'color2': '#C73E1D',  # Red
-            'title': f'Emx1: Ctrl vs Mut\nATAC Signal at ENCODE cCREs ({args.matrix})',
-            'description': 'Within-genotype mutation effect (Emx1)'
-        },
-        {
-            'name': 'nestin_vs_emx1_ctrl',
+            'name': 'nestin_ctrl_vs_emx1_mut',
             'sample1': 'Nestin-Ctrl',
-            'sample2': 'Emx1-Ctrl',
+            'sample2': 'Emx1-Mut',
             'color1': '#2E86AB',  # Blue
-            'color2': '#F18F01',  # Orange
-            'title': f'Baseline Comparison: Nestin-Ctrl vs Emx1-Ctrl\nATAC Signal at ENCODE cCREs ({args.matrix})',
-            'description': 'Genotype baseline comparison (Controls)'
+            'color2': '#C73E1D',  # Red
+            'title': f'Nestin-Ctrl vs Emx1-Mut\nATAC Signal at ENCODE cCREs ({args.matrix})',
+            'description': 'Cross-genotype comparison (Nestin-Ctrl as control for Emx1-Mut)'
         },
         {
             'name': 'nestin_vs_emx1_mut',

@@ -1,9 +1,17 @@
 #!/bin/bash
+#SBATCH --job-name=GABA_DEG_ENCODE_pipeline
+#SBATCH --output=logs/0_RUN_GABA_DEG_ENCODE_ANALYSIS.log
+#SBATCH --error=logs/0_RUN_GABA_DEG_ENCODE_ANALYSIS.err
+#SBATCH --time=8:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=64G
+#SBATCH --partition=workq
+
 ################################################################################
 # MASTER SCRIPT: GABA DEG ENCODE cCRE Analysis Pipeline
 #
-# This script runs the complete GABA DEG ENCODE cCRE analysis pipeline using
-# SLURM job dependencies to ensure proper execution order.
+# This script runs the complete GABA DEG ENCODE cCRE analysis pipeline
+# as a single SLURM job, executing all steps sequentially.
 #
 # PIPELINE OVERVIEW:
 # 1. Extract ENCODE cCREs overlapping with CREs linked to GABA DEGs
@@ -15,19 +23,17 @@
 # - Nestin-Ctrl vs Emx1-Mut (cross-genotype mutation effect)
 # - Nestin-Mut vs Emx1-Mut (mutant genotype comparison)
 #
-# USAGE:
-#   ./0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh [options]
+# NOTE: Emx1-Ctrl is a FAILED SAMPLE and is completely excluded.
+#       Nestin-Ctrl serves as the reference control for all comparisons.
 #
-# OPTIONS:
-#   --skip-individual    Skip individual CRE plots in visualization
-#   --parallel N         Use N parallel processes for individual plots
-#   --dry-run            Show what would be run without submitting jobs
+# USAGE:
+#   sbatch 0_RUN_GABA_DEG_ENCODE_ANALYSIS.sh
 #
 # REQUIREMENTS:
 # - GABA DEG lists (up/down regulated)
 # - Table 16 CRE-gene correlations
 # - ENCODE mm10-cCREs.bed
-# - BigWig files from Signac pipeline
+# - BigWig files from Signac pipeline (Nestin-Ctrl, Nestin-Mut, Emx1-Mut only)
 # - bedtools, deepTools (via conda)
 #
 ################################################################################
@@ -38,46 +44,16 @@ echo "========================================================================"
 echo "GABA DEG ENCODE cCRE ANALYSIS PIPELINE"
 echo "========================================================================"
 echo "Started: $(date)"
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $SLURM_NODELIST"
 echo ""
 
 # Change to script directory
 cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_encode"
 
-# Parse command line arguments
-SKIP_INDIVIDUAL=""
-PARALLEL_ARG=""
-DRY_RUN=false
-
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --skip-individual)
-            SKIP_INDIVIDUAL="--skip-individual"
-            shift
-            ;;
-        --parallel)
-            PARALLEL_ARG="--parallel $2"
-            shift 2
-            ;;
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-    esac
-done
-
 # Create directories
 mkdir -p logs
 mkdir -p output
-
-echo "Configuration:"
-echo "  Skip individual plots: ${SKIP_INDIVIDUAL:-no}"
-echo "  Parallel processes: ${PARALLEL_ARG:-default}"
-echo "  Dry run: $DRY_RUN"
-echo ""
 
 # ============================================================================
 # Check prerequisites
@@ -114,7 +90,7 @@ if [ ! -f "$ENCODE_CCRES" ]; then
 fi
 echo "  ENCODE cCREs found"
 
-# BigWig files
+# BigWig files (only 3 conditions - Emx1-Ctrl excluded)
 BIGWIG_BASE="../../signac_results_L1/bigwig_tracks_L1/by_celltype"
 for BW in GABA_Nestin-Ctrl.bw GABA_Nestin-Mut.bw GABA_Emx1-Mut.bw; do
     if [ ! -f "$BIGWIG_BASE/$BW" ]; then
@@ -122,122 +98,275 @@ for BW in GABA_Nestin-Ctrl.bw GABA_Nestin-Mut.bw GABA_Emx1-Mut.bw; do
         exit 1
     fi
 done
-echo "  BigWig files found"
+echo "  BigWig files found (3 conditions: Nestin-Ctrl, Nestin-Mut, Emx1-Mut)"
 
 echo ""
 echo "All prerequisites satisfied!"
 echo ""
 
 # ============================================================================
-# Create SLURM job scripts
+# STEP 1: Extract ENCODE cCREs for GABA DEGs
 # ============================================================================
+echo "========================================================================"
+echo "STEP 1: Extract ENCODE cCREs for GABA DEGs"
+echo "========================================================================"
+echo "Started: $(date)"
+echo ""
 
-# Step 1: Extract ENCODE cCREs
-cat > 1_extract_encode_cCREs_for_DEGs.sh << 'EOF'
-#!/bin/bash
-#SBATCH --job-name=1_extract_DEGs_encode
-#SBATCH --output=logs/1_extract_encode_cCREs_for_DEGs.log
-#SBATCH --error=logs/1_extract_encode_cCREs_for_DEGs.err
-#SBATCH --time=2:00:00
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=64G
-#SBATCH --partition=workq
-
-echo "Starting Step 1: Extract ENCODE cCREs for GABA DEGs"
-echo "Date: $(date)"
-
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_encode"
-
-# Activate conda environment with bedtools (sc-chromatin2 has both bedtools and pandas)
+# Activate conda environment with bedtools and pandas
 source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh
 conda activate sc-chromatin2
 
-# Verify bedtools is available
+echo "Conda environment: sc-chromatin2"
 echo "Checking bedtools: $(which bedtools)"
+echo ""
 
 # Run extraction script
 python 1_extract_encode_cCREs_for_DEGs.py
 
+echo ""
 echo "Step 1 completed: $(date)"
-EOF
+echo ""
 
-# Step 3 wrapper (visualization)
-cat > 3_visualize_deg_comparisons.sh << EOF
-#!/bin/bash
-#SBATCH --job-name=3_visualize_DEGs_encode
-#SBATCH --output=logs/3_visualize_deg_comparisons.log
-#SBATCH --error=logs/3_visualize_deg_comparisons.err
-#SBATCH --time=2:00:00
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=32G
-#SBATCH --partition=workq
+# ============================================================================
+# STEP 2: Compute Signal Matrices
+# ============================================================================
+echo "========================================================================"
+echo "STEP 2: Compute Signal Matrices"
+echo "========================================================================"
+echo "Started: $(date)"
+echo ""
 
-echo "Starting Step 3: Create custom comparison visualizations"
-echo "Date: \$(date)"
+# Switch to deepTools environment
+conda activate rna_seq_analysis_deep
 
-cd "/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature/CREs_GABA_DEGs_encode"
+echo "Conda environment: rna_seq_analysis_deep"
+echo "deepTools version: $(computeMatrix --version 2>&1 || echo 'checking...')"
+echo ""
 
-# Activate conda environment (sc-chromatin2 has matplotlib, seaborn, scipy)
-source /beegfs/scratch/ric.broccoli/kubacki.michal/conda/etc/profile.d/conda.sh
+# Source and run the matrix computation script directly (without sbatch)
+# We'll inline the key parts here to avoid environment issues
+
+BIGWIG_BASE="../../signac_results_L1/bigwig_tracks_L1/by_celltype"
+OUTPUT_DIR="./output/heatmaps_deeptools"
+BED_DIR="./output"
+
+mkdir -p $OUTPUT_DIR
+
+# Parameters
+WINDOW_SIZE=2000
+BIN_SIZE=50
+N_PROCESSORS=16
+
+# BigWig files (Emx1-Ctrl excluded)
+BW_NESTIN_CTRL="$BIGWIG_BASE/GABA_Nestin-Ctrl.bw"
+BW_NESTIN_MUT="$BIGWIG_BASE/GABA_Nestin-Mut.bw"
+BW_EMX1_MUT="$BIGWIG_BASE/GABA_Emx1-Mut.bw"
+
+# BED files
+BED_UP="$BED_DIR/encode_cCREs_up_DEGs.bed"
+BED_DOWN="$BED_DIR/encode_cCREs_down_DEGs.bed"
+
+# Function to create analysis for a DEG set
+create_analysis() {
+    local BED_FILE=$1
+    local DESCRIPTION=$2
+    local OUTPUT_PREFIX=$3
+
+    if [ ! -f "$BED_FILE" ]; then
+        echo "  Skipping: $DESCRIPTION (BED file not found)"
+        return
+    fi
+
+    N_CRES=$(wc -l < "$BED_FILE")
+
+    if [ $N_CRES -eq 0 ]; then
+        echo "  Skipping: $DESCRIPTION (no CREs)"
+        return
+    fi
+
+    echo ""
+    echo "Processing: $DESCRIPTION"
+    echo "  CREs: $N_CRES"
+    echo ""
+
+    # All three conditions (Emx1-Ctrl excluded)
+    BIGWIGS="$BW_NESTIN_CTRL $BW_NESTIN_MUT $BW_EMX1_MUT"
+    LABELS="Nestin-Ctrl Nestin-Mut Emx1-Mut"
+
+    # Compute matrix
+    echo "  Computing matrix..."
+    computeMatrix reference-point \
+        --referencePoint center \
+        -b $WINDOW_SIZE -a $WINDOW_SIZE \
+        -R "$BED_FILE" \
+        -S $BIGWIGS \
+        --samplesLabel $LABELS \
+        --binSize $BIN_SIZE \
+        --sortRegions keep \
+        --missingDataAsZero \
+        -o "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}.gz" \
+        -p $N_PROCESSORS \
+        --outFileNameMatrix "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}.tab" \
+        2>&1
+
+    if [ ! -f "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}.gz" ]; then
+        echo "  ERROR: computeMatrix failed"
+        return
+    fi
+    echo "  Matrix computed successfully"
+
+    # Create heatmap
+    echo "  Creating heatmap..."
+    plotHeatmap \
+        -m "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}.gz" \
+        -o "$OUTPUT_DIR/heatmap_${OUTPUT_PREFIX}.png" \
+        --colorMap Reds \
+        --dpi 300 \
+        --whatToShow 'heatmap and colorbar' \
+        --zMin 0 \
+        --refPointLabel "CRE Center" \
+        --heatmapHeight 10 \
+        --heatmapWidth 4 \
+        --sortRegions descend \
+        --sortUsing mean \
+        --plotTitle "ATAC Signal: $DESCRIPTION (n=$N_CRES)" \
+        --xAxisLabel "Distance from CRE Center (bp)" \
+        --yAxisLabel "CREs" \
+        2>&1
+
+    # Create metaprofile
+    echo "  Creating metaprofile..."
+    plotProfile \
+        -m "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}.gz" \
+        -o "$OUTPUT_DIR/metaprofile_${OUTPUT_PREFIX}.png" \
+        --plotTitle "ATAC Signal: $DESCRIPTION (n=$N_CRES)" \
+        --refPointLabel "CRE Center" \
+        --averageType mean \
+        --plotHeight 7 \
+        --plotWidth 10 \
+        --colors '#2E86AB' '#A23B72' '#C73E1D' \
+        --yAxisLabel "Mean ATAC Signal" \
+        2>&1
+
+    echo "  Saved: heatmap_${OUTPUT_PREFIX}.png, metaprofile_${OUTPUT_PREFIX}.png"
+}
+
+# Create Nestin-only analysis
+create_nestin_analysis() {
+    local BED_FILE=$1
+    local DESCRIPTION=$2
+    local OUTPUT_PREFIX=$3
+
+    if [ ! -f "$BED_FILE" ]; then
+        return
+    fi
+
+    N_CRES=$(wc -l < "$BED_FILE")
+    if [ $N_CRES -eq 0 ]; then
+        return
+    fi
+
+    echo ""
+    echo "Creating Nestin-only analysis: $DESCRIPTION"
+
+    NESTIN_BIGWIGS="$BW_NESTIN_CTRL $BW_NESTIN_MUT"
+    NESTIN_LABELS="Nestin-Ctrl Nestin-Mut"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        -b $WINDOW_SIZE -a $WINDOW_SIZE \
+        -R "$BED_FILE" \
+        -S $NESTIN_BIGWIGS \
+        --samplesLabel $NESTIN_LABELS \
+        --binSize $BIN_SIZE \
+        --sortRegions descend \
+        --sortUsing mean \
+        --missingDataAsZero \
+        -o "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}_nestin.gz" \
+        -p $N_PROCESSORS \
+        --outFileNameMatrix "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}_nestin.tab" \
+        2>&1
+
+    if [ -f "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}_nestin.gz" ]; then
+        plotHeatmap \
+            -m "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}_nestin.gz" \
+            -o "$OUTPUT_DIR/heatmap_${OUTPUT_PREFIX}_nestin.png" \
+            --colorMap Reds \
+            --dpi 300 \
+            --whatToShow 'heatmap and colorbar' \
+            --zMin 0 \
+            --refPointLabel "CRE Center" \
+            --heatmapHeight 10 \
+            --heatmapWidth 3 \
+            --plotTitle "Nestin: $DESCRIPTION (n=$N_CRES)" \
+            --xAxisLabel "Distance from CRE Center (bp)" \
+            2>&1
+
+        plotProfile \
+            -m "$OUTPUT_DIR/matrix_${OUTPUT_PREFIX}_nestin.gz" \
+            -o "$OUTPUT_DIR/metaprofile_${OUTPUT_PREFIX}_nestin.png" \
+            --plotTitle "Nestin: $DESCRIPTION (n=$N_CRES)" \
+            --refPointLabel "CRE Center" \
+            --colors '#2E86AB' '#A23B72' \
+            --plotHeight 6 \
+            --plotWidth 8 \
+            2>&1
+
+        echo "  Saved: heatmap_${OUTPUT_PREFIX}_nestin.png, metaprofile_${OUTPUT_PREFIX}_nestin.png"
+    fi
+}
+
+# Run analyses
+create_analysis "$BED_UP" "Up-Regulated GABA DEGs (ENCODE cCREs)" "up_DEGs"
+create_analysis "$BED_DOWN" "Down-Regulated GABA DEGs (ENCODE cCREs)" "down_DEGs"
+create_nestin_analysis "$BED_UP" "Up-DEG ENCODE cCREs" "up_DEGs"
+create_nestin_analysis "$BED_DOWN" "Down-DEG ENCODE cCREs" "down_DEGs"
+
+echo ""
+echo "Step 2 completed: $(date)"
+echo ""
+
+# ============================================================================
+# STEP 3: Create Custom Comparison Visualizations
+# ============================================================================
+echo "========================================================================"
+echo "STEP 3: Create Custom Comparison Visualizations"
+echo "========================================================================"
+echo "Started: $(date)"
+echo ""
+
+# Switch back to sc-chromatin2 for visualization
 conda activate sc-chromatin2
 
+echo "Conda environment: sc-chromatin2"
+echo ""
+
 # Run visualization script
-python 3_visualize_deg_comparisons.py $SKIP_INDIVIDUAL $PARALLEL_ARG
+python 3_visualize_deg_comparisons.py
 
-echo "Step 3 completed: \$(date)"
-EOF
+echo ""
+echo "Step 3 completed: $(date)"
+echo ""
 
 # ============================================================================
-# Submit jobs with dependencies
+# Summary
 # ============================================================================
-
-if [ "$DRY_RUN" = true ]; then
-    echo "DRY RUN - Would submit the following jobs:"
-    echo ""
-    echo "Step 1: sbatch 1_extract_encode_cCREs_for_DEGs.sh"
-    echo "Step 2: sbatch --dependency=afterok:\$JOB1 2_compute_signal_matrices.sh"
-    echo "Step 3: sbatch --dependency=afterok:\$JOB2 3_visualize_deg_comparisons.sh"
-    echo ""
-    exit 0
-fi
-
 echo "========================================================================"
-echo "SUBMITTING JOBS"
+echo "PIPELINE COMPLETE!"
 echo "========================================================================"
 echo ""
-
-# Step 1: Extract ENCODE cCREs
-echo "Submitting Step 1: Extract ENCODE cCREs..."
-JOB1=$(sbatch 1_extract_encode_cCREs_for_DEGs.sh | awk '{print $4}')
-echo "  Job ID: $JOB1"
-
-# Step 2: Compute signal matrices (depends on Step 1)
-echo "Submitting Step 2: Compute signal matrices..."
-JOB2=$(sbatch --dependency=afterok:$JOB1 2_compute_signal_matrices.sh | awk '{print $4}')
-echo "  Job ID: $JOB2 (depends on $JOB1)"
-
-# Step 3: Visualization (depends on Step 2)
-echo "Submitting Step 3: Create visualizations..."
-JOB3=$(sbatch --dependency=afterok:$JOB2 3_visualize_deg_comparisons.sh | awk '{print $4}')
-echo "  Job ID: $JOB3 (depends on $JOB2)"
-
+echo "Finished: $(date)"
 echo ""
-echo "========================================================================"
-echo "PIPELINE SUBMITTED!"
-echo "========================================================================"
+echo "Output files:"
+echo "  ./output/                              - TSV and BED files"
+echo "  ./output/heatmaps_deeptools/           - Heatmaps and metaprofiles"
+echo "  ./output/custom_comparisons_*/         - Custom comparison plots"
 echo ""
-echo "Job chain:"
-echo "  Step 1 (Extract): $JOB1"
-echo "  Step 2 (Matrix):  $JOB2 (after $JOB1)"
-echo "  Step 3 (Viz):     $JOB3 (after $JOB2)"
+echo "Key files:"
+ls -la output/*.bed output/*.tsv 2>/dev/null || echo "  (BED/TSV files)"
 echo ""
-echo "Monitor progress with:"
-echo "  squeue -u \$USER"
-echo "  tail -f logs/*.log"
-echo ""
-echo "Output will be in:"
-echo "  ./output/                    - TSV and BED files"
-echo "  ./output/heatmaps_deeptools/ - Heatmaps and metaprofiles"
-echo "  ./output/custom_comparisons/ - Custom comparison plots"
+echo "Visualizations:"
+ls -la output/heatmaps_deeptools/*.png 2>/dev/null | head -10 || echo "  (PNG files in heatmaps_deeptools/)"
 echo ""
 echo "========================================================================"

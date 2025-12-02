@@ -328,11 +328,11 @@ else
         echo ""
     fi
 
-    # Emx1 only
-    if [ -f "$BIGWIG_BASE/GABA_Emx1-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
-        echo "Creating Emx1 analysis (GABA CREs)..."
-        EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Emx1-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
-        EMX1_LABELS="Emx1-Ctrl Emx1-Mut"
+    # Emx1-Mut vs Nestin-Ctrl (using Nestin-Ctrl as control since Emx1-Ctrl failed)
+    if [ -f "$BIGWIG_BASE/GABA_Nestin-Ctrl.bw" ] && [ -f "$BIGWIG_BASE/GABA_Emx1-Mut.bw" ]; then
+        echo "Creating Emx1-Mut analysis using Nestin-Ctrl as control (GABA CREs)..."
+        EMX1_BIGWIGS="$BIGWIG_BASE/GABA_Nestin-Ctrl.bw $BIGWIG_BASE/GABA_Emx1-Mut.bw"
+        EMX1_LABELS="Nestin-Ctrl Emx1-Mut"
 
         computeMatrix reference-point \
             --referencePoint center \
@@ -344,13 +344,13 @@ else
             --sortRegions descend \
             --sortUsing mean \
             --missingDataAsZero \
-            -o "$OUTPUT_DIR/matrix_GABA_emx1.gz" \
+            -o "$OUTPUT_DIR/matrix_GABA_emx1_mut.gz" \
             -p $N_PROCESSORS \
             2>&1
 
         plotHeatmap \
-            -m "$OUTPUT_DIR/matrix_GABA_emx1.gz" \
-            -o "$OUTPUT_DIR/heatmap_GABA_emx1.png" \
+            -m "$OUTPUT_DIR/matrix_GABA_emx1_mut.gz" \
+            -o "$OUTPUT_DIR/heatmap_GABA_emx1_mut.png" \
             --colorMap Reds \
             --dpi 300 \
             --whatToShow 'heatmap and colorbar' \
@@ -358,26 +358,26 @@ else
             --refPointLabel "CRE Center" \
             --heatmapHeight 10 \
             --heatmapWidth 3 \
-            --plotTitle "Emx1: ATAC Signal at ENCODE cCREs (n=$N_GABA_CRES)" \
+            --plotTitle "Emx1-Mut vs Nestin-Ctrl: ATAC at ENCODE cCREs (n=$N_GABA_CRES)" \
             --xAxisLabel "Distance from CRE Center (bp)" \
             2>&1
 
-        if [ -f "$OUTPUT_DIR/heatmap_GABA_emx1.png" ]; then
-            echo "  ✓ Saved: heatmap_GABA_emx1.png"
+        if [ -f "$OUTPUT_DIR/heatmap_GABA_emx1_mut.png" ]; then
+            echo "  ✓ Saved: heatmap_GABA_emx1_mut.png"
         fi
 
         plotProfile \
-            -m "$OUTPUT_DIR/matrix_GABA_emx1.gz" \
-            -o "$OUTPUT_DIR/metaprofile_GABA_emx1.png" \
-            --plotTitle "Emx1: ATAC Signal at ENCODE cCREs (n=$N_GABA_CRES)" \
+            -m "$OUTPUT_DIR/matrix_GABA_emx1_mut.gz" \
+            -o "$OUTPUT_DIR/metaprofile_GABA_emx1_mut.png" \
+            --plotTitle "Emx1-Mut vs Nestin-Ctrl: ATAC at ENCODE cCREs (n=$N_GABA_CRES)" \
             --refPointLabel "CRE Center" \
-            --colors '#F18F01' '#C73E1D' \
+            --colors '#2E86AB' '#C73E1D' \
             --plotHeight 6 \
             --plotWidth 8 \
             2>&1
 
-        if [ -f "$OUTPUT_DIR/metaprofile_GABA_emx1.png" ]; then
-            echo "  ✓ Saved: metaprofile_GABA_emx1.png"
+        if [ -f "$OUTPUT_DIR/metaprofile_GABA_emx1_mut.png" ]; then
+            echo "  ✓ Saved: metaprofile_GABA_emx1_mut.png"
         fi
         echo ""
     fi
@@ -411,7 +411,7 @@ ENCODE cCREs:
   Mouse (mm10) candidate cis-regulatory elements from ENCODE
 
 Splicing genes list:
-  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/CREs_splicing_genes_paper/extracted_genes_final.csv
+  /beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv
 
 CRE-gene links:
   ../data/table_16.txt (literature correlations)

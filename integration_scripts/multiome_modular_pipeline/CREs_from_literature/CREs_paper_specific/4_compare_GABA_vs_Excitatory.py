@@ -55,17 +55,16 @@ WINDOW_SIZE = 2000
 BIN_SIZE = 50
 N_BINS = WINDOW_SIZE * 2 // BIN_SIZE
 
+# NOTE: Emx1-Ctrl is excluded (failed sample)
 CONDITIONS = {
     "Nestin-Ctrl": f"{BIGWIG_BASE}/GABA_Nestin-Ctrl.bw",
     "Nestin-Mut": f"{BIGWIG_BASE}/GABA_Nestin-Mut.bw",
-    "Emx1-Ctrl": f"{BIGWIG_BASE}/GABA_Emx1-Ctrl.bw",
     "Emx1-Mut": f"{BIGWIG_BASE}/GABA_Emx1-Mut.bw"
 }
 
 COLORS = {
     "Nestin-Ctrl": "#2E86AB",
     "Nestin-Mut": "#A23B72",
-    "Emx1-Ctrl": "#F18F01",
     "Emx1-Mut": "#C73E1D"
 }
 
@@ -228,7 +227,8 @@ print("STEP 4: Creating heatmaps...")
 print("-"*80)
 
 # GABA heatmap
-fig, axes = plt.subplots(1, 4, figsize=(16, 12), sharey=True)
+# NOTE: 3 conditions (Emx1-Ctrl excluded)
+fig, axes = plt.subplots(1, 3, figsize=(12, 12), sharey=True)
 fig.suptitle(f'POSITIVE CONTROL: ATAC Signal at GABA CREs (n={len(cres_gaba)})',
              fontsize=16, fontweight='bold')
 
@@ -247,7 +247,8 @@ plt.close()
 print("✓ Saved: heatmap_GABA_all_conditions.png")
 
 # Excitatory heatmap
-fig, axes = plt.subplots(1, 4, figsize=(16, 12), sharey=True)
+# NOTE: 3 conditions (Emx1-Ctrl excluded)
+fig, axes = plt.subplots(1, 3, figsize=(12, 12), sharey=True)
 fig.suptitle(f'NEGATIVE CONTROL: ATAC Signal at Excitatory CREs (n={len(cres_excitatory)})',
              fontsize=16, fontweight='bold')
 
