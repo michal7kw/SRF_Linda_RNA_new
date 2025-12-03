@@ -500,15 +500,15 @@ Examples:
         )
 
         # Metaprofile for significant CREs
-        if len(significant_cres) > 0:
-            print(f"Creating metaprofile (significant CREs)...")
-            plot_comparison_metaprofile(
-                data, bin_labels, significant_cres,
-                f"{output_dir}/metaprofile_{comp['name']}_significant.png",
-                f"{comp['title']} (Significant CREs: minSig={min_signal}, minFC={min_fc})",
-                comp['sample1'], comp['sample2'],
-                comp['color1'], comp['color2']
-            )
+        # if len(significant_cres) > 0:
+        #     print(f"Creating metaprofile (significant CREs)...")
+        #     plot_comparison_metaprofile(
+        #         data, bin_labels, significant_cres,
+        #         f"{output_dir}/metaprofile_{comp['name']}_significant.png",
+        #         f"{comp['title']} (Significant CREs: minSig={min_signal}, minFC={min_fc})",
+        #         comp['sample1'], comp['sample2'],
+        #         comp['color1'], comp['color2']
+        #     )
 
         # Individual plots (if not skipped)
         if not args.skip_individual and len(significant_cres) > 0:
@@ -577,14 +577,14 @@ Examples:
                     use_all_cres=True, all_cres_count=len(regions)
                 )
 
-                if len(significant_cres) > 0:
-                    plot_comparison_metaprofile(
-                        data, bin_labels, significant_cres,
-                        f"{output_dir}/metaprofile_{comp['name']}_significant.png",
-                        f"{comp['title']} (Significant CREs)",
-                        comp['sample1'], comp['sample2'],
-                        comp['color1'], comp['color2']
-                    )
+                # if len(significant_cres) > 0:
+                #     plot_comparison_metaprofile(
+                #         data, bin_labels, significant_cres,
+                #         f"{output_dir}/metaprofile_{comp['name']}_significant.png",
+                #         f"{comp['title']} (Significant CREs)",
+                #         comp['sample1'], comp['sample2'],
+                #         comp['color1'], comp['color2']
+                #     )
 
                 up_cres = [x for x in significant_cres if x[2] > 1]
                 down_cres = [x for x in significant_cres if x[2] < 1]
