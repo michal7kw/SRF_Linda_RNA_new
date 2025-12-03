@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=GABA_cCREs_pipeline
-#SBATCH --output=logs/0_RUN_COMPLETE_PIPELINE.log
-#SBATCH --error=logs/0_RUN_COMPLETE_PIPELINE.err
+#SBATCH --job-name=0_CREs_encode_GABA_specific
+#SBATCH --output=logs/0_CREs_encode_GABA_specific_%j.log
+#SBATCH --error=logs/0_CREs_encode_GABA_specific_%j.err
 #SBATCH --time=8:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=64G

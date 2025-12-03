@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=splicing_directional_pipeline
-#SBATCH --output=logs/0_pipeline_%j.out
-#SBATCH --error=logs/0_pipeline_%j.err
+#SBATCH --job-name=0_CREs_splicing_directional
+#SBATCH --output=logs/0_CREs_splicing_directional_%j.out
+#SBATCH --error=logs/0_CREs_splicing_directional_%j.err
 #SBATCH --time=8:00:00
 #SBATCH --mem=64G
 #SBATCH --cpus-per-task=16
@@ -13,11 +13,13 @@
 #
 # This pipeline analyzes chromatin accessibility at splicing gene regulatory
 # elements, specifically designed to identify NESTIN-SPECIFIC LOSS of
-# accessibility in GABA neurons.
+# accessibility in GABA neurons AND differential CREs between conditions.
 #
-# KEY INNOVATION: Separates CREs by correlation direction
-#   - Enhancer-like CREs (PCC > 0): accessibility ↑ = expression ↑
-#   - Silencer-like CREs (PCC < 0): accessibility ↑ = expression ↓
+# KEY INNOVATIONS:
+#   1. Separates CREs by correlation direction
+#      - Enhancer-like CREs (PCC > 0): accessibility ↑ = expression ↑
+#      - Silencer-like CREs (PCC < 0): accessibility ↑ = expression ↓
+#   2. Differential CRE analysis for both GABA-specific and all cell types
 #
 # RESEARCH QUESTION:
 #   Identify loss of chromatin accessibility at splicing gene regulatory
@@ -33,6 +35,9 @@
 #   MIN_SIGNAL=2.0       Minimum signal threshold for individual plots
 #   MIN_FC=2.0           Minimum fold change for individual plots
 #   MAX_INDIVIDUAL=50    Maximum number of individual plots
+#   DIFF_MIN_SIGNAL=2.0  Minimum signal for differential analysis
+#   DIFF_MIN_FC=3.0      Minimum fold change for differential analysis
+#   SKIP_DIFFERENTIAL=0  Set to 1 to skip differential analysis
 #
 # =============================================================================
 
@@ -56,6 +61,13 @@ MIN_FC="${MIN_FC:-2.0}"
 MAX_INDIVIDUAL="${MAX_INDIVIDUAL:-50}"
 INDIVIDUAL_DPI="${INDIVIDUAL_DPI:-150}"
 
+# Differential analysis parameters
+# NOTE: Default thresholds adjusted for normalized BigWig signal values (0.01-1.0 range)
+DIFF_MIN_SIGNAL="${DIFF_MIN_SIGNAL:-0.05}"
+DIFF_MIN_FC="${DIFF_MIN_FC:-1.5}"
+SKIP_DIFFERENTIAL="${SKIP_DIFFERENTIAL:-0}"
+DIFF_MAX_INDIVIDUAL="${DIFF_MAX_INDIVIDUAL:-20}"
+
 echo "=============================================================================="
 echo "SPLICING GENE CRE ANALYSIS PIPELINE - WITH DIRECTIONALITY"
 echo "=============================================================================="
@@ -64,12 +76,18 @@ echo "Date: $(date)"
 echo "Job ID: ${SLURM_JOB_ID}"
 echo "Working directory: ${SCRIPT_DIR}"
 echo ""
-echo "Settings:"
+echo "Step 3 Settings (Nestin-specific loss):"
 echo "  SKIP_INDIVIDUAL: ${SKIP_INDIVIDUAL}"
 echo "  MIN_SIGNAL: ${MIN_SIGNAL}"
 echo "  MIN_FC: ${MIN_FC}"
 echo "  MAX_INDIVIDUAL: ${MAX_INDIVIDUAL}"
 echo "  INDIVIDUAL_DPI: ${INDIVIDUAL_DPI}"
+echo ""
+echo "Step 4 Settings (Differential CRE analysis):"
+echo "  SKIP_DIFFERENTIAL: ${SKIP_DIFFERENTIAL}"
+echo "  DIFF_MIN_SIGNAL: ${DIFF_MIN_SIGNAL}"
+echo "  DIFF_MIN_FC: ${DIFF_MIN_FC}"
+echo "  DIFF_MAX_INDIVIDUAL: ${DIFF_MAX_INDIVIDUAL}"
 echo ""
 
 # =============================================================================
@@ -358,7 +376,103 @@ if [[ -f "${ENHANCER_BED}" && -f "${SILENCER_BED}" ]]; then
 fi
 
 echo ""
-echo "Step 2 complete: $(date)"
+echo "Step 2a (GABA-specific matrices) complete: $(date)"
+
+# =============================================================================
+# STEP 2b: Compute signal matrices for ALL cell types
+# =============================================================================
+
+echo ""
+echo "=============================================================================="
+echo "STEP 2b: Compute Signal Matrices for ALL Cell Types"
+echo "=============================================================================="
+echo "Start time: $(date)"
+echo ""
+
+# Process each CRE type for ALL cell types
+for CRE_TYPE in "enhancer" "silencer"; do
+    BED_FILE="${OUTPUT_DIR}/${CRE_TYPE}_CREs_all.bed"
+
+    if [[ ! -f "${BED_FILE}" ]]; then
+        echo "WARNING: BED file not found: ${BED_FILE}"
+        echo "         Skipping ${CRE_TYPE} all-celltype analysis"
+        continue
+    fi
+
+    CRE_COUNT=$(wc -l < "${BED_FILE}")
+    echo ""
+    echo "=============================================================================="
+    echo "Processing ${CRE_TYPE^^} CREs - ALL Cell Types (${CRE_COUNT} regions)"
+    echo "=============================================================================="
+
+    # Output files
+    MATRIX_FILE="${MATRIX_DIR}/matrix_${CRE_TYPE}_all.gz"
+    MATRIX_TAB="${MATRIX_DIR}/matrix_${CRE_TYPE}_all.tab"
+    HEATMAP_FILE="${HEATMAP_DIR}/heatmap_${CRE_TYPE}_all_celltypes.png"
+    PROFILE_FILE="${HEATMAP_DIR}/metaprofile_${CRE_TYPE}_all_celltypes.png"
+
+    # Compute matrix with all 3 conditions
+    echo ""
+    echo "Computing signal matrix..."
+    echo "  Window: +/- ${WINDOW_SIZE} bp"
+    echo "  Bin size: ${BIN_SIZE} bp"
+
+    computeMatrix reference-point \
+        --referencePoint center \
+        --beforeRegionStartLength ${WINDOW_SIZE} \
+        --afterRegionStartLength ${WINDOW_SIZE} \
+        --binSize ${BIN_SIZE} \
+        --regionsFileName "${BED_FILE}" \
+        --scoreFileName "${NESTIN_CTRL}" "${NESTIN_MUT}" "${EMX1_MUT}" \
+        --samplesLabel "Nestin-Ctrl" "Nestin-Mut" "Emx1-Mut" \
+        --outFileName "${MATRIX_FILE}" \
+        --outFileNameMatrix "${MATRIX_TAB}" \
+        --numberOfProcessors ${PROCESSORS} \
+        --missingDataAsZero \
+        --skipZeros
+
+    echo "  Saved: ${MATRIX_FILE}"
+
+    # Create heatmap
+    echo ""
+    echo "Creating heatmap..."
+
+    plotHeatmap \
+        --matrixFile "${MATRIX_FILE}" \
+        --outFileName "${HEATMAP_FILE}" \
+        --colorMap "RdYlBu_r" \
+        --whatToShow "heatmap and colorbar" \
+        --sortUsing mean \
+        --sortUsingSamples 1 \
+        --zMin 0 \
+        --heatmapHeight 15 \
+        --heatmapWidth 5 \
+        --dpi 300 \
+        --plotTitle "${CRE_TYPE^} CREs at Splicing Genes (All Cell Types)"
+
+    echo "  Saved: ${HEATMAP_FILE}"
+
+    # Create metaprofile
+    echo ""
+    echo "Creating metaprofile..."
+
+    plotProfile \
+        --matrixFile "${MATRIX_FILE}" \
+        --outFileName "${PROFILE_FILE}" \
+        --colors "#3182bd" "#de2d26" "#ff7f00" \
+        --plotType lines \
+        --perGroup \
+        --dpi 300 \
+        --plotTitle "${CRE_TYPE^} CREs at Splicing Genes (All Cell Types)" \
+        --yAxisLabel "ATAC Signal" \
+        --regionsLabel "${CRE_TYPE^} CREs"
+
+    echo "  Saved: ${PROFILE_FILE}"
+
+done
+
+echo ""
+echo "Step 2b (all-celltype matrices) complete: $(date)"
 
 # =============================================================================
 # STEP 3: Visualize and identify Nestin-specific loss
@@ -390,6 +504,49 @@ echo ""
 echo "Step 3 complete: $(date)"
 
 # =============================================================================
+# STEP 4: Differential CRE Analysis
+# =============================================================================
+
+if [[ "${SKIP_DIFFERENTIAL}" == "1" ]]; then
+    echo ""
+    echo "=============================================================================="
+    echo "STEP 4: SKIPPED (SKIP_DIFFERENTIAL=1)"
+    echo "=============================================================================="
+else
+    echo ""
+    echo "=============================================================================="
+    echo "STEP 4: Differential CRE Analysis"
+    echo "=============================================================================="
+    echo "Start time: $(date)"
+    echo ""
+    echo "Parameters:"
+    echo "  Min signal threshold: ${DIFF_MIN_SIGNAL}"
+    echo "  Min fold change: ${DIFF_MIN_FC}"
+    echo "  Max individual plots: ${DIFF_MAX_INDIVIDUAL}"
+    echo ""
+
+    # Build arguments for differential analysis
+    DIFF_ARGS=""
+    DIFF_ARGS="${DIFF_ARGS} --min-signal ${DIFF_MIN_SIGNAL}"
+    DIFF_ARGS="${DIFF_ARGS} --min-fc ${DIFF_MIN_FC}"
+    DIFF_ARGS="${DIFF_ARGS} --max-individual ${DIFF_MAX_INDIVIDUAL}"
+
+    if [[ "${SKIP_INDIVIDUAL}" == "1" ]]; then
+        DIFF_ARGS="${DIFF_ARGS} --skip-individual"
+    fi
+
+    echo "Running differential CRE analysis (all cell types)..."
+    python "${SCRIPT_DIR}/4_differential_CRE_analysis.py" ${DIFF_ARGS}
+
+    echo ""
+    echo "Running differential CRE analysis (GABA-specific)..."
+    python "${SCRIPT_DIR}/4_differential_CRE_analysis.py" ${DIFF_ARGS} --use-gaba
+
+    echo ""
+    echo "Step 4 complete: $(date)"
+fi
+
+# =============================================================================
 # PIPELINE COMPLETE
 # =============================================================================
 
@@ -405,11 +562,15 @@ echo "  ${OUTPUT_DIR}/matrices/"
 echo "  ${OUTPUT_DIR}/heatmaps_deeptools/"
 echo "  ${OUTPUT_DIR}/visualizations/"
 echo "  ${OUTPUT_DIR}/nestin_specific_loss/"
+echo "  ${OUTPUT_DIR}/differential_CREs_minSig${DIFF_MIN_SIGNAL}_minFC${DIFF_MIN_FC}/"
 echo ""
 echo "Key output files:"
 echo "  output/enhancer_CREs_GABA.bed"
 echo "  output/silencer_CREs_GABA.bed"
+echo "  output/enhancer_CREs_all.bed"
+echo "  output/silencer_CREs_all.bed"
 echo "  output/heatmaps_deeptools/*.png"
 echo "  output/visualizations/*.png"
 echo "  output/nestin_specific_loss/*.tsv"
+echo "  output/differential_CREs_*/ (differential analysis results)"
 echo ""

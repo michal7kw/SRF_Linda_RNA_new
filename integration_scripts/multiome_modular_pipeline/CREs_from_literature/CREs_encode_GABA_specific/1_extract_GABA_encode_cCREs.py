@@ -3,19 +3,28 @@
 Extract GABA Cell Type Specific ENCODE cCREs
 
 This script identifies ENCODE cCREs (from mm10-cCREs.bed) that are specifically
-associated with GABA/hippocampal cell types, using literature CRE-gene correlations
-from Table 16 with ENHANCED filtering for GABA-related SubTypes.
+associated with hippocampal GABAergic cell types, using literature CRE-gene
+correlations from Table 16 with EXPLICIT cell type filtering.
 
 This is an alternative to CREs_encode_paper_intersection that focuses EXCLUSIVELY
 on GABA cell type specific CREs from the start, providing cleaner positive controls
 for GABA ATAC-seq validation.
 
-GABA/Hippocampal SubType Keywords (Enhanced):
-- Hippocampal regions: CA1, CA2, CA3, CA4, DG, DGNBL, HPF
-- GABA neuron markers: GABA, GABAergic, INH, Interneuron
-- Specific interneuron types: PV, SST, VIP, LAMP5, LAMP, PVALB
-- Combined markers: PVGA, SSTGA, VIPGA, LAMGA, SNCG
-- Granule cells: GRC, GC
+METHODOLOGY (based on data exploration in helpers/explore_data/):
+1. Hippocampal samples identified from Table 1 (Major Region == 'HPF')
+2. Cells from those samples filtered by Class == 'GABA' in Table 2
+3. The 46 unique GABAergic CellTypes from hippocampus are used for filtering
+
+This EXCLUDES glutamatergic cell types like CA1GL, CA3GL, DGGR that were
+incorrectly matched by the previous keyword-based approach.
+
+Included GABAergic cell types (46 total):
+- PVGA1-7: Parvalbumin interneurons
+- SSTGA1-10: Somatostatin interneurons
+- VIPGA1-4: VIP interneurons
+- LAMGA1-4: Lamp5 interneurons
+- DGNBL1-2: Dentate gyrus neuroblasts
+- Plus minor populations: MSGA, LSXGA, CNUGA, STRGA, OBNBL, D2MSN
 
 Usage:
     python 1_extract_GABA_encode_cCREs.py
@@ -66,38 +75,55 @@ OUTPUT_TABLE16_ONLY = os.path.join(OUTPUT_DIR, "GABA_specific_table16_cCREs.tsv"
 OUTPUT_SUMMARY = os.path.join(OUTPUT_DIR, "SUMMARY_GABA_specific_cCREs.txt")
 
 # =============================================================================
-# Enhanced GABA SubType Keywords
+# Hippocampal GABAergic Cell Types (from data exploration)
 # =============================================================================
 
-# Comprehensive list of GABA/hippocampal cell type keywords
-GABA_SUBTYPES = {
-    # Hippocampal regions
-    'Hippocampus', 'HPF', 'CA1', 'CA2', 'CA3', 'CA4', 'DG', 'DGNBL',
-    # GABA neuron markers
-    'GABA', 'GABAergic', 'INH', 'Interneuron', 'Inhibitory',
-    # Specific interneuron types
-    'PV', 'PVALB', 'SST', 'Sst', 'VIP', 'Vip', 'LAMP5', 'LAMP', 'SNCG',
-    # Combined markers (from ENCODE)
-    'PVGA', 'SSTGA', 'VIPGA', 'LAMGA',
-    # Granule cells (hippocampal)
-    'GRC', 'GC', 'Granule',
-    # Neuroblasts
-    'NBLGA', 'NB'
-}
+# Explicit list of 46 GABAergic cell types found in hippocampal samples
+# Derived from: helpers/explore_data/identify_hippocampal_gaba_types.py
+# Method: Table 1 (HPF samples) -> Table 2 (Class == 'GABA') -> CellType
+#
+# This EXCLUDES glutamatergic cell types that were incorrectly matched before:
+# - CA1GL1-3, CA3GL1-6: Glutamatergic pyramidal neurons
+# - DGGR: Dentate gyrus granule cells (glutamatergic)
+# - PVM: Perivascular macrophages (non-neuronal)
+# - RGDG: Radial glia
 
-# Convert to uppercase for matching
-GABA_SUBTYPES_UPPER = {s.upper() for s in GABA_SUBTYPES}
+HIPPOCAMPAL_GABA_CELLTYPES = {
+    # Parvalbumin interneurons (PV+)
+    'PVGA1', 'PVGA2', 'PVGA3', 'PVGA4', 'PVGA5', 'PVGA6', 'PVGA7',
+    # Somatostatin interneurons (SST+)
+    'SSTGA1', 'SSTGA2', 'SSTGA3', 'SSTGA4', 'SSTGA5', 'SSTGA6',
+    'SSTGA7', 'SSTGA8', 'SSTGA9', 'SSTGA10',
+    # VIP interneurons
+    'VIPGA1', 'VIPGA2', 'VIPGA3', 'VIPGA4',
+    # Lamp5 interneurons
+    'LAMGA1', 'LAMGA2', 'LAMGA3', 'LAMGA4',
+    # Dentate gyrus neuroblasts (GABAergic immature neurons)
+    'DGNBL1', 'DGNBL2',
+    # Lateral septal complex GABAergic
+    'LSXGA3', 'LSXGA4', 'LSXGA5', 'LSXGA7',
+    # Medial septal GABAergic
+    'MSGA1', 'MSGA2', 'MSGA4', 'MSGA6', 'MSGA7', 'MSGA8', 'MSGA9',
+    'MSGA11', 'MSGA12',
+    # Other minor populations
+    'CNUGA',      # Cerebellar nuclei GABAergic (sparse in hippocampus)
+    'OBNBL',      # Olfactory bulb neuroblasts
+    'STRGA2', 'STRGA3',  # Striatal GABAergic
+    'D2MSN2', 'D2MSN3',  # D2 medium spiny neurons (very sparse)
+}
 
 def is_gaba_subtype(subtype):
     """
-    Check if SubType is GABA/hippocampal related.
-    Uses enhanced keyword matching.
+    Check if SubType is a hippocampal GABAergic cell type.
+    Uses EXACT matching against the curated list of 46 cell types.
+
+    This excludes:
+    - Glutamatergic neurons (CA1GL, CA3GL, DGGR, etc.)
+    - Non-neuronal cells (PVM, etc.)
     """
     if pd.isna(subtype):
         return False
-    subtype_str = str(subtype).upper()
-    # Check if any GABA keyword is found in the SubType string
-    return any(gaba_type in subtype_str for gaba_type in GABA_SUBTYPES_UPPER)
+    return str(subtype) in HIPPOCAMPAL_GABA_CELLTYPES
 
 # =============================================================================
 # Step 1: Load and Filter Table 16 for GABA SubTypes
@@ -107,8 +133,9 @@ print("="*80)
 print("STEP 1: Loading and filtering Table 16 for GABA cell types")
 print("-"*80)
 print(f"Loading: {TABLE16_FILE}")
-print(f"GABA SubType keywords: {len(GABA_SUBTYPES)}")
-print(f"Sample keywords: {', '.join(list(GABA_SUBTYPES)[:15])}")
+print(f"Hippocampal GABAergic cell types: {len(HIPPOCAMPAL_GABA_CELLTYPES)}")
+print(f"Sample cell types: {', '.join(sorted(list(HIPPOCAMPAL_GABA_CELLTYPES))[:10])}")
+print("Using EXACT cell type matching (excludes CA1GL, CA3GL, DGGR, etc.)")
 print("Processing in chunks to manage memory...", flush=True)
 
 # Read in chunks and filter immediately
@@ -382,7 +409,8 @@ with open(OUTPUT_SUMMARY, 'w') as f:
 
     f.write("INPUT DATA:\n")
     f.write(f"  Table 16 GABA links (filtered): {len(gaba_links):,}\n")
-    f.write(f"  GABA SubType keywords used: {len(GABA_SUBTYPES)}\n\n")
+    f.write(f"  Hippocampal GABAergic cell types: {len(HIPPOCAMPAL_GABA_CELLTYPES)}\n")
+    f.write(f"  Method: EXACT cell type matching (not keyword-based)\n\n")
 
     f.write("STATISTICAL FILTERS:\n")
     f.write(f"  FDR threshold: < {FDR_THRESHOLD}\n")
@@ -429,8 +457,10 @@ with open(OUTPUT_SUMMARY, 'w') as f:
     for subtype, count in subtype_counts.items():
         f.write(f"  {subtype}: {count:,}\n")
 
-    f.write("\nGABA SUBTYPE KEYWORDS USED:\n")
-    f.write(f"  {', '.join(sorted(GABA_SUBTYPES))}\n")
+    f.write("\nHIPPOCAMPAL GABAERGIC CELL TYPES USED:\n")
+    f.write(f"  {', '.join(sorted(HIPPOCAMPAL_GABA_CELLTYPES))}\n")
+    f.write("\nEXCLUDED (glutamatergic/non-neuronal):\n")
+    f.write("  CA1GL1-3, CA3GL1-6, DGGR, RGDG, PVM\n")
 
     f.write("\nOUTPUT FILES:\n")
     f.write(f"  Table 16-only: {OUTPUT_TABLE16_ONLY}\n")

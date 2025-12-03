@@ -46,6 +46,72 @@ plt.rcParams['ytick.major.width'] = 1.5
 sns.set_style("ticks")
 
 
+def filter_significant_cres(data, n_cres, cre_info, sample1_name, sample2_name,
+                            min_signal=2.0, min_fc=2.0):
+    """
+    Filter CREs based on signal and fold change thresholds.
+
+    Parameters:
+    -----------
+    data : dict
+        Dictionary with sample names as keys and signal arrays as values
+    n_cres : int
+        Number of CREs
+    cre_info : dict
+        Dictionary with CRE information
+    sample1_name : str
+        Name of sample 1 (control/reference)
+    sample2_name : str
+        Name of sample 2 (treatment/comparison)
+    min_signal : float
+        Minimum max signal required across conditions
+    min_fc : float
+        Minimum fold change (FC >= min_fc OR FC <= 1/min_fc)
+
+    Returns:
+    --------
+    significant_cres : list
+        List of (index, cre_info, fc, max_signal, mean1, mean2) for significant CREs
+    """
+    sample1_data = data[sample1_name]
+    sample2_data = data[sample2_name]
+
+    significant_cres = []
+
+    for i in range(n_cres):
+        # Calculate mean signal for each sample
+        mean1 = np.mean(sample1_data[i, :])
+        mean2 = np.mean(sample2_data[i, :])
+
+        # Calculate max signal across both conditions
+        max_signal = max(np.max(sample1_data[i, :]), np.max(sample2_data[i, :]))
+
+        # Check min signal threshold
+        if max_signal < min_signal:
+            continue
+
+        # Calculate fold change (add small epsilon to avoid division by zero)
+        eps = 1e-6
+        fc = (mean2 + eps) / (mean1 + eps)
+
+        # Check fold change threshold (up OR down)
+        if not (fc >= min_fc or fc <= (1.0 / min_fc)):
+            continue
+
+        # Get CRE info
+        info = cre_info.get(i, {
+            'cre_id': f'CRE_{i+1}',
+            'chr': 'unknown',
+            'start': 0,
+            'end': 0,
+            'gene': 'Unknown'
+        })
+
+        significant_cres.append((i, info, fc, max_signal, mean1, mean2))
+
+    return significant_cres
+
+
 def read_deeptools_matrix(matrix_file):
     """
     Read deepTools matrix file and extract signal data.
@@ -249,7 +315,7 @@ def _plot_single_cre_comparison(args):
     Helper function for parallel processing of individual CRE plots.
     This must be a top-level function for multiprocessing to work.
     """
-    (i, cre_id, gene, chrom, start, end, data, bin_labels,
+    (i, info, fc, max_signal, mean1, mean2, data, bin_labels,
      sample1_name, sample2_name, color1, color2, comparison_name,
      output_dir, dpi) = args
 
@@ -267,8 +333,20 @@ def _plot_single_cre_comparison(args):
     ax.axvline(x=0, color='gray', linestyle='--', linewidth=1, alpha=0.5)
     ax.set_xlabel('Distance from CRE Center (bp)', fontsize=11, fontweight='bold')
     ax.set_ylabel('ATAC Signal', fontsize=11, fontweight='bold')
-    ax.set_title(f'{gene} - {cre_id}\n{chrom}:{start}-{end}\n{comparison_name}',
-                fontsize=12, fontweight='bold')
+
+    # Title with FC and direction (matching GABA_specific implementation)
+    direction = "UP" if fc > 1 else "DOWN"
+    gene = info.get('gene', 'Unknown')
+    cre_id = info.get('cre_id', f'CRE_{i+1}')
+    chrom = info.get('chr', '')
+    start = info.get('start', '')
+    end = info.get('end', '')
+
+    title = f"{gene} - {cre_id}\n"
+    title += f"{chrom}:{start}-{end}\n"
+    title += f"FC={fc:.2f} ({direction}) | {comparison_name}"
+
+    ax.set_title(title, fontsize=11, fontweight='bold')
     ax.legend(loc='best', frameon=True)
     ax.grid(True, alpha=0.3, linestyle=':')
     sns.despine(ax=ax)
@@ -276,7 +354,7 @@ def _plot_single_cre_comparison(args):
     plt.tight_layout()
     safe_gene = str(gene).replace('/', '_').replace(' ', '_')
     safe_cre = str(cre_id).replace('/', '_').replace(' ', '_')
-    output_file = f"{output_dir}/individual_{comparison_name}_{safe_gene}_{safe_cre}.png"
+    output_file = f"{output_dir}/individual_{direction.lower()}_{comparison_name}_{safe_gene}_{safe_cre}.png"
     plt.savefig(output_file, dpi=dpi, bbox_inches='tight')
     plt.close()
 
@@ -286,9 +364,10 @@ def _plot_single_cre_comparison(args):
 def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_file,
                                     output_dir, sample1_name, sample2_name,
                                     color1, color2, comparison_name,
-                                    n_processes=1, dpi=150, max_plots=100):
+                                    n_processes=1, dpi=150, max_plots=100,
+                                    min_signal=1.0, min_fc=1.5):
     """
-    Create individual plots for each CRE showing comparison.
+    Create individual plots for CREs showing comparison (filtered by signal/FC thresholds).
 
     Parameters:
     -----------
@@ -298,6 +377,10 @@ def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_fil
         DPI for individual plots (default: 150)
     max_plots : int
         Maximum number of individual plots to create (default: 100)
+    min_signal : float
+        Minimum max signal threshold (default: 1.0)
+    min_fc : float
+        Minimum fold change threshold (default: 1.5)
     """
     # Read BED file to get CRE IDs and coordinates
     bed_df = pd.read_csv(bed_file, sep='\t', header=None,
@@ -310,22 +393,50 @@ def plot_individual_cres_comparison(data, regions, bin_labels, bed_file, tsv_fil
         # Group by cCRE_id1 and get first gene
         gene_map = tsv_df.groupby('cCRE_id1')['Gene'].first().to_dict()
 
+    # Build CRE info dictionary
+    cre_info = {}
+    for idx, row in bed_df.iterrows():
+        cre_info[idx] = {
+            'cre_id': row['cre_id'],
+            'chr': row['chr'],
+            'start': row['start'],
+            'end': row['end'],
+            'gene': gene_map.get(row['cre_id'], 'Unknown')
+        }
+
+    # Filter CREs based on signal and fold change thresholds
+    print(f"  Filtering CREs: min_signal={min_signal}, min_fc={min_fc}")
+    significant_cres = filter_significant_cres(
+        data, len(bed_df), cre_info,
+        sample1_name, sample2_name,
+        min_signal=min_signal, min_fc=min_fc
+    )
+
+    # Split into up and down regulated
+    up_cres = [x for x in significant_cres if x[2] > 1]
+    down_cres = [x for x in significant_cres if x[2] < 1]
+
+    print(f"  Found {len(significant_cres)} significant CREs: {len(up_cres)} UP, {len(down_cres)} DOWN")
+
+    if len(significant_cres) == 0:
+        print(f"  No CREs passed filtering thresholds")
+        return
+
     # Limit number of plots
-    n_cres = min(len(bed_df), max_plots)
-    if len(bed_df) > max_plots:
-        print(f"  NOTE: Limiting to {max_plots} individual plots (out of {len(bed_df)} CREs)")
+    n_plots = min(len(significant_cres), max_plots)
+    if len(significant_cres) > max_plots:
+        print(f"  NOTE: Limiting to {max_plots} individual plots (out of {len(significant_cres)} significant CREs)")
+
+    # Sort by fold change magnitude (most significant first)
+    sorted_cres = sorted(significant_cres, key=lambda x: abs(np.log2(x[2])), reverse=True)
 
     # Prepare arguments for parallel processing
     plot_args = []
-    for i in range(n_cres):
-        cre_id = bed_df.iloc[i]['cre_id']
-        gene = gene_map.get(cre_id, 'Unknown')
-        chrom = bed_df.iloc[i]['chr']
-        start = bed_df.iloc[i]['start']
-        end = bed_df.iloc[i]['end']
-
-        args = (i, cre_id, gene, chrom, start, end, data, bin_labels,
-                sample1_name, sample2_name, color1, color2, comparison_name,
+    for i, info, fc, max_sig, mean1, mean2 in sorted_cres[:n_plots]:
+        # Pass info dict and FC values to match GABA_specific implementation
+        args = (i, info, fc, max_sig, mean1, mean2, data, bin_labels,
+                sample1_name, sample2_name, color1, color2,
+                comparison_name,
                 output_dir, dpi)
         plot_args.append(args)
 
@@ -499,6 +610,10 @@ Examples:
                        help='Maximum number of individual plots per comparison (default: 100)')
     parser.add_argument('--matrix', type=str, default='GABA',
                        help='Matrix to use: GABA, all_celltypes, or CRE type name (default: GABA)')
+    parser.add_argument('--min-signal', type=float, default=1.0,
+                       help='Minimum max signal threshold for individual plots (default: 1.0)')
+    parser.add_argument('--min-fc', type=float, default=1.5,
+                       help='Minimum fold change threshold (default: 1.5)')
 
     args = parser.parse_args()
 
@@ -520,6 +635,8 @@ Examples:
             print(f"   -> Using {args.parallel} parallel processes")
         print(f"   -> Individual plot DPI: {args.individual_dpi}")
         print(f"   -> Max individual plots: {args.max_individual}")
+        print(f"   -> Min signal threshold: {args.min_signal}")
+        print(f"   -> Min fold change: {args.min_fc} (up) or {1/args.min_fc:.2f} (down)")
         print(f"   -> Metaprofile DPI: 300 (always high quality)")
     print()
 
@@ -630,7 +747,9 @@ Examples:
                 comp['name'],
                 n_processes=args.parallel,
                 dpi=args.individual_dpi,
-                max_plots=args.max_individual
+                max_plots=args.max_individual,
+                min_signal=args.min_signal,
+                min_fc=args.min_fc
             )
         elif args.skip_individual:
             print(f"\n  Skipping individual CRE plots for {comp['name']} (fast mode)")

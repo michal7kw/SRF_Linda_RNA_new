@@ -8,7 +8,7 @@
 
 ## Key Features
 
-- **Enhanced GABA SubType Filtering**: Uses keyword matching to identify GABA-specific CREs
+- **Explicit GABAergic Cell Type Filtering**: Uses exact matching against 46 hippocampal GABAergic cell types (NOT keyword matching)
 - **Dual Output Strategy**: Creates BOTH Table 16-only AND ENCODE-intersected CRE sets
 - **minSig/minFC Filtering**: Visualizes only significantly differentially accessible CREs
 - **Publication-Ready Outputs**: Heatmaps, metaprofiles, and individual CRE plots
@@ -72,18 +72,27 @@ The pipeline consists of four main stages:
 - Usage: Source of GABA SubType information
 - Statistical filters: FDR < 0.05, |PCC| > 0.2
 
-### GABA SubType Keywords (Enhanced)
+### Hippocampal GABAergic Cell Types (Explicit List)
 
-The pipeline uses comprehensive keyword matching for GABA cell types:
+The pipeline uses **EXACT cell type matching** against 46 GABAergic cell types identified from hippocampal samples:
 
-| Category | Keywords |
-|----------|----------|
-| **Hippocampal Regions** | CA1, CA2, CA3, CA4, DG, DGNBL, HPF, Hippocampus |
-| **GABA Markers** | GABA, GABAergic, INH, Interneuron, Inhibitory |
-| **Interneuron Types** | PV, PVALB, SST, Sst, VIP, Vip, LAMP5, LAMP, SNCG |
-| **Combined Markers** | PVGA, SSTGA, VIPGA, LAMGA, NBLGA |
-| **Granule Cells** | GRC, GC, Granule |
-| **Neuroblasts** | NB |
+| Cell Type Category | Subtypes | Count |
+|--------------------|----------|-------|
+| **Parvalbumin (PV+)** | PVGA1-7 | 7 |
+| **Somatostatin (SST+)** | SSTGA1-10 | 10 |
+| **VIP interneurons** | VIPGA1-4 | 4 |
+| **Lamp5 interneurons** | LAMGA1-4 | 4 |
+| **DG neuroblasts** | DGNBL1-2 | 2 |
+| **Lateral septal** | LSXGA3,4,5,7 | 4 |
+| **Medial septal** | MSGA1,2,4,6,7,8,9,11,12 | 9 |
+| **Other (sparse)** | CNUGA, OBNBL, STRGA2-3, D2MSN2-3 | 6 |
+
+**Methodology**: Derived from `helpers/explore_data/identify_hippocampal_gaba_types.py`:
+1. Hippocampal samples identified from Table 1 (Major Region == 'HPF')
+2. Cells from those samples filtered by Class == 'GABA' in Table 2
+3. Extract unique CellType values → 46 GABAergic cell types
+
+**EXCLUDED (glutamatergic/non-neuronal)**: CA1GL1-3, CA3GL1-6, DGGR, RGDG, PVM
 
 ## CRE Filtering Criteria
 
@@ -91,7 +100,7 @@ The pipeline uses comprehensive keyword matching for GABA cell types:
 |--------|-------|----------|
 | **FDR threshold** | < 0.05 | YES |
 | **PCC threshold** | > 0.2 | YES |
-| **SubType filter** | GABA keywords | YES |
+| **SubType filter** | Exact match to 46 GABAergic cell types | YES |
 | **ENCODE intersection** | bedtools | For intersected set only |
 
 ## minSig/minFC Filtering
@@ -203,7 +212,8 @@ This helps you understand:
 |---------|-------------------------------|----------------------------------|
 | **Focus** | All cell types + GABA subset | GABA-specific only |
 | **Gene Filter** | Splicing genes | None (all GABA) |
-| **SubType Keywords** | Basic (12 keywords) | Enhanced (30+ keywords) |
+| **SubType Filter** | Keyword matching (error-prone) | **Explicit 46 cell types (validated)** |
+| **Excludes Glutamatergic** | No | **YES (CA1GL, CA3GL, DGGR excluded)** |
 | **minSig/minFC** | Not included | Included |
 | **Individual Plots** | Limited | Full support |
 | **Dual Output** | No | **YES (Table 16 + Intersected)** |

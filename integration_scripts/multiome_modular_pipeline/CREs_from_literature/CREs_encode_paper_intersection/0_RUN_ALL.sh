@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=encode_cCREs_pipeline
-#SBATCH --output=logs/0_RUN_ENCODE_CCRES_ANALYSIS.log
-#SBATCH --error=logs/0_RUN_ENCODE_CCRES_ANALYSIS.err
+#SBATCH --job-name=0_CREs_encode_paper_intersection
+#SBATCH --output=logs/0_CREs_encode_paper_intersection_%j.log
+#SBATCH --error=logs/0_CREs_encode_paper_intersection_%j.err
 #SBATCH --time=8:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=64G
@@ -135,7 +135,15 @@ echo "STEP 5: Creating custom comparison visualizations"
 echo "========================================================================"
 echo ""
 
-python 5_visualize_custom_comparisons.py --skip-individual
+# Create individual CRE plots with stringent thresholds
+# --min-signal 2.0: Require max signal >= 2.0
+# --min-fc 3.0: Require fold change >= 3.0 (up) or <= 0.33 (down)
+# --parallel 8: Use 8 parallel processes
+python 5_visualize_custom_comparisons.py \
+    --min-signal 2.0 \
+    --min-fc 3.0 \
+    --parallel 8 \
+    --max-individual 100
 
 if [ $? -ne 0 ]; then
     echo "WARNING: Step 5 had issues"
@@ -173,12 +181,17 @@ echo ""
 echo "Steps 4-5 - Custom Comparisons:"
 echo "  output/custom_comparisons/matrix_*.gz"
 echo "  output/custom_comparisons/profiles/metaprofile_*.png"
+echo "  output/custom_comparisons/profiles/individual_*.png (filtered CREs)"
 echo "  output/custom_comparisons/overview_all_conditions_*.png"
 echo ""
 echo "Comparisons performed (3 total):"
 echo "  1. Nestin-Ctrl vs Nestin-Mut (within-genotype)"
 echo "  2. Nestin-Ctrl vs Emx1-Mut (cross-genotype)"
 echo "  3. Nestin-Mut vs Emx1-Mut (mutant comparison)"
+echo ""
+echo "Individual CRE plots filtering:"
+echo "  min_signal: 2.0 (max signal threshold)"
+echo "  min_fc: 3.0 (fold change >= 3.0 or <= 0.33)"
 echo ""
 echo "Completed: $(date)"
 echo "========================================================================"

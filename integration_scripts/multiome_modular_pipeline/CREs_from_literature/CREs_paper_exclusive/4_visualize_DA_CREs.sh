@@ -22,12 +22,12 @@
 # - PARALLEL_JOBS=8: Number of parallel processes (default: 8)
 # - INDIVIDUAL_DPI=150: DPI for individual plots (default: 150)
 # - MIN_SIGNAL=2.0: Minimum signal threshold (default: 2.0)
-# - MIN_FC=2.0: Minimum fold change threshold (default: 2.0)
+# - MIN_FC=3.0: Minimum fold change threshold (default: 3.0)
 #
 # Usage:
 #   sbatch 4_visualize_DA_CREs.sh                    # Full analysis
 #   SKIP_INDIVIDUAL=1 sbatch 4_visualize_DA_CREs.sh  # Fast mode (metaprofiles only)
-#   MIN_SIGNAL=2.0 MIN_FC=2.0 sbatch 4_visualize_DA_CREs.sh  # Stricter filtering
+#   MIN_SIGNAL=2.0 MIN_FC=3.0 sbatch 4_visualize_DA_CREs.sh  # Stricter filtering
 ################################################################################
 
 echo "========================================================================"
@@ -44,7 +44,7 @@ SKIP_INDIVIDUAL=${SKIP_INDIVIDUAL:-0}
 PARALLEL_JOBS=${PARALLEL_JOBS:-8}
 INDIVIDUAL_DPI=${INDIVIDUAL_DPI:-150}
 MIN_SIGNAL=${MIN_SIGNAL:-2.0}
-MIN_FC=${MIN_FC:-2.0}
+MIN_FC=${MIN_FC:-3.0}
 
 echo "Configuration:"
 echo "  SKIP_INDIVIDUAL: $SKIP_INDIVIDUAL"

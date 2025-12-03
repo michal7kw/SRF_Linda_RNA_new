@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=0_RUN_COMPLETE_EXCLUSIVE_PIPELINE
-#SBATCH --output=logs/0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.log
-#SBATCH --error=logs/0_RUN_COMPLETE_EXCLUSIVE_PIPELINE.err
+#SBATCH --job-name=0_CREs_paper_exclusive
+#SBATCH --output=logs/0_CREs_paper_exclusive_%j.log
+#SBATCH --error=logs/0_CREs_paper_exclusive_%j.err
 #SBATCH --time=00:10:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=1G

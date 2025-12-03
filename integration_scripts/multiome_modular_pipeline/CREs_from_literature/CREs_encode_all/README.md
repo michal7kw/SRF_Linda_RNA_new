@@ -274,3 +274,167 @@ This pipeline uses **genomic proximity** to link CREs to genes:
 - Path: `../../signac_results_L1/bigwig_tracks_L1/by_celltype/GABA_*.bw`
 - Files used: GABA_Nestin-Ctrl.bw, GABA_Nestin-Mut.bw, GABA_Emx1-Mut.bw
 - **Excluded**: GABA_Emx1-Ctrl.bw (failed sample - do not use)
+
+---
+
+## TFBS Analysis Pipeline (Steps 6-9)
+
+This extended pipeline performs **Transcription Factor Binding Site (TFBS)** analysis within ATAC-seq peaks that overlap with PLS (Promoter-Like Signature) elements. It identifies which TFs may regulate splicing gene expression and how SRF mutation affects TF accessibility at promoters.
+
+### Quick Start - TFBS Analysis
+
+```bash
+# Run the complete TFBS analysis pipeline
+./0_RUN_TFBS_ANALYSIS.sh
+
+# Dry run (preview what will be executed)
+./0_RUN_TFBS_ANALYSIS.sh --dry-run
+
+# Start from a specific step (e.g., skip intersection if already done)
+./0_RUN_TFBS_ANALYSIS.sh --from 7
+```
+
+**Expected Runtime:** ~6-8 hours total (HOMER is computationally intensive)
+
+### Step 6: Intersect ATAC Peaks with PLS Elements (`6_intersect_peaks_with_PLS.sh`)
+
+**Purpose:** Identify ATAC-seq peaks that overlap with promoter-like regulatory elements.
+
+**Method:**
+1. Combine PLS and PLS_CTCF_bound BED files (~1,800 PLS elements)
+2. Use bedtools intersect to find overlapping ATAC peaks for each condition
+3. Create HOMER-compatible BED files for motif analysis
+
+**Input:**
+- `output/encode_cCREs_PLS.bed` (1,248 PLS elements)
+- `output/encode_cCREs_PLS_CTCF_bound.bed` (545 PLS+CTCF elements)
+- ATAC peak files from chromap pipeline
+
+**Output** (in `output/tfbs_analysis/peaks_on_PLS/`):
+- `{sample}_peaks_on_PLS.bed` - Peaks overlapping PLS
+- `{sample}_peaks_on_PLS_homer.bed` - HOMER-compatible format
+- `intersection_summary.txt` - Statistics
+
+### Step 7: HOMER TFBS Motif Analysis (`7_run_homer_tfbs_analysis.sh`)
+
+**Purpose:** Identify enriched TF binding motifs in peaks at promoter-like elements.
+
+**Method:**
+1. Run HOMER `findMotifsGenome.pl` on each condition
+2. Search for both de novo and known motifs
+3. Uses mm10 genome (auto-installs if needed)
+
+**Parameters:**
+- Analysis window: ±200bp around peak center
+- De novo motif lengths: 8, 10, 12bp
+- Background: Random genomic regions (HOMER default)
+- Repeat masking: Enabled
+
+**Output** (in `output/tfbs_analysis/homer_results/{sample}/`):
+- `homerResults.html` - Interactive HTML report
+- `knownResults.txt` - Known motif enrichment table
+- `homerResults/` - De novo motifs
+- `top20_known_motifs.txt` - Top enriched TFs
+
+### Step 8: Differential Motif Enrichment (`8_differential_motif_analysis.py`)
+
+**Purpose:** Compare TF motif enrichment between conditions to identify differentially accessible TF sites.
+
+**Comparisons:**
+1. **Nestin-Ctrl vs Nestin-Mut** - Mutation effect in Nestin
+2. **Nestin-Ctrl vs Emx1-Mut** - Cross-genotype mutation effect
+3. **Nestin-Mut vs Emx1-Mut** - Mutant genotype comparison
+
+**Metrics:**
+- Log2 enrichment ratio between conditions
+- Delta log10(p-value)
+- Differential status classification
+
+**Output** (in `output/tfbs_analysis/differential_analysis/`):
+- `differential_motifs_{comparison}.tsv` - Full comparison results
+- `significant_differential_motifs_{comparison}.tsv` - Filtered significant
+- `tf_enrichment_matrix_all_samples.tsv` - Cross-sample matrix
+- `DIFFERENTIAL_MOTIF_ANALYSIS_SUMMARY.md` - Report
+
+### Step 9: Visualization (`9_visualize_tfbs_results.py`)
+
+**Purpose:** Generate publication-quality figures for TFBS analysis results.
+
+**Figures Generated:**
+- `heatmap_tf_enrichment.png/pdf` - Top TF motif enrichment heatmap
+- `volcano_{comparison}.png` - Differential enrichment volcano plots
+- `barplot_tf_family_enrichment.png` - TF family distribution
+- `scatter_condition_comparisons.png` - Cross-condition correlations
+- `summary_figure_tfbs_analysis.png/pdf` - Multi-panel summary figure
+
+**Output** (in `output/tfbs_analysis/figures/`):
+- PNG files (300 DPI for publication)
+- PDF files (vector graphics)
+
+### TFBS Output Directory Structure
+
+```
+output/tfbs_analysis/
+├── peaks_on_PLS/                          # Step 6
+│   ├── {sample}_peaks_on_PLS.bed
+│   ├── {sample}_peaks_on_PLS_homer.bed
+│   ├── All_samples_merged_peaks_on_PLS.bed
+│   └── statistics/intersection_summary.txt
+├── homer_results/                          # Step 7
+│   ├── preparsed_mm10/                     # HOMER cache
+│   ├── Nestin_Ctrl/
+│   │   ├── homerResults.html
+│   │   ├── knownResults.txt
+│   │   ├── top20_known_motifs.txt
+│   │   └── homerResults/                   # De novo motifs
+│   ├── Nestin_Mut/
+│   └── Emx1_Mut/
+├── differential_analysis/                  # Step 8
+│   ├── differential_motifs_*.tsv
+│   ├── significant_differential_motifs_*.tsv
+│   ├── tf_enrichment_matrix_all_samples.tsv
+│   └── DIFFERENTIAL_MOTIF_ANALYSIS_SUMMARY.md
+└── figures/                                # Step 9
+    ├── heatmap_tf_enrichment.png/pdf
+    ├── volcano_*.png
+    ├── barplot_tf_family_enrichment.png
+    ├── scatter_condition_comparisons.png
+    └── summary_figure_tfbs_analysis.png/pdf
+```
+
+### Biological Interpretation
+
+**TFs enriched in mutant conditions may indicate:**
+- Compensatory transcriptional programs activated by SRF loss
+- Altered chromatin state opening new TF binding sites
+- Secondary effects on splicing gene regulation
+
+**TFs depleted in mutant conditions may indicate:**
+- Direct or indirect SRF targets
+- Co-regulatory relationships with SRF
+- Affected transcriptional networks
+
+### Dependencies
+
+| Step | Tool | Conda Environment |
+|------|------|-------------------|
+| 6 | bedtools | peak_calling_new |
+| 7 | HOMER | annotation_enrichment |
+| 8 | pandas, scipy, numpy | analysis3_env |
+| 9 | matplotlib, seaborn | analysis3_env |
+
+### Individual Step Execution
+
+```bash
+# Step 6: Intersect peaks with PLS
+sbatch 6_intersect_peaks_with_PLS.sh
+
+# Step 7: HOMER motif analysis (array job for 3 conditions)
+sbatch 7_run_homer_tfbs_analysis.sh
+
+# Step 8: Differential analysis
+sbatch 8_differential_motif_analysis.sh
+
+# Step 9: Visualization
+sbatch 9_visualize_tfbs_results.sh
+```

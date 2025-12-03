@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=GABA_DEG_ENCODE_pipeline
-#SBATCH --output=logs/0_RUN_GABA_DEG_ENCODE_ANALYSIS.log
-#SBATCH --error=logs/0_RUN_GABA_DEG_ENCODE_ANALYSIS.err
+#SBATCH --job-name=0_CREs_GABA_DEGs_encode
+#SBATCH --output=logs/0_CREs_GABA_DEGs_encode_%j.log
+#SBATCH --error=logs/0_CREs_GABA_DEGs_encode_%j.err
 #SBATCH --time=8:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=64G

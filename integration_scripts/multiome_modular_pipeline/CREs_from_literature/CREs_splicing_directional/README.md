@@ -18,29 +18,41 @@ compared to:
 2. **Emx1-Mut**
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Step 1: Extract CREs with PCC Directionality                               │
-│  ├── Load ~1,141 splicing genes (Reactome/GO pathways)                     │
-│  ├── Query Table 16 (3.2M CRE-gene correlations)                           │
-│  ├── SEPARATE by PCC sign:                                                  │
-│  │   ├── Enhancer-like: PCC > 0.2 (positive correlation)                   │
-│  │   └── Silencer-like: PCC < -0.2 (negative correlation)                  │
-│  ├── Filter for GABA/hippocampal cell types                                │
-│  └── Output: enhancer_CREs_GABA.bed (~689 CREs), silencer_CREs_GABA.bed (~594 CREs) │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Step 2: Compute Signal Matrices                                            │
-│  ├── Load GABA BigWig files (Nestin-Ctrl, Nestin-Mut, Emx1-Mut)           │
-│  ├── Compute deepTools matrices for enhancers and silencers                │
-│  ├── Create heatmaps and metaprofiles                                       │
-│  └── Generate pairwise comparisons                                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Step 3: Visualize and Identify Nestin-Specific Loss                        │
-│  ├── Create publication-quality comparison plots                            │
-│  ├── Identify CREs with Nestin-specific loss pattern                        │
-│  ├── Generate three-way comparison scatter plots                            │
-│  ├── Create individual CRE plots for top hits                               │
-│  └── Output: nestin_specific_loss_enhancer.tsv, nestin_specific_loss_silencer.tsv │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│  Step 1: Extract CREs with PCC Directionality                                       │
+│  ├── Load ~1,141 splicing genes (Reactome/GO pathways)                              │
+│  ├── Query Table 16 (3.2M CRE-gene correlations)                                    │
+│  ├── SEPARATE by PCC sign:                                                          │
+│  │   ├── Enhancer-like: PCC > 0.2 (positive correlation)                            │
+│  │   └── Silencer-like: PCC < -0.2 (negative correlation)                           │
+│  ├── Filter for GABA/hippocampal cell types AND all cell types                      │
+│  └── Output: enhancer_CREs_GABA.bed, silencer_CREs_GABA.bed, *_all.bed              │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│  Step 2a: Compute Signal Matrices (GABA-specific)                                   │
+│  ├── Load GABA BigWig files (Nestin-Ctrl, Nestin-Mut, Emx1-Mut)                     │
+│  ├── Compute deepTools matrices for enhancers and silencers                         │
+│  ├── Create heatmaps and metaprofiles                                               │
+│  └── Generate pairwise comparisons                                                  │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│  Step 2b: Compute Signal Matrices (All Cell Types)                                  │
+│  ├── Same process but using all cell type CREs                                      │
+│  └── Output: matrix_{enhancer,silencer}_all.gz                                      │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│  Step 3: Visualize and Identify Nestin-Specific Loss                                │
+│  ├── Create publication-quality comparison plots                                    │
+│  ├── Identify CREs with Nestin-specific loss pattern                                │
+│  ├── Generate three-way comparison scatter plots                                    │
+│  ├── Create individual CRE plots for top hits                                       │
+│  └── Output: nestin_specific_loss_enhancer.tsv, nestin_specific_loss_silencer.tsv   │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│  Step 4: Differential CRE Analysis                                                  │
+│  ├── Identify differential CREs using min_signal and min_fc thresholds             │
+│  ├── Three comparisons: Ctrl vs Mut, Ctrl vs Emx1-Mut, Nestin-Mut vs Emx1-Mut      │
+│  ├── Separate analysis for enhancers and silencers                                  │
+│  ├── Runs for BOTH all cell types AND GABA-specific CREs                           │
+│  ├── Create volcano plots, MA plots, and metaprofiles                              │
+│  └── Output: differential_CREs_minSig{X}_minFC{Y}/ organized directory             │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Quick Start
@@ -129,6 +141,8 @@ CREs_splicing_directional/
 ├── 2_compute_signal_matrices.sh             # Step 2
 ├── 3_visualize_directional_comparisons.py   # Step 3
 ├── 3_visualize_directional_comparisons.sh   # SLURM wrapper
+├── 4_differential_CRE_analysis.py           # Step 4: Differential CRE analysis
+├── 4_differential_CRE_analysis.sh           # SLURM wrapper for Step 4
 ├── README.md                                # This file
 ├── logs/                                    # SLURM logs
 └── output/
@@ -184,14 +198,56 @@ CREs_splicing_directional/
     │   ├── scatter_silencer_three_way_comparison.png
     │   └── summary_barplot_all_conditions.png
     │
-    └── nestin_specific_loss/                # KEY RESULTS
-        ├── nestin_specific_loss_enhancer.tsv
-        ├── nestin_specific_loss_silencer.tsv
-        ├── SUMMARY_nestin_specific_loss.txt
-        ├── individual_enhancer_minSig2.0_minFC2.0/  # Individual plots (with threshold suffix)
-        │   └── cre_001_GeneName_fc2.5.png
-        └── individual_silencer_minSig2.0_minFC2.0/
-            └── cre_001_GeneName_fc2.5.png
+    ├── nestin_specific_loss/                # KEY RESULTS (Step 3)
+    │   ├── nestin_specific_loss_enhancer.tsv
+    │   ├── nestin_specific_loss_silencer.tsv
+    │   ├── SUMMARY_nestin_specific_loss.txt
+    │   ├── individual_enhancer_minSig2.0_minFC2.0/
+    │   │   └── cre_001_GeneName_fc2.5.png
+    │   └── individual_silencer_minSig2.0_minFC2.0/
+    │       └── cre_001_GeneName_fc2.5.png
+    │
+    └── differential_CREs_minSig0.05_minFC1.5/  # DIFFERENTIAL ANALYSIS (Step 4)
+        ├── SUMMARY_differential_CRE_analysis.txt
+        │
+        ├── results/                          # TSV files with statistics
+        │   ├── differential_CREs_enhancer_nestin_ctrl_vs_mut.tsv
+        │   ├── differential_CREs_enhancer_nestin_ctrl_vs_mut_significant.tsv
+        │   ├── differential_CREs_enhancer_nestin_ctrl_vs_emx1_mut.tsv
+        │   ├── differential_CREs_enhancer_nestin_mut_vs_emx1_mut.tsv
+        │   ├── differential_CREs_silencer_*.tsv
+        │   └── ...
+        │
+        ├── plots/                            # Visualization plots
+        │   ├── summary_enhancer_differential.png  # Stacked bar overview
+        │   ├── summary_silencer_differential.png
+        │   ├── enhancer/                     # Per CRE type
+        │   │   ├── nestin_ctrl_vs_mut/       # Per comparison
+        │   │   │   ├── volcano_enhancer_nestin_ctrl_vs_mut.png
+        │   │   │   ├── ma_plot_enhancer_nestin_ctrl_vs_mut.png
+        │   │   │   ├── metaprofile_up_enhancer_nestin_ctrl_vs_mut.png
+        │   │   │   └── metaprofile_down_enhancer_nestin_ctrl_vs_mut.png
+        │   │   ├── nestin_ctrl_vs_emx1_mut/
+        │   │   └── nestin_mut_vs_emx1_mut/
+        │   └── silencer/
+        │       └── ...
+        │
+        ├── bed_files/                        # BED files for IGV/deepTools
+        │   ├── enhancer/
+        │   │   ├── dCREs_enhancer_nestin_ctrl_vs_mut_significant.bed
+        │   │   ├── dCREs_enhancer_nestin_ctrl_vs_mut_up.bed
+        │   │   ├── dCREs_enhancer_nestin_ctrl_vs_mut_down.bed
+        │   │   └── ...
+        │   └── silencer/
+        │       └── ...
+        │
+        └── individual_plots/                 # Individual CRE signal profiles
+            ├── enhancer/
+            │   ├── nestin_ctrl_vs_mut/
+            │   │   └── dCRE_001_up_GeneName_fc3.5.png
+            │   └── ...
+            └── silencer/
+                └── ...
 ```
 
 ## Key Output Files
@@ -251,6 +307,19 @@ MIN_SIGNAL=1.0 MIN_FC=1.5 sbatch 3_visualize_directional_comparisons.sh  # More 
 
 # Combined options
 MAX_INDIVIDUAL=100 sbatch 3_visualize_directional_comparisons.sh  # More plots with default thresholds
+
+# Step 4 only: Differential CRE analysis (requires Step 2 output)
+sbatch 4_differential_CRE_analysis.sh
+
+# Step 4 with options (via environment variables)
+DIFF_MIN_SIGNAL=1.5 DIFF_MIN_FC=2.0 sbatch 4_differential_CRE_analysis.sh  # More permissive
+DIFF_MIN_SIGNAL=3.0 DIFF_MIN_FC=4.0 sbatch 4_differential_CRE_analysis.sh  # Stricter
+
+# Step 4 with GABA-specific only (via USE_GABA=1)
+USE_GABA=1 sbatch 4_differential_CRE_analysis.sh
+
+# Skip differential analysis in main pipeline
+SKIP_DIFFERENTIAL=1 sbatch 0_RUN_SPLICING_DIRECTIONAL_PIPELINE.sh
 ```
 
 ### Individual Plot Filtering Parameters
@@ -266,6 +335,32 @@ Individual CRE plots are filtered based on signal and fold-change thresholds:
 
 **Output directories include threshold suffix**: `individual_enhancer_minSig2.0_minFC2.0/`
 
+### Differential CRE Analysis Parameters (Step 4)
+
+**IMPORTANT**: Default thresholds are set for normalized BigWig signal values (typically 0.01-1.0 range).
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| DIFF_MIN_SIGNAL | 0.05 | Minimum max signal required for differential detection |
+| DIFF_MIN_FC | 1.5 | Minimum fold change required for significance |
+| SKIP_DIFFERENTIAL | 0 | Set to 1 to skip differential analysis in main pipeline |
+| DIFF_MAX_INDIVIDUAL | 20 | Maximum individual plots per comparison |
+| USE_GABA | 0 | Set to 1 to analyze only GABA-specific CREs |
+| DIAGNOSTICS_ONLY | 0 | Set to 1 to only show signal diagnostics |
+
+**Differential CRE Detection Logic**:
+```
+Significant UP = (max_signal >= min_signal) AND (fc >= min_fc)
+Significant DOWN = (max_signal >= min_signal) AND (fc <= 1/min_fc)
+```
+
+**Comparisons performed**:
+- **nestin_ctrl_vs_mut**: Within-genotype mutation effect
+- **nestin_ctrl_vs_emx1_mut**: Cross-genotype comparison
+- **nestin_mut_vs_emx1_mut**: Mutant genotype comparison
+
+**Output directories include threshold suffix**: `differential_CREs_minSig0.05_minFC1.5/`
+
 ## Comparison with Previous Pipelines
 
 | Feature | Previous Pipelines | This Pipeline |
@@ -273,4 +368,7 @@ Individual CRE plots are filtered based on signal and fold-change thresholds:
 | **PCC filtering** | \|PCC\| > 0.2 (mixed) | PCC > 0.2 OR PCC < -0.2 (separated) |
 | **CRE types** | Combined | Enhancers and Silencers separately |
 | **Nestin-specific** | Not identified | Explicitly detected |
+| **Differential CREs** | Not performed | Full differential analysis (Step 4) |
+| **Cell type scope** | GABA only | Both GABA-specific AND all cell types |
 | **Biological interpretation** | Ambiguous | Clear directional model |
+| **Output organization** | Flat | Hierarchical with clear naming |

@@ -57,12 +57,12 @@ ENCODE_CCRES_FILE = "../data/mm10-cCREs.bed"
 FDR_THRESHOLD = 0.05
 PCC_THRESHOLD = 0.2
 
-# GABA/hippocampal cell types
-GABA_SUBTYPES = {
-    'Hippocampus', 'CA1', 'CA2', 'CA3', 'CA4', 'DG', 'DGNBL', 'GRC',
-    'GABA', 'GABAergic', 'Interneuron', 'PV', 'SST', 'VIP',
-    'LAMP5', 'LAMP', 'PVGA', 'SSTGA', 'VIPGA', 'LAMGA', 'INH'
-}
+# Import hippocampal GABAergic cell types from shared helper module
+# This uses EXACT matching against 46 validated cell types (not keyword matching)
+# Excludes glutamatergic neurons like CA1GL, CA3GL, DGGR
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'helpers'))
+from gaba_cell_types import HIPPOCAMPAL_GABA_CELLTYPES, is_gaba_subtype
 
 # Output directory
 OUTPUT_DIR = "./output"
@@ -103,12 +103,9 @@ print("-"*80)
 print(f"Loading: {TABLE16_FILE}")
 print("Processing in chunks to manage memory...", flush=True)
 
-def is_gaba_subtype(subtype):
-    """Check if SubType is GABA/hippocampal"""
-    if pd.isna(subtype):
-        return False
-    subtype_str = str(subtype).upper()
-    return any(gaba_type.upper() in subtype_str for gaba_type in GABA_SUBTYPES)
+# is_gaba_subtype imported from helpers/gaba_cell_types.py
+# Uses EXACT matching against 46 validated hippocampal GABAergic cell types
+print(f"Using {len(HIPPOCAMPAL_GABA_CELLTYPES)} validated hippocampal GABAergic cell types")
 
 chunk_size = 500000
 filtered_chunks = []

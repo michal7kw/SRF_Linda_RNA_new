@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=0_RUN_SPLICING_GENES_ANALYSIS
-#SBATCH --output=logs/0_RUN_SPLICING_GENES_ANALYSIS.log
-#SBATCH --error=logs/0_RUN_SPLICING_GENES_ANALYSIS.err
+#SBATCH --job-name=0_CREs_splicing_genes_paper
+#SBATCH --output=logs/0_CREs_splicing_genes_paper_%j.log
+#SBATCH --error=logs/0_CREs_splicing_genes_paper_%j.err
 #SBATCH --time=00:10:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=1G

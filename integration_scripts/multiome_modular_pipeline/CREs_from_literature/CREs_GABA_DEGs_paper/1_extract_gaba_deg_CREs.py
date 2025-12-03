@@ -110,20 +110,18 @@ print("="*80)
 print("STEP 3: Setting up cell type classification")
 print("-"*80)
 
-# Define hippocampal/GABAergic subtypes (same as splicing genes analysis)
-hippocampal_keywords = [
-    'CA1', 'CA2', 'CA3', 'DG', 'DGNBL', 'GRC',  # Hippocampal
-    'LAMP5', 'LAMP', 'VIP', 'SST', 'PV', 'PVGA', 'SSTGA', 'VIPGA', 'LAMGA',  # GABAergic interneurons
-    'GABA', 'INH', 'interneuron'
-]
+# Import hippocampal GABAergic cell types from shared helper module
+# This uses EXACT matching against 46 validated cell types (not keyword matching)
+# Excludes glutamatergic neurons like CA1GL, CA3GL, DGGR
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'helpers'))
+from gaba_cell_types import HIPPOCAMPAL_GABA_CELLTYPES, is_gaba_subtype
 
-def is_hippocampal_or_gaba(subtype):
-    if pd.isna(subtype):
-        return False
-    subtype_str = str(subtype).upper()
-    return any(keyword.upper() in subtype_str for keyword in hippocampal_keywords)
+# Alias for compatibility with existing code
+is_hippocampal_or_gaba = is_gaba_subtype
 
-print(f"GABA/Hippocampal keywords: {', '.join(hippocampal_keywords)}")
+print(f"Using {len(HIPPOCAMPAL_GABA_CELLTYPES)} validated hippocampal GABAergic cell types")
+print("(EXACT matching - excludes CA1GL, CA3GL, DGGR, etc.)")
 print()
 
 # =============================================================================

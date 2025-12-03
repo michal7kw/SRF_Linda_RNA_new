@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """
-Step 1: Extract Splicing Gene CREs with PCC Directionality
+Step 1: Extract Splicing Gene CREs (All Cell Types) with PCC Directionality
 
 This script extracts CREs linked to splicing genes from Table 16,
 SEPARATING by correlation direction:
 - Enhancer-like CREs (PCC > 0): accessibility ↑ = expression ↑
 - Silencer-like CREs (PCC < 0): accessibility ↑ = expression ↓
 
-This is critical for proper biological interpretation:
-- Loss of accessibility at ENHANCERS → reduced gene expression
-- Loss of accessibility at SILENCERS → increased gene expression
-
-For splicing disturbances (likely reduced splicing gene expression),
-we expect to see loss of accessibility at ENHANCER-like CREs.
+DIFFERENCE FROM PREVIOUS PIPELINES:
+- NO filtering for GABA/Hippocampal cell types.
+- Uses ALL available CRE-gene links for splicing genes.
 
 Author: Claude Code
 Date: December 2024
@@ -32,7 +29,7 @@ from collections import defaultdict
 # Paths
 BASE_DIR = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/multiome_modular_pipeline/CREs_from_literature")
 DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "CREs_splicing_directional" / "output"
+OUTPUT_DIR = BASE_DIR / "CREs_splicing_differential_all_celltypes" / "output"
 
 # Input files
 SPLICING_GENES_FILE = Path("/beegfs/scratch/ric.sessa/kubacki.michal/SRF_Linda_top/SRF_Linda_RNA/integration_scripts/splicing_genes/extracted_genes_final.csv")
@@ -42,19 +39,6 @@ ENCODE_CCRES_FILE = DATA_DIR / "mm10-cCREs.bed"
 # Statistical thresholds
 FDR_THRESHOLD = 0.05
 PCC_THRESHOLD = 0.2  # Will be applied directionally: PCC > 0.2 OR PCC < -0.2
-
-# Import hippocampal GABAergic cell types from shared helper module
-# This uses EXACT matching against 46 validated cell types (not keyword matching)
-# Excludes glutamatergic neurons like CA1GL, CA3GL, DGGR
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'helpers'))
-from gaba_cell_types import HIPPOCAMPAL_GABA_CELLTYPES, is_gaba_subtype as _is_gaba_subtype
-
-# Keep GABA_KEYWORDS for backward compatibility (but it's not used anymore)
-GABA_KEYWORDS = [
-    # Additional subtypes
-    'CGE', 'MGE', 'LGE'
-]
 
 # Create output directory
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -77,14 +61,6 @@ def load_splicing_genes():
     print(f"Unique splicing genes: {len(genes)}")
 
     return set(genes)
-
-
-def is_gaba_subtype(subtype):
-    """Check if a SubType is a hippocampal GABAergic cell type.
-    Uses EXACT matching against 46 validated cell types from shared module.
-    Excludes glutamatergic neurons like CA1GL, CA3GL, DGGR.
-    """
-    return _is_gaba_subtype(subtype)
 
 
 def parse_coordinate(coord_str):
@@ -166,30 +142,10 @@ def process_table16_chunks(CREs_splicing_genes_paper, chunk_size=500000):
     return enhancer_df, silencer_df
 
 
-def filter_gaba_subtypes(df, cre_type):
-    """Filter for GABA/hippocampal cell types."""
-    if len(df) == 0:
-        return df, df
-
-    print(f"\nFiltering {cre_type} CREs for GABA/hippocampal subtypes...")
-
-    # All cell types
-    all_celltypes = df.copy()
-
-    # GABA-specific
-    gaba_mask = df['SubType'].apply(is_gaba_subtype)
-    gaba_specific = df[gaba_mask].copy()
-
-    print(f"  All cell types: {len(all_celltypes):,} links")
-    print(f"  GABA/hippocampal: {len(gaba_specific):,} links")
-
-    return all_celltypes, gaba_specific
-
-
 def extract_bed_coordinates(df, cre_type):
     """Extract unique CRE coordinates in BED format."""
     if len(df) == 0:
-        return pd.DataFrame()
+        return pd.DataFrame(), pd.DataFrame()
 
     # Parse coordinates
     coords = []
@@ -220,60 +176,7 @@ def extract_bed_coordinates(df, cre_type):
     return bed_df, unique_cres
 
 
-def intersect_with_encode(bed_file, output_file):
-    """Intersect with ENCODE cCREs to get type annotations."""
-    print(f"\nIntersecting with ENCODE cCREs...")
-
-    # Run bedtools intersect
-    cmd = f"bedtools intersect -a {bed_file} -b {ENCODE_CCRES_FILE} -wa -wb"
-
-    try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, check=True)
-
-        # Parse output
-        lines = result.stdout.strip().split('\n')
-        if not lines or lines[0] == '':
-            print("  No overlaps found with ENCODE cCREs")
-            return pd.DataFrame()
-
-        # Parse intersected results
-        records = []
-        for line in lines:
-            parts = line.split('\t')
-            if len(parts) >= 12:  # Our BED6 + ENCODE BED6
-                records.append({
-                    'chrom': parts[0],
-                    'start': int(parts[1]),
-                    'end': int(parts[2]),
-                    'cre_id': parts[3],
-                    'score': float(parts[4]),
-                    'strand': parts[5],
-                    'encode_chrom': parts[6],
-                    'encode_start': int(parts[7]),
-                    'encode_end': int(parts[8]),
-                    'encode_id': parts[9],
-                    'encode_score': parts[10],
-                    'encode_type': parts[11] if len(parts) > 11 else 'unknown'
-                })
-
-        intersect_df = pd.DataFrame(records)
-        print(f"  Found {len(intersect_df):,} overlaps with ENCODE cCREs")
-
-        # Count by ENCODE type
-        if len(intersect_df) > 0:
-            type_counts = intersect_df['encode_type'].value_counts()
-            print("\n  ENCODE CRE type distribution:")
-            for cre_type, count in type_counts.head(10).items():
-                print(f"    {cre_type}: {count:,}")
-
-        return intersect_df
-
-    except subprocess.CalledProcessError as e:
-        print(f"  bedtools error: {e.stderr}")
-        return pd.DataFrame()
-
-
-def save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba):
+def save_outputs(enhancer_all, silencer_all):
     """Save all output files."""
     print("\n" + "=" * 80)
     print("SAVING OUTPUT FILES")
@@ -282,9 +185,7 @@ def save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba):
     # Save TSV files with all information
     outputs = [
         (enhancer_all, "enhancer_CREs_all_celltypes.tsv"),
-        (enhancer_gaba, "enhancer_CREs_GABA.tsv"),
         (silencer_all, "silencer_CREs_all_celltypes.tsv"),
-        (silencer_gaba, "silencer_CREs_GABA.tsv"),
     ]
 
     for df, filename in outputs:
@@ -297,10 +198,8 @@ def save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba):
     bed_outputs = []
 
     for df, name, cre_type in [
-        (enhancer_gaba, "enhancer_CREs_GABA", "enhancer"),
-        (silencer_gaba, "silencer_CREs_GABA", "silencer"),
-        (enhancer_all, "enhancer_CREs_all", "enhancer"),
-        (silencer_all, "silencer_CREs_all", "silencer"),
+        (enhancer_all, "enhancer_CREs_all_celltypes", "enhancer"),
+        (silencer_all, "silencer_CREs_all_celltypes", "silencer"),
     ]:
         if len(df) > 0:
             bed_df, unique_cres = extract_bed_coordinates(df, cre_type)
@@ -328,34 +227,18 @@ def save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba):
     return bed_outputs
 
 
-def write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs):
+def write_summary(CREs_splicing_genes_paper, enhancer_all, silencer_all, bed_outputs):
     """Write summary statistics file."""
     print("\n" + "=" * 80)
     print("WRITING SUMMARY")
     print("=" * 80)
 
-    summary_path = OUTPUT_DIR / "SUMMARY_splicing_CREs_directional.txt"
+    summary_path = OUTPUT_DIR / "SUMMARY_extraction.txt"
 
     with open(summary_path, 'w') as f:
         f.write("=" * 80 + "\n")
-        f.write("SPLICING GENE CRE ANALYSIS - DIRECTIONAL\n")
+        f.write("SPLICING GENE CRE ANALYSIS - ALL CELL TYPES\n")
         f.write("=" * 80 + "\n\n")
-
-        f.write("RESEARCH QUESTION:\n")
-        f.write("-" * 80 + "\n")
-        f.write("Identify loss of chromatin accessibility at splicing gene regulatory elements\n")
-        f.write("specifically in Nestin-MUT GABA neurons compared to:\n")
-        f.write("  1. Nestin-Ctrl (within-genotype mutation effect)\n")
-        f.write("  2. Emx1-Mut (genotype-specific response)\n\n")
-
-        f.write("KEY INSIGHT - PCC DIRECTIONALITY:\n")
-        f.write("-" * 80 + "\n")
-        f.write("ENHANCER-like CREs (PCC > 0): accessibility UP = expression UP\n")
-        f.write("  -> Loss of accessibility at enhancers -> REDUCED gene expression\n")
-        f.write("  -> Relevant if splicing genes are DOWN-regulated in Nestin-MUT\n\n")
-        f.write("SILENCER-like CREs (PCC < 0): accessibility UP = expression DOWN\n")
-        f.write("  -> Loss of accessibility at silencers -> INCREASED gene expression\n")
-        f.write("  -> Relevant if splicing genes are UP-regulated in Nestin-MUT\n\n")
 
         f.write("INPUT DATA:\n")
         f.write("-" * 80 + "\n")
@@ -367,42 +250,19 @@ def write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silenc
         f.write("-" * 80 + "\n")
         f.write(f"FDR threshold: < {FDR_THRESHOLD}\n")
         f.write(f"PCC threshold: > {PCC_THRESHOLD} (enhancers) OR < -{PCC_THRESHOLD} (silencers)\n")
-        f.write(f"Cell type filter: GABA/Hippocampal keywords\n\n")
+        f.write(f"Cell type filter: NONE (All cell types included)\n\n")
 
         f.write("RESULTS:\n")
         f.write("-" * 80 + "\n")
         f.write("\nENHANCER-like CREs (PCC > 0.2):\n")
         f.write(f"  All cell types: {len(enhancer_all):,} CRE-gene links\n")
-        f.write(f"  GABA/hippocampal: {len(enhancer_gaba):,} CRE-gene links\n")
 
         f.write("\nSILENCER-like CREs (PCC < -0.2):\n")
         f.write(f"  All cell types: {len(silencer_all):,} CRE-gene links\n")
-        f.write(f"  GABA/hippocampal: {len(silencer_gaba):,} CRE-gene links\n")
 
         f.write("\nBED FILES GENERATED:\n")
         for bed_path, name, count in bed_outputs:
             f.write(f"  {name}.bed: {count:,} unique CREs\n")
-
-        f.write("\n" + "=" * 80 + "\n")
-        f.write("BIOLOGICAL INTERPRETATION:\n")
-        f.write("=" * 80 + "\n\n")
-
-        f.write("For splicing disturbances in Nestin-MUT GABA neurons:\n\n")
-        f.write("1. If splicing genes show REDUCED expression:\n")
-        f.write("   -> Focus on ENHANCER-like CREs\n")
-        f.write("   -> Look for LOSS of accessibility in Nestin-MUT\n")
-        f.write("   -> Pattern: Nestin-Ctrl HIGH, Nestin-Mut LOW, Emx1-Mut HIGH/NORMAL\n\n")
-
-        f.write("2. If splicing genes show INCREASED expression:\n")
-        f.write("   -> Focus on SILENCER-like CREs\n")
-        f.write("   -> Look for LOSS of accessibility in Nestin-MUT\n")
-        f.write("   -> Pattern: Nestin-Ctrl HIGH, Nestin-Mut LOW, Emx1-Mut HIGH/NORMAL\n\n")
-
-        f.write("NEXT STEPS:\n")
-        f.write("-" * 80 + "\n")
-        f.write("1. Run Step 2: Compute signal matrices (2_compute_signal_matrices.sh)\n")
-        f.write("2. Run Step 3: Visualize comparisons and identify Nestin-specific loss\n")
-        f.write("   (3_visualize_directional_comparisons.py)\n")
 
     print(f"Saved: {summary_path}")
 
@@ -413,10 +273,10 @@ def write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silenc
 
 def main():
     print("\n" + "=" * 80)
-    print("SPLICING GENE CRE ANALYSIS - WITH DIRECTIONALITY")
+    print("SPLICING GENE CRE ANALYSIS - ALL CELL TYPES")
     print("=" * 80)
-    print("\nThis analysis separates CREs by correlation direction to enable")
-    print("proper biological interpretation of accessibility changes.\n")
+    print("\nThis analysis extracts ALL CREs linked to splicing genes, without")
+    print("cell type restrictions, separating by correlation direction.\n")
 
     # Load splicing genes
     CREs_splicing_genes_paper = load_splicing_genes()
@@ -424,23 +284,16 @@ def main():
     # Process Table 16 with PCC directionality
     enhancer_df, silencer_df = process_table16_chunks(CREs_splicing_genes_paper)
 
-    # Filter for GABA subtypes
-    enhancer_all, enhancer_gaba = filter_gaba_subtypes(enhancer_df, "enhancer")
-    silencer_all, silencer_gaba = filter_gaba_subtypes(silencer_df, "silencer")
-
-    # Save outputs
-    bed_outputs = save_outputs(enhancer_all, enhancer_gaba, silencer_all, silencer_gaba)
+    # Save outputs (No GABA filtering step)
+    bed_outputs = save_outputs(enhancer_df, silencer_df)
 
     # Write summary
-    write_summary(CREs_splicing_genes_paper, enhancer_all, enhancer_gaba, silencer_all, silencer_gaba, bed_outputs)
+    write_summary(CREs_splicing_genes_paper, enhancer_df, silencer_df, bed_outputs)
 
     print("\n" + "=" * 80)
     print("EXTRACTION COMPLETE")
     print("=" * 80)
     print(f"\nOutput directory: {OUTPUT_DIR}")
-    print("\nKey files for downstream analysis:")
-    print("  - enhancer_CREs_GABA.bed (for loss of accessibility -> reduced expression)")
-    print("  - silencer_CREs_GABA.bed (for loss of accessibility -> increased expression)")
     print("\nNext: Run 2_compute_signal_matrices.sh")
 
 

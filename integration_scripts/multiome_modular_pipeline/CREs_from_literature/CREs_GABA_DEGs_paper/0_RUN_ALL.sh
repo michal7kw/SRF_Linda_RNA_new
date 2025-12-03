@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=GABA_DEG_analysis
-#SBATCH --output=logs/0_RUN_GABA_DEG_ANALYSIS.log
-#SBATCH --error=logs/0_RUN_GABA_DEG_ANALYSIS.err
+#SBATCH --job-name=0_CREs_GABA_DEGs_paper
+#SBATCH --output=logs/0_CREs_GABA_DEGs_paper_%j.log
+#SBATCH --error=logs/0_CREs_GABA_DEGs_paper_%j.err
 #SBATCH --time=6:00:00
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=128G
@@ -232,44 +232,12 @@ echo "STEP 3: Creating visualizations"
 echo "========================================================================"
 echo ""
 
-# Performance options (can be set via environment variables):
-# - SKIP_INDIVIDUAL=0: Create individual CRE plots (default: skip)
-# - PARALLEL_JOBS=N: Use N parallel processes for individual plots
-# - INDIVIDUAL_DPI=N: DPI for individual plots (default: 150)
-
-SKIP_FLAG="--skip-individual"
-if [ "${SKIP_INDIVIDUAL}" = "0" ]; then
-    echo "Full mode: Creating individual plots"
-    SKIP_FLAG=""
-else
-    echo "Fast mode (DEFAULT): Skipping individual CRE plots"
-fi
-
-PARALLEL_FLAG=""
-if [ -n "${PARALLEL_JOBS}" ]; then
-    PARALLEL_FLAG="--parallel ${PARALLEL_JOBS}"
-    echo "Using ${PARALLEL_JOBS} parallel processes"
-fi
-
-DPI_FLAG=""
-if [ -n "${INDIVIDUAL_DPI}" ]; then
-    DPI_FLAG="--individual-dpi ${INDIVIDUAL_DPI}"
-    echo "Individual plot DPI: ${INDIVIDUAL_DPI}"
-fi
-
-FILTER_FLAG=""
-if [ -n "${MIN_SIGNAL}" ]; then
-    FILTER_FLAG="$FILTER_FLAG --min-signal ${MIN_SIGNAL}"
-    echo "Min Signal: ${MIN_SIGNAL}"
-fi
-if [ -n "${MIN_FC}" ]; then
-    FILTER_FLAG="$FILTER_FLAG --min-fc ${MIN_FC}"
-    echo "Min FC: ${MIN_FC}"
-fi
-
+# Run visualization script with individual CRE plots
+# Thresholds: min_signal=2.0, min_fc=3.0 for filtering
+echo "Creating individual CRE plots with thresholds: min_signal=2.0, min_fc=3.0"
 echo ""
 echo "Running visualization script..."
-python 3_visualize_deg_comparisons.py $SKIP_FLAG $PARALLEL_FLAG $DPI_FLAG $FILTER_FLAG 2>&1 | tee logs/3_visualize_deg_comparisons.log
+python 3_visualize_deg_comparisons.py --min-signal 2.0 --min-fc 3.0 --parallel 8 2>&1 | tee logs/3_visualize_deg_comparisons.log
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Visualization failed!"
