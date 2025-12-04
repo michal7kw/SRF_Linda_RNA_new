@@ -63,8 +63,8 @@ INDIVIDUAL_DPI="${INDIVIDUAL_DPI:-150}"
 
 # Differential analysis parameters
 # NOTE: Default thresholds adjusted for normalized BigWig signal values (0.01-1.0 range)
-DIFF_MIN_SIGNAL="${DIFF_MIN_SIGNAL:-0.05}"
-DIFF_MIN_FC="${DIFF_MIN_FC:-1.5}"
+DIFF_MIN_SIGNAL="${DIFF_MIN_SIGNAL:-1.0}"
+DIFF_MIN_FC="${DIFF_MIN_FC:-2.0}"
 SKIP_DIFFERENTIAL="${SKIP_DIFFERENTIAL:-0}"
 DIFF_MAX_INDIVIDUAL="${DIFF_MAX_INDIVIDUAL:-20}"
 
